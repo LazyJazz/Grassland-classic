@@ -146,6 +146,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Geometry\Geometry.h" />
+    <ClInclude Include="include\Geometry\GeometryDecl.h" />
     <ClInclude Include="include\Grassland.h" />
     <ClInclude Include="include\Math\Math.h" />
     <ClInclude Include="include\Math\MathDecl.h" />

@@ -16,6 +16,9 @@
     <Filter Include="头文件\Math">
       <UniqueIdentifier>{bd73f6ce-d492-4364-a7fd-37bfa2f500ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Geometry">
+      <UniqueIdentifier>{d0ea2825-de59-47be-91f3-86a9a5a85946}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="include\Math\MatrixCommon.h">
       <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Geometry\Geometry.h">
+      <Filter>头文件\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Geometry\GeometryDecl.h">
+      <Filter>头文件\Geometry</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
