@@ -10,15 +10,22 @@ namespace Grassland
 		template<typename T> T EPS();
 		
 		template<>
-		double EPS() { return 1e-8; }
+		double EPS();
 
 		template<>
-		float EPS() { return 1e-4; }
+		float EPS();
 
 		template<>
-		int EPS() { return 1; }
+		int EPS();
+
+		template<typename T> T radian(T deg);
+
+		template<typename T> T degree(T rad);
+
 
 		template<int n, typename T> struct Vector;
 		template<int R, int C, typename T> struct Matrix;
 	}
 }
+
+#include"MathDecl.inl"

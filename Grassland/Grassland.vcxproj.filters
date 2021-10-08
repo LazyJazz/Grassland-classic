@@ -31,10 +31,28 @@
     <Filter Include="头文件\Graphics\GL\GLFW">
       <UniqueIdentifier>{59d58b3a-210f-476b-931e-f634e1212523}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Graphics">
+      <UniqueIdentifier>{6dc739f0-25df-4740-963d-d48b3923b36e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Graphics\GL">
+      <UniqueIdentifier>{2b16880a-e84a-4c64-9619-d887340e3da1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Math">
+      <UniqueIdentifier>{fc3cf61d-8cb7-426f-a437-357e9c0fe401}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\GL\GLWindow.cpp">
+      <Filter>源文件\Graphics\GL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Math\MathDecl.cpp">
+      <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Transform.cpp">
+      <Filter>源文件\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,8 +113,14 @@
     <ClInclude Include="include\Graphics\Graphics.h">
       <Filter>头文件\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GraphGL.h">
+    <ClInclude Include="include\Graphics\GL\GLHeader.h">
       <Filter>头文件\Graphics\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GLWindow.h">
+      <Filter>头文件\Graphics\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Transform.h">
+      <Filter>头文件\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +150,9 @@
     </None>
     <None Include="shaders\VertexShader.glsl">
       <Filter>资源文件</Filter>
+    </None>
+    <None Include="include\Math\MathDecl.inl">
+      <Filter>头文件\Math</Filter>
     </None>
   </ItemGroup>
 </Project>

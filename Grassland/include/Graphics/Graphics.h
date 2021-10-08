@@ -1,2 +1,2 @@
 #pragma once
-#include "GL/GraphGL.h"
+#include "GL/GLWindow.h"

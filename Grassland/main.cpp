@@ -62,19 +62,18 @@ uint32_t glCompileShaderFromSourceFile(const char* path, uint32_t glshadertype)
     return hShader;
 }
 
-int main(void)
+int main2(void)
 {
+
     GLFWwindow* window, *window2;
 
     /* Initialize the library */
     if (!glfwInit())
         return -1;
 
-
-
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(512, 512, "Hello World", NULL, NULL);
-    window2 = glfwCreateWindow(512, 512, "Window2", NULL, NULL);
+    window2 = glfwCreateWindow(512, 512, "Window2", NULL, window);
     if (!window)
     {
         glfwTerminate();
@@ -87,7 +86,7 @@ int main(void)
     }
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window2);
+    glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -293,4 +292,30 @@ int main(void)
 
     glfwTerminate();
     return 0;
+}
+
+int main()
+{
+    Grassland::Graphics::GL::Window window;
+    Grassland::Graphics::GL::Initialize(800, 600, "Grassland", &window);
+
+
+    while (!glfwWindowShouldClose(window.GetGLFWWindowHandle()))
+    {
+        if (glfwGetKey(window.GetGLFWWindowHandle(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window.GetGLFWWindowHandle(), true);
+
+        if (glfwGetKey(window.GetGLFWWindowHandle(), GLFW_KEY_SPACE) == GLFW_PRESS)
+            glfwSwapInterval(1);
+        /* Render here */
+        glClearColor(0.7, 0.8, 1.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        /* Swap front and back buffers */
+        glfwSwapBuffers(window.GetGLFWWindowHandle());
+
+        /* Poll for and process events */
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
 }
