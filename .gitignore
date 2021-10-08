@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+!Grassland/lib/x64/Release/glfw3.lib
+!Grassland/lib/x64/Debug/glfw3.lib
+!Grassland/lib/x86/Release/glfw3.lib
+!Grassland/lib/x86/Debug/glfw3.lib

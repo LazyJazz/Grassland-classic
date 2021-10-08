@@ -19,6 +19,18 @@
     <Filter Include="头文件\Geometry">
       <UniqueIdentifier>{d0ea2825-de59-47be-91f3-86a9a5a85946}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Graphics">
+      <UniqueIdentifier>{4f25d02c-3f29-4014-8deb-933a90fc978e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\GL">
+      <UniqueIdentifier>{45530985-9eeb-48c3-a768-5c3d0975fd84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\GL\GLAD">
+      <UniqueIdentifier>{43c1e462-d64e-4702-ab76-74885079ccc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\GL\GLFW">
+      <UniqueIdentifier>{59d58b3a-210f-476b-931e-f634e1212523}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +80,24 @@
     <ClInclude Include="include\Geometry\GeometryDecl.h">
       <Filter>头文件\Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GLFW\glfw3.h">
+      <Filter>头文件\Graphics\GL\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GLFW\glfw3native.h">
+      <Filter>头文件\Graphics\GL\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GLAD\glad.h">
+      <Filter>头文件\Graphics\GL\GLAD</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GLAD\khrplatform.h">
+      <Filter>头文件\Graphics\GL\GLAD</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Graphics.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GraphGL.h">
+      <Filter>头文件\Graphics\GL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
@@ -90,6 +120,12 @@
     </None>
     <None Include="include\Math\Matrix4x4.inl">
       <Filter>头文件\Math</Filter>
+    </None>
+    <None Include="shaders\FragmentShader.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="shaders\VertexShader.glsl">
+      <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
 </Project>

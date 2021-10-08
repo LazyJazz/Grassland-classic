@@ -5,13 +5,6 @@ namespace Grassland
 {
 	namespace Geometry
 	{
-		template<typename T> struct Ray;
-
-		template<typename T>
-		class Geometry
-		{
-		public:
-			;
-		};
+		;
 	}
 }
