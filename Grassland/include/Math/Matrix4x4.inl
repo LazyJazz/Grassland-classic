@@ -38,6 +38,17 @@ namespace Grassland
 		}
 
 		template<typename T>
+		inline Matrix<4, 4, T>::Matrix(const Matrix<3, 3, T>& mat3)
+		{
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					m[i][j] = mat3[i][j];
+			m[3][0] = m[3][1] = m[3][2] = 0;
+			m[0][3] = m[1][3] = m[2][3] = 0;
+			m[3][3] = 1;
+		}
+
+		template<typename T>
 		inline Vector<4, T>& Matrix<4, 4, T>::operator[](int index)
 		{
 			return m[index];

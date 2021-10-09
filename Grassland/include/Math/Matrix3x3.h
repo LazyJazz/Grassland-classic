@@ -19,6 +19,7 @@ namespace Grassland
 				T m20, T m21, T m22
 			);
 			Matrix(T scalar);
+			Matrix(const Matrix<4, 4, T>& mat4);
 
 			Vector<3, T>& operator[] (int index);
 			const Vector<3, T>& operator[] (int index) const;

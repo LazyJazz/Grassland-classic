@@ -315,7 +315,7 @@ int main()
         Grassland::Math::Vec3( 1.0,  1.0, -1.0),
         Grassland::Math::Vec3( 1.0,  1.0,  1.0)
     };
-    Grassland::Math::Vec3 vertices[8][2];
+    Grassland::Math::Vec3 vertices[8][2] = {};
 
     uint32_t indices[] = {
         0b000, 0b011, 0b001,
@@ -336,54 +336,56 @@ int main()
     uint32_t hVertexBuffer;
     uint32_t hVertexArray;
 
-    glGenVertexArrays(1, &hVertexArray);
     glGenBuffers(1, &hVertexBuffer);
     glGenBuffers(1, &hIndexBuffer);
-    glBindVertexArray(hVertexArray);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    
+    glGenVertexArrays(1, &hVertexArray);
+    glBindVertexArray(hVertexArray);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
-
-
-    uint32_t vertexShader, fragmentShader;
-    vertexShader = glCompileShaderFromSourceFile("shaders/VertexShader.glsl", GL_VERTEX_SHADER);
-    fragmentShader = glCompileShaderFromSourceFile("shaders/FragmentShader.glsl", GL_FRAGMENT_SHADER);
-
-    uint32_t shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-
-    int32_t uniformMatrixLocation = glGetUniformLocation(shaderProgram, "gMatrix");
-    glUseProgram(shaderProgram);
-
+    GRG::GL::Shader vertexShader, fragmentShader;
+    GRG::GL::Program shaderProgram;
+    vertexShader.CompileFromFile("shaders/VertexShader.glsl", GL_VERTEX_SHADER);
+    fragmentShader.CompileFromFile("shaders/FragmentShader.glsl", GL_FRAGMENT_SHADER);
+    shaderProgram.Init();
+    shaderProgram.Attach(vertexShader);
+    shaderProgram.Attach(fragmentShader);
+    shaderProgram.Link();
+    vertexShader.Release();
+    fragmentShader.Release();
     
 
     glEnable(GL_DEPTH_TEST);
 
     float dpitch = 0.0, dyaw = 0.0, droll = 0.0;
 
-    Grassland::Math::Mat4x4 pitch(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    )
+    dpitch = Grassland::Math::radian(0.1);
+    dyaw = Grassland::Math::radian(0.21);
+    droll = Grassland::Math::radian(0.32);
+
+
+    Grassland::Math::Mat3x3
+        pitch(
+            cos(dpitch), -sin(dpitch), 0.0,
+            sin(dpitch), cos(dpitch), 0.0,
+            0.0, 0.0, 1.0
+        )
         , yaw(
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0
+            1.0, 0.0, 0.0,
+            0.0, cos(dyaw), -sin(dyaw),
+            0.0, sin(dyaw), cos(dyaw)
         ), roll(
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0
-        );
+            cos(droll), 0.0, -sin(droll),
+            0.0, 1.0, 0.0,
+            sin(droll), 0.0, cos(droll)
+        ), mat_block(1.0);
 
     glfwSwapInterval(1);
     while (!glfwWindowShouldClose(window.GetGLFWWindowHandle()))
@@ -399,32 +401,17 @@ int main()
             1.0,
             20.0
         ) * translate.inverse();
+        glUseProgram(0);
 
-        glUniformMatrix4fv(uniformMatrixLocation, 1, 1, &UniformMat[0][0]);
 
-        dpitch += Grassland::Math::radian(0.1);
-        dyaw += Grassland::Math::radian(0.2);
-        droll += Grassland::Math::radian(0.3);
+        shaderProgram.SetMat4("gMatrix", UniformMat);
+        shaderProgram.Use();
 
-        Grassland::Math::Mat3x3
-            pitch(
-                cos(dpitch),-sin(dpitch), 0.0,
-                sin(dpitch), cos(dpitch), 0.0,
-                0.0, 0.0, 1.0
-            )
-            , yaw(
-                1.0, 0.0, 0.0,
-                0.0, cos(dyaw), -sin(dyaw),
-                0.0, sin(dyaw),  cos(dyaw)
-            ), roll(
-                cos(droll), 0.0, -sin(droll),
-                0.0, 1.0, 0.0,
-                sin(droll), 0.0, cos(droll)
-            );
+        mat_block *= pitch * yaw * roll;
 
         for (int i = 0; i < 8; i++)
         {
-            vertices[i][0] = pitch*yaw*roll*block[i];
+            vertices[i][0] = mat_block*block[i];
             vertices[i][1] = block[i] * 0.5 + 0.5;
         }
 
@@ -435,11 +422,9 @@ int main()
 
 
         glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
         /* Swap front and back buffers */

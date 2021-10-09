@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Graphics\GL\GLShader.cpp" />
     <ClCompile Include="include\Graphics\GL\GLWindow.cpp" />
     <ClCompile Include="include\Graphics\Transform.cpp" />
     <ClCompile Include="include\Math\MathDecl.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="include\Graphics\GL\GLFW\glfw3.h" />
     <ClInclude Include="include\Graphics\GL\GLFW\glfw3native.h" />
     <ClInclude Include="include\Graphics\GL\GLHeader.h" />
+    <ClInclude Include="include\Graphics\GL\GLShader.h" />
     <ClInclude Include="include\Graphics\GL\GLWindow.h" />
     <ClInclude Include="include\Graphics\Graphics.h" />
     <ClInclude Include="include\Grassland.h" />
