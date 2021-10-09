@@ -59,6 +59,33 @@ int main()
         0b001, 0b111, 0b101
     };
 
+    float texSquare[] = {
+        -1.0, -0.9, 0.0, 0.0, 0.0,
+        -1.0,  0.9, 0.0, 0.0, 1.0,
+         1.0, -0.9, 0.0, 1.0, 0.0,
+         1.0,  0.9, 0.0, 1.0, 1.0
+    };
+
+    uint32_t texIndices[] = {
+        0, 1, 2,
+        1, 2, 3
+    };
+    uint32_t hIndexBufferTex;
+    uint32_t hVertexBufferTex;
+    uint32_t hVertexArrayTex;
+    glGenBuffers(1, &hVertexBufferTex);
+    glGenBuffers(1, &hIndexBufferTex);
+    glGenVertexArrays(1, &hVertexArrayTex);
+    glBindVertexArray(hVertexArrayTex);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texIndices), texIndices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(texSquare), texSquare, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)12);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
     uint32_t hIndexBuffer;
     uint32_t hVertexBuffer;
     uint32_t hVertexArray;
@@ -87,9 +114,54 @@ int main()
     shaderProgram.Link();
     vertexShader.Release();
     fragmentShader.Release();
-    
+
+    GRG::GL::Shader vertexShaderTex, fragmentShaderTex;
+    GRG::GL::Program shaderProgramTex;
+    vertexShaderTex.CompileFromFile("shaders/VertexShaderTex.glsl", GL_VERTEX_SHADER);
+    fragmentShaderTex.CompileFromFile("shaders/FragmentShaderTex.glsl", GL_FRAGMENT_SHADER);
+    shaderProgramTex.Init();
+    shaderProgramTex.Attach(vertexShaderTex);
+    shaderProgramTex.Attach(fragmentShaderTex);
+    shaderProgramTex.Link();
+    vertexShaderTex.Release();
+    fragmentShaderTex.Release();
+
+    uint32_t hFrameBuffer;
+    uint32_t hFrameBufferTex, hFrameBufferDepth;
+    glGenFramebuffers(1, &hFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
+
+    glGenTextures(1, &hFrameBufferTex);
+    glGenTextures(1, &hFrameBufferDepth);
+
+    glBindTexture(GL_TEXTURE_2D, hFrameBufferTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+        800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hFrameBufferTex, 0);
+
+    glBindTexture(GL_TEXTURE_2D, hFrameBufferDepth);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+        800, 600, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, hFrameBufferDepth, 0);
 
     glEnable(GL_DEPTH_TEST);
+    //glReadBuffer(GL_NONE);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << " FrameBuffer Not Complete" << std::endl;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    
+
 
     float dpitch = 0.0, dyaw = 0.0, droll = 0.0;
 
@@ -135,7 +207,6 @@ int main()
         shaderProgram.Use();
 
         mat_block *= pitch * yaw * roll;
-
         for (int i = 0; i < 8; i++)
         {
             vertices[i][0] = mat_block*block[i];
@@ -144,7 +215,11 @@ int main()
 
 
         /* Render here */
-        glClearColor(0.7, 0.8, 1.0, 1.0);
+        glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
+        glBindVertexArray(hVertexArray);
+        glViewport(0, 0, 800, 600);
+        glEnable(GL_DEPTH_TEST);
+        glClearColor(0.6, 0.7, 0.9, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -154,6 +229,22 @@ int main()
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
+        shaderProgramTex.Use();
+        glViewport(0, 0, 800, 600);
+        glBindVertexArray(hVertexArrayTex);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(0.7, 0.8, 1.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glBindTexture(GL_TEXTURE_2D, hFrameBufferTex);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
+        glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)12);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window.GetGLFWWindowHandle());
 

@@ -160,5 +160,11 @@
     <None Include="include\Math\MathDecl.inl">
       <Filter>头文件\Math</Filter>
     </None>
+    <None Include="shaders\FragmentShaderTex.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="shaders\VertexShaderTex.glsl">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

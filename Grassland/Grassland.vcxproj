@@ -192,7 +192,9 @@
     <None Include="include\Math\Vector3.inl" />
     <None Include="include\Math\Vector4.inl" />
     <None Include="shaders\FragmentShader.glsl" />
+    <None Include="shaders\FragmentShaderTex.glsl" />
     <None Include="shaders\VertexShader.glsl" />
+    <None Include="shaders\VertexShaderTex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
