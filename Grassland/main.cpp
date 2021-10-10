@@ -73,36 +73,43 @@ int main()
     uint32_t hIndexBufferTex;
     uint32_t hVertexBufferTex;
     uint32_t hVertexArrayTex;
-    glGenBuffers(1, &hVertexBufferTex);
-    glGenBuffers(1, &hIndexBufferTex);
+
     glGenVertexArrays(1, &hVertexArrayTex);
     glBindVertexArray(hVertexArrayTex);
+    glGenBuffers(1, &hVertexBufferTex);
+    glGenBuffers(1, &hIndexBufferTex);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texIndices), texIndices, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texIndices), texIndices, GL_STATIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(texSquare), texSquare, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)12);
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
+
 
     uint32_t hIndexBuffer;
     uint32_t hVertexBuffer;
     uint32_t hVertexArray;
 
+    glGenVertexArrays(1, &hVertexArray);
+    glBindVertexArray(hVertexArray);
     glGenBuffers(1, &hVertexBuffer);
     glGenBuffers(1, &hIndexBuffer);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glGenVertexArrays(1, &hVertexArray);
-    glBindVertexArray(hVertexArray);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glBindVertexArray(0);
 
     GRG::GL::Shader vertexShader, fragmentShader;
     GRG::GL::Program shaderProgram;
@@ -216,33 +223,34 @@ int main()
 
         /* Render here */
         glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
-        glBindVertexArray(hVertexArray);
         glViewport(0, 0, 800, 600);
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.6, 0.7, 0.9, 1.0);
+        glClearColor(0.6, 0.5, 0.4, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glBindVertexArray(hVertexArray);
 
 
-        glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
+        //glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
+        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
         shaderProgramTex.Use();
         glViewport(0, 0, 800, 600);
-        glBindVertexArray(hVertexArrayTex);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.7, 0.8, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+        glBindVertexArray(hVertexArrayTex);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
+        //glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
+
         glBindTexture(GL_TEXTURE_2D, hFrameBufferTex);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
-        glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)12);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
