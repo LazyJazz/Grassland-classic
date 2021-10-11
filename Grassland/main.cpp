@@ -9,9 +9,13 @@
 #include <iostream>
 
 float g_aspect = 800.0 / 600.0;
+int32_t gWidth = 800, gHeight = 600;
+int32_t gWidthNow = 800, gHeightNow = 600;
 
 void glfwWindowResizeCallBack(GLFWwindow* window, int32_t width, int32_t height)
 {
+    gWidth = width;
+    gHeight = height;
     glViewport(0, 0, width, height);
     g_aspect = (float)width / height;
 }
@@ -133,39 +137,9 @@ int main()
     vertexShaderTex.Release();
     fragmentShaderTex.Release();
 
-    uint32_t hFrameBuffer;
-    uint32_t hFrameBufferTex, hFrameBufferDepth;
-    glGenFramebuffers(1, &hFrameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
-
-    glGenTextures(1, &hFrameBufferTex);
-    glGenTextures(1, &hFrameBufferDepth);
-
-    glBindTexture(GL_TEXTURE_2D, hFrameBufferTex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-        800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hFrameBufferTex, 0);
-
-    glBindTexture(GL_TEXTURE_2D, hFrameBufferDepth);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-        800, 600, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, hFrameBufferDepth, 0);
-
-    glEnable(GL_DEPTH_TEST);
+    GRG::GL::FrameBuffer frame_buffer;
+    frame_buffer.Init(800, 600);
     //glReadBuffer(GL_NONE);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << " FrameBuffer Not Complete" << std::endl;
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     
 
@@ -220,10 +194,18 @@ int main()
             vertices[i][1] = block[i] * 0.5 + 0.5;
         }
 
+        if (gWidth != gWidthNow || gHeight != gHeightNow)
+        {
+            
+            frame_buffer.Resize(gWidth, gHeight);
+
+            gWidthNow = gWidth;
+            gHeightNow = gHeight;
+        }
 
         /* Render here */
-        glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
-        glViewport(0, 0, 800, 600);
+        frame_buffer.Use();
+        glViewport(0, 0, gWidth, gHeight);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.6, 0.5, 0.4, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -237,10 +219,10 @@ int main()
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        GRG::GL::UseScreenFrame();
         shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
         shaderProgramTex.Use();
-        glViewport(0, 0, 800, 600);
+        glViewport(0, 0, gWidth, gHeight);
         glDisable(GL_DEPTH_TEST);
         glClearColor(0.7, 0.8, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -250,7 +232,7 @@ int main()
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
         //glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
 
-        glBindTexture(GL_TEXTURE_2D, hFrameBufferDepth);
+        glBindTexture(GL_TEXTURE_2D, frame_buffer.GetColorTextureHandle());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */

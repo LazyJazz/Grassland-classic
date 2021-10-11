@@ -57,6 +57,9 @@
     <ClCompile Include="include\Graphics\GL\GLShader.cpp">
       <Filter>源文件\Graphics\GL</Filter>
     </ClCompile>
+    <ClCompile Include="include\Graphics\GL\GLFrameBuffer.cpp">
+      <Filter>源文件\Graphics\GL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Grassland.h">
@@ -126,6 +129,9 @@
       <Filter>头文件\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\GL\GLShader.h">
+      <Filter>头文件\Graphics\GL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GL\GLFrameBuffer.h">
       <Filter>头文件\Graphics\GL</Filter>
     </ClInclude>
   </ItemGroup>
