@@ -204,8 +204,8 @@ int main()
         Grassland::Math::Mat4x4 UniformMat = Grassland::Graphics::TransformProjection(
             Grassland::Math::radian(60.0),
             g_aspect,
-            1.0,
-            20.0
+            3.0,
+            7.0
         ) * translate.inverse();
         glUseProgram(0);
 
@@ -250,7 +250,7 @@ int main()
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
         //glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
 
-        glBindTexture(GL_TEXTURE_2D, hFrameBufferTex);
+        glBindTexture(GL_TEXTURE_2D, hFrameBufferDepth);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
