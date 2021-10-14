@@ -28,8 +28,8 @@ namespace Grassland
 				{
 					glGenTextures(1, &hColorTex);
 					glBindTexture(GL_TEXTURE_2D, hColorTex);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
@@ -97,6 +97,9 @@ namespace Grassland
 			void UseScreenFrame()
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				int32_t width, height;
+				glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
+				glViewport(0, 0, width, height);
 				glEnable(GL_DEPTH_TEST);
 			}
 		}

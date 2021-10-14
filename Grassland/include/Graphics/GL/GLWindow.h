@@ -14,7 +14,8 @@ namespace Grassland
 			public:
 				Window();
 				GLFWwindow*& GetGLFWWindowHandle();
-				int ShouldClose() const;
+				int32_t ShouldClose() const;
+				void Present() const;
 			};
 
 			/*! @brief Initialize OpenGL environment.
@@ -31,7 +32,17 @@ namespace Grassland
 			* 
 			* @return If succeed, return GRASSLAND_TRUE, otherwise, return GRASSLAND_FALSE
 			*/
-			GRASSLAND_RESULT Initialize(int32_t width, int32_t height, const char* title, Window* window);
+			GRASSLAND_RESULT Initialize(int32_t width, int32_t height, const char* title, Window* window, int32_t MSScale = 4);
+
+			void SetClearColor(float red, float green, float blue, float alpha);
+
+			void SetDepthTestState(bool enable);
+
+			void ClearColorBuffer();
+
+			void ClearDepthBuffer();
+
+			void SetMultiSampleState(bool enable);
 		}
 	}
 }

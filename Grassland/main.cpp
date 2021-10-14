@@ -138,7 +138,7 @@ int main()
     fragmentShaderTex.Release();
 
     GRG::GL::FrameBuffer frame_buffer;
-    frame_buffer.Init(800, 600);
+    frame_buffer.Init(400, 300);
     //glReadBuffer(GL_NONE);
 
     
@@ -168,7 +168,9 @@ int main()
         ), mat_block(1.0);
 
     glfwSwapInterval(1);
-    while (!glfwWindowShouldClose(window.GetGLFWWindowHandle()))
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    while (!window.ShouldClose())
     {
         if (glfwGetKey(window.GetGLFWWindowHandle(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window.GetGLFWWindowHandle(), true);
@@ -197,46 +199,37 @@ int main()
         if (gWidth != gWidthNow || gHeight != gHeightNow)
         {
             
-            frame_buffer.Resize(gWidth, gHeight);
+            //frame_buffer.Resize(gWidth, gHeight);
 
             gWidthNow = gWidth;
             gHeightNow = gHeight;
         }
 
         /* Render here */
-        frame_buffer.Use();
-        glViewport(0, 0, gWidth, gHeight);
-        glEnable(GL_DEPTH_TEST);
-        glClearColor(0.6, 0.5, 0.4, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GRG::GL::UseScreenFrame();
+        //frame_buffer.Use();
+        GRG::GL::SetClearColor(0.7, 0.6, 0.5, 1.0);
+        GRG::GL::ClearColorBuffer();
+        GRG::GL::ClearDepthBuffer();
+
         glBindVertexArray(hVertexArray);
-
-
-        //glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBuffer);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
 
-        GRG::GL::UseScreenFrame();
+        /*GRG::GL::UseScreenFrame();
         shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
         shaderProgramTex.Use();
-        glViewport(0, 0, gWidth, gHeight);
-        glDisable(GL_DEPTH_TEST);
-        glClearColor(0.7, 0.8, 1.0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+        GRG::GL::SetDepthTestState(false);
+        GRG::GL::SetClearColor(0.7, 0.8, 1.0, 1.0);
+        GRG::GL::ClearColorBuffer();
         glBindVertexArray(hVertexArrayTex);
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hIndexBufferTex);
-        //glBindBuffer(GL_ARRAY_BUFFER, hVertexBufferTex);
 
         glBindTexture(GL_TEXTURE_2D, frame_buffer.GetColorTextureHandle());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window.GetGLFWWindowHandle());
+        //glfwSwapBuffers(window.GetGLFWWindowHandle());
+        window.Present();
 
         /* Poll for and process events */
         glfwPollEvents();
