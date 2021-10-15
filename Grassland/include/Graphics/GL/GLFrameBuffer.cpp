@@ -28,12 +28,12 @@ namespace Grassland
 				{
 					glGenTextures(1, &hColorTex);
 					glBindTexture(GL_TEXTURE_2D, hColorTex);
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+						width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-						width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hColorTex, 0);
 					glBindTexture(GL_TEXTURE_2D, 0);
 				}
@@ -54,20 +54,7 @@ namespace Grassland
 			}
 			void FrameBuffer::Resize(int32_t _width, int32_t _height)
 			{
-				width = _width;
-				height = _height;
-				if (hColorTex)
-				{
-					glBindTexture(GL_TEXTURE_2D, hColorTex);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-						width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-				}
-				if (hDepthTex)
-				{
-					glBindBuffer(GL_TEXTURE_2D, hDepthTex);
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-						width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-				}
+				Init(_width, _height, hColorTex, hDepthTex);
 			}
 			void FrameBuffer::Use() const
 			{

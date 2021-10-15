@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Graphics\Bitmap.cpp" />
     <ClCompile Include="include\Graphics\GL\GLFrameBuffer.cpp" />
     <ClCompile Include="include\Graphics\GL\GLShader.cpp" />
     <ClCompile Include="include\Graphics\GL\GLWindow.cpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="include\Geometry\Geometry.h" />
     <ClInclude Include="include\Geometry\GeometryDecl.h" />
+    <ClInclude Include="include\Graphics\Bitmap.h" />
     <ClInclude Include="include\Graphics\GL\GLAD\glad.h" />
     <ClInclude Include="include\Graphics\GL\GLAD\khrplatform.h" />
     <ClInclude Include="include\Graphics\GL\GLFrameBuffer.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="include\Graphics\GL\GLFW\glfw3native.h" />
     <ClInclude Include="include\Graphics\GL\GLHeader.h" />
     <ClInclude Include="include\Graphics\GL\GLShader.h" />
+    <ClInclude Include="include\Graphics\GL\GLTexture.h" />
     <ClInclude Include="include\Graphics\GL\GLWindow.h" />
     <ClInclude Include="include\Graphics\Graphics.h" />
     <ClInclude Include="include\Grassland.h" />

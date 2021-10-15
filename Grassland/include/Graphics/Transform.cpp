@@ -14,5 +14,14 @@ namespace Grassland
 				0.0, 0.0, 1.0, 0.0
 			);
 		}
+		Math::Mat4x4 TransformTranslate(float x, float y, float z)
+		{
+			return Math::Mat4x4(
+				1.0, 0.0, 0.0, x,
+				0.0, 1.0, 0.0, y,
+				0.0, 0.0, 1.0, z,
+				0.0, 0.0, 0.0, 1.0
+			);
+		}
 	}
 }

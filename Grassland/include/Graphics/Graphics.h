@@ -3,3 +3,4 @@
 #include "GL/GLShader.h"
 #include "GL/GLFrameBuffer.h"
 #include "Transform.h"
+#include "Bitmap.h"

@@ -22,6 +22,9 @@ void glfwWindowResizeCallBack(GLFWwindow* window, int32_t width, int32_t height)
 
 int main()
 {
+    GRG::Bitmap img(640, 480);
+    img.Clear(GRG::BitmapPixel(0xFF * 0.7, 0xFF * 0.8, 0xFF * 0.9));
+    img.SaveBitmapToFile("img.bmp");
     Grassland::Graphics::GL::Window window;
     Grassland::Graphics::GL::Initialize(800, 600, "Grassland", &window);
 
@@ -138,7 +141,7 @@ int main()
     fragmentShaderTex.Release();
 
     GRG::GL::FrameBuffer frame_buffer;
-    frame_buffer.Init(400, 300);
+    frame_buffer.Init(200, 150);
     //glReadBuffer(GL_NONE);
 
     
@@ -168,7 +171,7 @@ int main()
         ), mat_block(1.0);
 
     glfwSwapInterval(1);
-    glEnable(GL_BLEND);
+    GRG::GL::SetBlendState(1);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     while (!window.ShouldClose())
     {
@@ -180,8 +183,8 @@ int main()
         Grassland::Math::Mat4x4 UniformMat = Grassland::Graphics::TransformProjection(
             Grassland::Math::radian(60.0),
             g_aspect,
-            3.0,
-            7.0
+            2.0,
+            10.0
         ) * translate.inverse();
         glUseProgram(0);
 
@@ -198,8 +201,9 @@ int main()
 
         if (gWidth != gWidthNow || gHeight != gHeightNow)
         {
-            
-            //frame_buffer.Resize(gWidth, gHeight);
+            /*frame_buffer.Release();
+            frame_buffer.Init(gWidth, gHeight); //*/
+            frame_buffer.Resize(gWidth * 2, gHeight * 2);
 
             gWidthNow = gWidth;
             gHeightNow = gHeight;
@@ -207,8 +211,8 @@ int main()
 
         /* Render here */
         GRG::GL::UseScreenFrame();
-        //frame_buffer.Use();
-        GRG::GL::SetClearColor(0.7, 0.6, 0.5, 1.0);
+        frame_buffer.Use();
+        GRG::GL::SetClearColor(0.7, 0.6, 0.5, 0.0);
         GRG::GL::ClearColorBuffer();
         GRG::GL::ClearDepthBuffer();
 
@@ -216,7 +220,7 @@ int main()
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
 
-        /*GRG::GL::UseScreenFrame();
+        GRG::GL::UseScreenFrame();
         shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
         shaderProgramTex.Use();
         GRG::GL::SetDepthTestState(false);
@@ -225,7 +229,7 @@ int main()
         glBindVertexArray(hVertexArrayTex);
 
         glBindTexture(GL_TEXTURE_2D, frame_buffer.GetColorTextureHandle());
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);//*/
 
         /* Swap front and back buffers */
         //glfwSwapBuffers(window.GetGLFWWindowHandle());
@@ -234,6 +238,5 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
-
     glfwTerminate();
 }

@@ -43,6 +43,8 @@ namespace Grassland
 			void ClearDepthBuffer();
 
 			void SetMultiSampleState(bool enable);
+
+			void SetBlendState(bool enable);
 		}
 	}
 }

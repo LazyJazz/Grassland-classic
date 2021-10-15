@@ -73,6 +73,11 @@ namespace Grassland
 				if (enable)glEnable(GL_MULTISAMPLE);
 				else glDisable(GL_MULTISAMPLE);
 			}
+			void SetBlendState(bool enable)
+			{
+				if (enable) glEnable(GL_BLEND);
+				else glDisable(GL_BLEND);
+			}
 		}
 	}
 }
