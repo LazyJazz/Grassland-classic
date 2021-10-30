@@ -7,6 +7,10 @@ namespace Grassland
 	{
 		namespace GL
 		{
+			class Texture
+			{
+				;
+			};
 		}
 	}
 }
