@@ -25,7 +25,6 @@ void glfwWindowResizeCallBack(GLFWwindow* window, int32_t width, int32_t height)
 
 int main()
 {
-    ID3D12CommandQueue;
     GRG::Bitmap img(800, 600);
     img.Clear(GRG::BitmapPixel(0xFF * 0.7, 0xFF * 0.8, 0xFF * 0.9));
     img.SaveBitmapToFile("img.bmp");
@@ -226,7 +225,7 @@ int main()
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
 
         glReadPixels(0, 0, gWidthNow, gHeightNow, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, img.GetColorPtr());
-        //img.SaveBitmapToFile("screen_save.bmp");
+        img.SaveBitmapToFile("screen_save.bmp");
 
         GRG::GL::UseScreenFrame();
         shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
