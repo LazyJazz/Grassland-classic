@@ -14,7 +14,13 @@ namespace Grassland
 #pragma pack (1)
 		struct BitmapPixel
 		{
-			uint8_t b, g, r;
+			//uint8_t b, g, r;
+			union
+			{
+				uint8_t b;
+				uint8_t g;
+				uint8_t r;
+			};
 			BitmapPixel();
 			BitmapPixel(uint8_t _r, uint8_t _g, uint8_t _b);
 		};

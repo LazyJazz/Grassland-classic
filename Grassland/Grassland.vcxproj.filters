@@ -40,6 +40,9 @@
     <Filter Include="源文件\Math">
       <UniqueIdentifier>{fc3cf61d-8cb7-426f-a437-357e9c0fe401}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Graphics\Image">
+      <UniqueIdentifier>{296a8cfb-45c8-45bf-857d-e39bbb168192}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -143,6 +146,12 @@
     <ClInclude Include="include\Graphics\Bitmap.h">
       <Filter>头文件\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\Image\ImageDef.h">
+      <Filter>头文件\Graphics\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Image\ImageByte1.h">
+      <Filter>头文件\Graphics\Image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
@@ -180,6 +189,9 @@
     </None>
     <None Include="shaders\VertexShaderTex.glsl">
       <Filter>资源文件</Filter>
+    </None>
+    <None Include="include\Graphics\Image\ImageByte1.inl">
+      <Filter>头文件\Graphics\Image</Filter>
     </None>
   </ItemGroup>
 </Project>

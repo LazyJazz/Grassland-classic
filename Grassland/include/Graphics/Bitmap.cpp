@@ -208,9 +208,15 @@ namespace Grassland
 			infoheader.biBitCount = 0x18;
 			fwrite(&fileheader, sizeof(fileheader), 1, pFile);
 			fwrite(&infoheader, sizeof(infoheader), 1, pFile);
-			for (int y = height - 1; y >= 0; y--)
+			//for (int y = height - 1; y >= 0; y--)
+			for (int y = 0; y < height; y++)
 			{
-				fwrite(pixels + y * width, sizeof(BitmapPixel), width, pFile);
+				for (int x = 0; x < width; x++) {
+					fputc(pixels[y * width + x].b, pFile);
+					fputc(pixels[y * width + x].g, pFile);
+					fputc(pixels[y * width + x].r, pFile);
+				}//*/
+				//fwrite(pixels + y * width, sizeof(BitmapPixel), width, pFile);
 				for (int i = 0; i < widthBytes - 3 * width; i++)
 					fputc(0, pFile);
 			}

@@ -6,6 +6,9 @@
 #include <random>
 #include <cmath>
 
+#include <Windows.h>
+#include <d3d12.h>
+
 #include <iostream>
 
 float g_aspect = 800.0 / 600.0;
@@ -22,7 +25,8 @@ void glfwWindowResizeCallBack(GLFWwindow* window, int32_t width, int32_t height)
 
 int main()
 {
-    GRG::Bitmap img(640, 480);
+    ID3D12CommandQueue;
+    GRG::Bitmap img(800, 600);
     img.Clear(GRG::BitmapPixel(0xFF * 0.7, 0xFF * 0.8, 0xFF * 0.9));
     img.SaveBitmapToFile("img.bmp");
     Grassland::Graphics::GL::Window window;
@@ -141,7 +145,7 @@ int main()
     fragmentShaderTex.Release();
 
     GRG::GL::FrameBuffer frame_buffer;
-    frame_buffer.Init(200, 150);
+    frame_buffer.Init(800, 600);
     //glReadBuffer(GL_NONE);
 
     
@@ -203,10 +207,11 @@ int main()
         {
             /*frame_buffer.Release();
             frame_buffer.Init(gWidth, gHeight); //*/
-            frame_buffer.Resize(gWidth * 2, gHeight * 2);
+            frame_buffer.Resize(gWidth, gHeight);
 
             gWidthNow = gWidth;
             gHeightNow = gHeight;
+            img.Resize(gWidth, gHeight);
         }
 
         /* Render here */
@@ -219,6 +224,9 @@ int main()
         glBindVertexArray(hVertexArray);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
         glDrawElements(GL_TRIANGLES, _countof(indices), GL_UNSIGNED_INT, 0);
+
+        glReadPixels(0, 0, gWidthNow, gHeightNow, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, img.GetColorPtr());
+        //img.SaveBitmapToFile("screen_save.bmp");
 
         GRG::GL::UseScreenFrame();
         shaderProgramTex.SetMat4("gMatrix", GRM::Mat4(1.0));
@@ -234,6 +242,7 @@ int main()
         /* Swap front and back buffers */
         //glfwSwapBuffers(window.GetGLFWWindowHandle());
         window.Present();
+        //return 0;
 
         /* Poll for and process events */
         glfwPollEvents();

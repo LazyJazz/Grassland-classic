@@ -173,6 +173,8 @@
     <ClInclude Include="include\Graphics\GL\GLTexture.h" />
     <ClInclude Include="include\Graphics\GL\GLWindow.h" />
     <ClInclude Include="include\Graphics\Graphics.h" />
+    <ClInclude Include="include\Graphics\Image\ImageByte1.h" />
+    <ClInclude Include="include\Graphics\Image\ImageDef.h" />
     <ClInclude Include="include\Grassland.h" />
     <ClInclude Include="include\Graphics\Transform.h" />
     <ClInclude Include="include\Math\Math.h" />
@@ -188,6 +190,7 @@
     <ClInclude Include="include\Math\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="include\Graphics\Image\ImageByte1.inl" />
     <None Include="include\Math\MathDecl.inl" />
     <None Include="include\Math\Matrix2x2.inl" />
     <None Include="include\Math\Matrix3x3.inl" />
