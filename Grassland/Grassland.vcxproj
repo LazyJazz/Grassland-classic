@@ -151,12 +151,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Graphics\Util\PixelDecl.cpp" />
     <ClCompile Include="include\Math\MathDecl.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Geometry\Geometry.h" />
     <ClInclude Include="include\Geometry\GeometryDecl.h" />
+    <ClInclude Include="include\Graphics\Graphics.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GL.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h" />
@@ -165,7 +168,16 @@
     <ClInclude Include="include\Graphics\Util\Camera.h" />
     <ClInclude Include="include\Graphics\Util\Image.h" />
     <ClInclude Include="include\Graphics\Util\Pixel.h" />
+    <ClInclude Include="include\Graphics\Util\PixelByte.h" />
+    <ClInclude Include="include\Graphics\Util\PixelByte3.h" />
+    <ClInclude Include="include\Graphics\Util\PixelByte4.h" />
+    <ClInclude Include="include\Graphics\Util\PixelDecl.h" />
+    <ClInclude Include="include\Graphics\Util\PixelFloat.h" />
+    <ClInclude Include="include\Graphics\Util\PixelFloat3.h" />
+    <ClInclude Include="include\Graphics\Util\PixelFloat4.h" />
+    <ClInclude Include="include\Graphics\Util\Util.h" />
     <ClInclude Include="include\Grassland.h" />
+    <ClInclude Include="include\GrasslandDecl.h" />
     <ClInclude Include="include\Math\Math.h" />
     <ClInclude Include="include\Math\MathDecl.h" />
     <ClInclude Include="include\Math\Matrix.h" />

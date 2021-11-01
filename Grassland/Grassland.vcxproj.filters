@@ -43,6 +43,9 @@
     <Filter Include="头文件\Graphics\OpenGL\GLAD">
       <UniqueIdentifier>{6a85a5cb-73f1-457d-b62a-15850c4ff538}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Graphics\Util">
+      <UniqueIdentifier>{02eb344f-7414-4b53-80fc-9608c49db402}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -50,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="include\Math\MathDecl.cpp">
       <Filter>源文件\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Util\PixelDecl.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +123,39 @@
       <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Pixel.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Graphics.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GL.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelDecl.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelByte.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelByte3.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelByte4.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelFloat.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelFloat3.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\PixelFloat4.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GrasslandDecl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Util.h">
       <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
   </ItemGroup>

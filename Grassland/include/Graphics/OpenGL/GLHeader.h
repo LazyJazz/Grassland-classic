@@ -1,2 +1,3 @@
 #pragma once
-#include ""
+#include "GLAD/glad.h"
+#include "GLFW/glfw3.h"
