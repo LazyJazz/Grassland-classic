@@ -37,6 +37,12 @@
     <Filter Include="头文件\Graphics\DirectX">
       <UniqueIdentifier>{a2287170-165f-4217-88bc-43df8c9be328}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Graphics\OpenGL\GLFW">
+      <UniqueIdentifier>{a0fa7ee0-f42a-4231-af3c-d9a7c9d372dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\OpenGL\GLAD">
+      <UniqueIdentifier>{6a85a5cb-73f1-457d-b62a-15850c4ff538}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -88,6 +94,30 @@
     </ClInclude>
     <ClInclude Include="include\Geometry\GeometryDecl.h">
       <Filter>头文件\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h">
+      <Filter>头文件\Graphics\OpenGL\GLAD</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h">
+      <Filter>头文件\Graphics\OpenGL\GLAD</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h">
+      <Filter>头文件\Graphics\OpenGL\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h">
+      <Filter>头文件\Graphics\OpenGL\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLHeader.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Camera.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Image.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Pixel.h">
+      <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
