@@ -151,8 +151,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLTexture.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLVertexArray.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLWindow.cpp" />
+    <ClCompile Include="include\Graphics\Util\Camera.cpp" />
     <ClCompile Include="include\Graphics\Util\Color.cpp" />
     <ClCompile Include="include\Graphics\Util\Image.cpp" />
+    <ClCompile Include="include\Graphics\Util\Mesh.cpp" />
     <ClCompile Include="include\Math\MathDecl.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -167,9 +173,13 @@
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLHeader.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLTexture.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLVertexArray.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLWindow.h" />
     <ClInclude Include="include\Graphics\Util\Camera.h" />
     <ClInclude Include="include\Graphics\Util\Image.h" />
     <ClInclude Include="include\Graphics\Util\Color.h" />
+    <ClInclude Include="include\Graphics\Util\Mesh.h" />
     <ClInclude Include="include\Graphics\Util\Util.h" />
     <ClInclude Include="include\Grassland.h" />
     <ClInclude Include="include\GrasslandDecl.h" />

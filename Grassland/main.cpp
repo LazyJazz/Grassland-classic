@@ -12,6 +12,8 @@
 
 #include <iostream>
 
+using namespace Grassland;
+
 class Item
 {
 public:
@@ -19,11 +21,15 @@ public:
 	~Item() { std::cout << "Destructing" << std::endl; }
 };
 
+
+
 int main()
 {
-	Grassland::Graphics::Util::Image img;
-	img.LoadBMP("screen_save.bmp");
-	img.StoreBMP("screen_copy.bmp");
+	GRLPtr<GRLIImage> pImage;
+	GRLCreateImage(0, 0, &pImage);
+	GRLPtr<GRLIBase> pImage2(pImage);
+	pImage->LoadBMP("screen_copy.bmp");
+	pImage->StoreBMP("screen_copy2.bmp");
 }
 //float g_aspect = 800.0 / 600.0;
 //int32_t gWidth = 800, gHeight = 600;

@@ -46,6 +46,9 @@
     <Filter Include="源文件\Graphics\Util">
       <UniqueIdentifier>{02eb344f-7414-4b53-80fc-9608c49db402}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Graphics\OpenGL">
+      <UniqueIdentifier>{b2cb8cf4-a841-4254-81ca-a38e463fea84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -58,6 +61,24 @@
       <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\Util\Image.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLTexture.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLVertexArray.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLWindow.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Util\Camera.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Util\Mesh.cpp">
       <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
   </ItemGroup>
@@ -142,6 +163,18 @@
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h">
       <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLVertexArray.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLTexture.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLWindow.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Mesh.h">
+      <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -46,12 +46,12 @@ namespace Grassland
 		virtual GRL_RESULT Resize(int32_t width, int32_t height) const = 0;
 		virtual int32_t GetHeight() const = 0;
 		virtual int32_t GetWidth() const = 0;
-		virtual void Clear() const = 0;
-		virtual GRL_RESULT Map(GRLColor * pfBuffer) const = 0;
-		virtual GRL_RESULT Unmap() const = 0;
-		virtual GRL_RESULT LoadBitmap(const char * __bmp_file_path) const = 0;
+		virtual void Clear(GRLColor color) const = 0;
+		virtual GRL_RESULT GetImageBuffer(GRLColor ** ppBuffer) const = 0;
+		virtual GRL_RESULT LoadBMP(const char * __bmp_file_path) const = 0;
 		virtual GRL_RESULT StoreBMP(const char* __bmp_file_path) const = 0;
 	};
+
 	/*
 	* @param width
 	* Image width.
