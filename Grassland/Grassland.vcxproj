@@ -151,7 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\Graphics\Util\PixelDecl.cpp" />
+    <ClCompile Include="include\Graphics\Util\Color.cpp" />
+    <ClCompile Include="include\Graphics\Util\Image.cpp" />
     <ClCompile Include="include\Math\MathDecl.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -165,16 +166,10 @@
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLHeader.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h" />
     <ClInclude Include="include\Graphics\Util\Camera.h" />
     <ClInclude Include="include\Graphics\Util\Image.h" />
-    <ClInclude Include="include\Graphics\Util\Pixel.h" />
-    <ClInclude Include="include\Graphics\Util\PixelByte.h" />
-    <ClInclude Include="include\Graphics\Util\PixelByte3.h" />
-    <ClInclude Include="include\Graphics\Util\PixelByte4.h" />
-    <ClInclude Include="include\Graphics\Util\PixelDecl.h" />
-    <ClInclude Include="include\Graphics\Util\PixelFloat.h" />
-    <ClInclude Include="include\Graphics\Util\PixelFloat3.h" />
-    <ClInclude Include="include\Graphics\Util\PixelFloat4.h" />
+    <ClInclude Include="include\Graphics\Util\Color.h" />
     <ClInclude Include="include\Graphics\Util\Util.h" />
     <ClInclude Include="include\Grassland.h" />
     <ClInclude Include="include\GrasslandDecl.h" />

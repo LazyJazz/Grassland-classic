@@ -1,2 +1,3 @@
 #pragma once
-#include "Pixel.h"
+#include "Color.h"
+#include "Image.h"

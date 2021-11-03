@@ -54,7 +54,10 @@
     <ClCompile Include="include\Math\MathDecl.cpp">
       <Filter>源文件\Math</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\Util\PixelDecl.cpp">
+    <ClCompile Include="include\Graphics\Util\Color.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Util\Image.cpp">
       <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
   </ItemGroup>
@@ -122,7 +125,7 @@
     <ClInclude Include="include\Graphics\Util\Image.h">
       <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Util\Pixel.h">
+    <ClInclude Include="include\Graphics\Util\Color.h">
       <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Graphics.h">
@@ -131,32 +134,14 @@
     <ClInclude Include="include\Graphics\OpenGL\GL.h">
       <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelDecl.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelByte.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelByte3.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelByte4.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelFloat.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelFloat3.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Graphics\Util\PixelFloat4.h">
-      <Filter>头文件\Graphics\Util</Filter>
-    </ClInclude>
     <ClInclude Include="include\GrasslandDecl.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Util.h">
       <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,21 +21,9 @@ public:
 
 int main()
 {
-	std::shared_ptr<Item> pItem = std::make_shared<Item>();;
-	std::make_shared<Item>();
-	
-	std::cout << "Is Unique: " << (pItem.unique() ? "Yes" : "No") << std::endl;
-
-	std::shared_ptr<Item> pItem2 = pItem;
-
-	std::cout << "Use count:" << pItem2.use_count() << std::endl;
-
-	pItem.reset();
-
-	std::cout << "Use count:" << pItem2.use_count() << std::endl;
-
-	std::cout << "Returning" << std::endl;
-	return 0;
+	Grassland::Graphics::Util::Image img;
+	img.LoadBMP("screen_save.bmp");
+	img.StoreBMP("screen_copy.bmp");
 }
 //float g_aspect = 800.0 / 600.0;
 //int32_t gWidth = 800, gHeight = 600;
