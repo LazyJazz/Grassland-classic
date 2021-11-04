@@ -19,71 +19,48 @@
 
 using namespace Grassland;
 
-struct Complex
-{
-	double real;
-	double image;
-};
-
-auto operator "" i (long double x)
-{
-	Complex ret;
-	ret.real = 0.0;
-	ret.image = x;
-	return ret;
-}
-
-void ShowHEX(const char* str)
-{
-	int len = strlen(str);
-	for (int i = 0; i < len; i++)
-	{
-		int c = str[i];
-		c = c & 255;
-		printf("%2x", c);
-	}
-	puts("");
-}
-
 int main()
 {
-	_setmode(_fileno(stdout), _O_U16TEXT);
-	//SetConsoleOutputCP(437);
-	std::wcout << L"我爱你，中国" << std::endl;
-	std::cout << "我爱你，中国" << std::endl;
-	/*std::ifstream fin("text.txt");
-	ShowHEX("我爱你，中国");
-	ShowHEX(u8"我爱你，中国");
-	ShowHEX("Hello, World!");
-	ShowHEX(u8"Hello, World!");
-	std::cout << "我爱你，中国" << std::endl;
-	std::string str;
-	fin >> str;
-	ShowHEX(str.c_str());
-	SetConsoleOutputCP(65001);
-	std::cout << str;
-	std::cout << u8"我爱你，中国" << std::endl;
-	std::cout << "Hello, World!" << std::endl;
-	std::cout << u8"Hello, World!" << std::endl;
-	using namespace std::literals;
-	auto time_period = 3s;//*/
+	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
+	float H = 0.0, S = 1.0, V = 1.0;
 
-	/*GRLOpenGLInit(800, 600, "Grassland Project 1", false);
+	uint32_t hVertexBuffer;
+	uint32_t hElementBuffer;
+	uint32_t hVertexArrayObject;
+
+	glGenBuffers(1, &hVertexBuffer);
+	glGenBuffers(1, &hElementBuffer);
+	glGenVertexArrays(1, &hVertexArrayObject);
+
+	glBindVertexArray(hVertexArrayObject);
+
+	glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hElementBuffer);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
-		glClearColor(0.0, 0.0, 0.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
-
 		int state = glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_E);
 		if (state == GLFW_PRESS)
 		{
+			H += 0.006;
 			puts("PRESS");
 		}
 		else puts("RELEASE");
-		;
+
+
 		//glClear();
+
+		GRLColor color = GRLColor(0.6, 0.7, 0.8);//Graphics::Util::HSV_to_RGB(H, S, V);
+
+		glClearColor(color.r, color.g, color.b, color.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
 		glfwPollEvents();
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	GRLOpenGLTerminate();//*/
 }
