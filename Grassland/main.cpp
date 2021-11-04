@@ -7,29 +7,85 @@
 #include <cmath>
 
 #include <Windows.h>
+#include <fstream>
 #include <d3d12.h>
 #include <memory>
 
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <io.h>
+#include <fcntl.h>
 
 using namespace Grassland;
 
-class Item
+struct Complex
 {
-public:
-	Item() { std::cout << "Constructing" << std::endl; }
-	~Item() { std::cout << "Destructing" << std::endl; }
+	double real;
+	double image;
 };
 
+auto operator "" i (long double x)
+{
+	Complex ret;
+	ret.real = 0.0;
+	ret.image = x;
+	return ret;
+}
 
+void ShowHEX(const char* str)
+{
+	int len = strlen(str);
+	for (int i = 0; i < len; i++)
+	{
+		int c = str[i];
+		c = c & 255;
+		printf("%2x", c);
+	}
+	puts("");
+}
 
 int main()
 {
-	GRLPtr<GRLIImage> pImage;
-	GRLCreateImage(0, 0, &pImage);
-	GRLPtr<GRLIBase> pImage2(pImage);
-	pImage->LoadBMP("screen_copy.bmp");
-	pImage->StoreBMP("screen_copy2.bmp");
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	//SetConsoleOutputCP(437);
+	std::wcout << L"我爱你，中国" << std::endl;
+	std::cout << "我爱你，中国" << std::endl;
+	/*std::ifstream fin("text.txt");
+	ShowHEX("我爱你，中国");
+	ShowHEX(u8"我爱你，中国");
+	ShowHEX("Hello, World!");
+	ShowHEX(u8"Hello, World!");
+	std::cout << "我爱你，中国" << std::endl;
+	std::string str;
+	fin >> str;
+	ShowHEX(str.c_str());
+	SetConsoleOutputCP(65001);
+	std::cout << str;
+	std::cout << u8"我爱你，中国" << std::endl;
+	std::cout << "Hello, World!" << std::endl;
+	std::cout << u8"Hello, World!" << std::endl;
+	using namespace std::literals;
+	auto time_period = 3s;//*/
+
+	/*GRLOpenGLInit(800, 600, "Grassland Project 1", false);
+	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
+	{
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
+
+		int state = glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_E);
+		if (state == GLFW_PRESS)
+		{
+			puts("PRESS");
+		}
+		else puts("RELEASE");
+		;
+		//glClear();
+		glfwPollEvents();
+	}
+	GRLOpenGLTerminate();//*/
 }
 //float g_aspect = 800.0 / 600.0;
 //int32_t gWidth = 800, gHeight = 600;

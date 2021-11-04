@@ -81,6 +81,9 @@
     <ClCompile Include="include\Graphics\Util\Mesh.cpp">
       <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLInput.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Grassland.h">
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Mesh.h">
       <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLInput.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdio>
+
+#define GRLSetErrorInfo puts
 
 namespace Grassland
 {
