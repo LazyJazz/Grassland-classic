@@ -19,6 +19,11 @@
 
 using namespace Grassland;
 
+int operator "" kg(unsigned long long x)
+{
+	return x * 1000;
+}
+
 int main()
 {
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
@@ -36,6 +41,7 @@ int main()
 
 	glBindBuffer(GL_ARRAY_BUFFER, hVertexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, hElementBuffer);
+
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
@@ -51,10 +57,11 @@ int main()
 		}
 		else puts("RELEASE");
 
-
 		//glClear();
 
-		GRLColor color = GRLColor(0.6, 0.7, 0.8);//Graphics::Util::HSV_to_RGB(H, S, V);
+		GRLColor color = 
+			//GRLColor(0.6, 0.7, 0.8);
+			Graphics::Util::HSV_to_RGB(H, S, V);
 
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
