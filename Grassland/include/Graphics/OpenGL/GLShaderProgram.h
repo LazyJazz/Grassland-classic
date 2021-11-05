@@ -17,7 +17,15 @@ namespace Grassland
 
 			class Shader
 			{
-				;
+			public:
+				Shader();
+				Shader(const char * shader_file_path, GRL_OPENGL_SHADER_TYPE shader_type);
+				GRL_RESULT LoadShaderFromFile(const char* shader_file_path, GRL_OPENGL_SHADER_TYPE shader_type);
+				GRL_OPENGL_SHADER_TYPE GetShaderType() const;
+				uint32_t GetShaderHandle() const;
+			private:
+				uint32_t __shader_handle;
+				GRL_OPENGL_SHADER_TYPE __shader_type;
 			};
 
 			class Program
@@ -27,5 +35,16 @@ namespace Grassland
 		}
 	}
 
-	class GLRIShaderProgram
+	class GLRIOpenGLShader : public GRLIBase
+	{
+	public:
+	private:
+
+	};
+
+	class GLRIOpenGLProgram: public GRLIBase
+	{
+	public:
+	private:
+	};
 }
