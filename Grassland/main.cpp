@@ -47,7 +47,17 @@ int main()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
+
 	glBindVertexArray(0);
+
+	GRLPtr<GRLIOpenGLProgram> pProgram;
+
+	GRLCreateProgramFromSourceFile(
+		"shaders/VertexShader.glsl",
+		"shaders/FragmentShader.glsl",
+		nullptr,
+		&pProgram
+	);
 
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
