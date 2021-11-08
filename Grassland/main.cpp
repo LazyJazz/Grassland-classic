@@ -19,14 +19,31 @@
 
 using namespace Grassland;
 
-int operator "" kg(unsigned long long x)
+GRLMat4 TransformProjection(float FOVangle, float aspect, float Near, float Far)
 {
-	return x * 1000;
+	float INVtanFOVangle = 1.0 / tan(FOVangle * 0.5);
+	return GRLMat4(
+		INVtanFOVangle / aspect, 0.0, 0.0, 0.0,
+		0.0, INVtanFOVangle, 0.0, 0.0,
+		0.0, 0.0, Far / (Far - Near), -(Near * Far) / (Far - Near),
+		0.0, 0.0, 1.0, 0.0
+	);
 }
+
+GRLMat4 TransformTranslate(float x, float y, float z)
+{
+	return GRLMat4(
+		1.0, 0.0, 0.0, x,
+		0.0, 1.0, 0.0, y,
+		0.0, 0.0, 1.0, z,
+		0.0, 0.0, 0.0, 1.0
+	);
+}
+
 
 int main()
 {
-	int (*aplusb)(int, int) = [](int a, int b) {return a + b; };
+	auto aplusb = [](int a, int b) {return a + b; };
 	std::cout << aplusb(1,2) << std::endl;
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 	float H = 0.0, S = 1.0, V = 1.0;
@@ -59,15 +76,64 @@ int main()
 		&pProgram
 	);
 
+	GRLVec3 block[8] =
+	{
+		Grassland::Math::Vec3(-1.0, -1.0, -1.0),
+		Grassland::Math::Vec3(-1.0, -1.0,  1.0),
+		Grassland::Math::Vec3(-1.0,  1.0, -1.0),
+		Grassland::Math::Vec3(-1.0,  1.0,  1.0),
+		Grassland::Math::Vec3(1.0, -1.0, -1.0),
+		Grassland::Math::Vec3(1.0, -1.0,  1.0),
+		Grassland::Math::Vec3(1.0,  1.0, -1.0),
+		Grassland::Math::Vec3(1.0,  1.0,  1.0)
+	};
+	GRLVec3 vertices[8][2] = {};
+	uint32_t indices[] = {
+		0b000, 0b011, 0b001,
+		0b000, 0b011, 0b010,
+		0b100, 0b111, 0b101,
+		0b100, 0b111, 0b110,
+		0b000, 0b101, 0b001,
+		0b000, 0b101, 0b100,
+		0b010, 0b111, 0b011,
+		0b010, 0b111, 0b110,
+		0b000, 0b110, 0b010,
+		0b000, 0b110, 0b100,
+		0b001, 0b111, 0b011,
+		0b001, 0b111, 0b101
+	};
+
+	Graphics::OpenGL::VertexArray vertex_array;
+	vertex_array.BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STREAM);
+	vertex_array.ActiveVerticesLayout(0, 3, 6, 0);
+	vertex_array.ActiveVerticesLayout(1, 3, 6, 3);
+	float dpitch = 0.0, dyaw = 0.0, droll = 0.0;
+
+	dpitch = Grassland::Math::radian(0.1);
+	dyaw = Grassland::Math::radian(0.21);
+	droll = Grassland::Math::radian(0.32);
+
+
+	Grassland::Math::Mat3x3
+		pitch(
+			cos(dpitch), -sin(dpitch), 0.0,
+			sin(dpitch), cos(dpitch), 0.0,
+			0.0, 0.0, 1.0
+		)
+		, yaw(
+			1.0, 0.0, 0.0,
+			0.0, cos(dyaw), -sin(dyaw),
+			0.0, sin(dyaw), cos(dyaw)
+		), roll(
+			cos(droll), 0.0, -sin(droll),
+			0.0, 1.0, 0.0,
+			sin(droll), 0.0, cos(droll)
+		), mat_block(1.0);
+	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
 		int state = glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_E);
-		if (state == GLFW_PRESS)
-		{
-			H += 0.001;
-			//puts("PRESS");
-		}
-		//else puts("RELEASE");
+		H += 0.001;
 
 		//glClear();
 
@@ -77,6 +143,23 @@ int main()
 
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		pProgram->Use();
+		pProgram->SetMat4("gMatrix", TransformProjection(
+			Grassland::Math::radian(60.0),
+			4.0f/3.0f,
+			2.0,
+			10.0
+		) * TransformTranslate(0.0, 0.0, 5.0));
+		mat_block *= pitch * yaw * roll;
+		for (int i = 0; i < 8; i++)
+		{
+			vertices[i][0] = mat_block * block[i];
+			vertices[i][1] = block[i] * 0.5 + 0.5;
+		}
+		vertex_array.BindVerticesData(&vertices[0][0][0], 8*2*3, GRL_OPENGL_BUFFER_USAGE_DYNAMIC);
+
+		vertex_array.Render();
+
 		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
 		glfwPollEvents();
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));

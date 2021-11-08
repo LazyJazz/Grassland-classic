@@ -192,6 +192,7 @@ namespace Grassland
 
 			GRL_RESULT Shader::CompileShaderFromFile(const char* shader_file_path, GRL_OPENGL_SHADER_TYPE shader_type)
 			{
+				__shader_type = shader_type;
 				FILE* file = nullptr;
 #ifdef _WIN32
 				fopen_s(&file, shader_file_path, "rb");
@@ -205,15 +206,17 @@ namespace Grassland
 				}
 				fseek(file, 0, SEEK_END);
 				int32_t length = ftell(file);
-				std::cout << "Code length:" << length << std::endl;
+				//std::cout << "Code length:" << length << std::endl;
 				char* source_code = new char[length + 1];
+				memset(source_code, 0, length + 1);
 				fseek(file, 0, SEEK_SET);
 				fread(source_code, 1, length, file);
-				source_code[length] = 0;
-				std::cout << source_code << std::endl;
+				//std::cout << source_code << std::endl;
 				fclose(file);
 
-				__shader_handle = glCreateShader(__OpenGLShaderTypeEnumToValue(__shader_type));
+				__shader_handle = glCreateShader(
+					__OpenGLShaderTypeEnumToValue(shader_type)
+				);
 				glShaderSource(__shader_handle, 1, &source_code, NULL);
 				glCompileShader(__shader_handle);
 				delete[] source_code;
