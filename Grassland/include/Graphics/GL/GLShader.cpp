@@ -15,7 +15,7 @@ namespace Grassland
 			{
 				Release();
 #ifdef _WIN32
-				FILE* file = nullptr; fopen_s(&file, path, "r");
+				FILE* file = nullptr; fopen_s(&file, path, "rb");
 #else
 				FILE* file = fopen(path, "r");
 #endif
@@ -39,6 +39,8 @@ namespace Grassland
 				hShader = glCreateShader(type);
 				glShaderSource(hShader, 1, &source_code, NULL);
 				glCompileShader(hShader);
+
+				std::cout << "Code length:" << length << std::endl;
 				delete[] source_code;
 
 				int32_t success;
