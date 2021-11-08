@@ -26,6 +26,8 @@ int operator "" kg(unsigned long long x)
 
 int main()
 {
+	int (*aplusb)(int, int) = [](int a, int b) {return a + b; };
+	std::cout << aplusb(1,2) << std::endl;
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 	float H = 0.0, S = 1.0, V = 1.0;
 
@@ -52,7 +54,7 @@ int main()
 		int state = glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_E);
 		if (state == GLFW_PRESS)
 		{
-			H += 0.006;
+			H += 0.001;
 			puts("PRESS");
 		}
 		else puts("RELEASE");

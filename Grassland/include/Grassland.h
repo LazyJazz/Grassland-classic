@@ -3,5 +3,5 @@
 #include "Geometry/Geometry.h"
 #include "Graphics/Graphics.h"
 
-#define GrMath Grassland::Math
-#define GrGraph Grassland::Graphics
+#define GRLMath Grassland::Math
+#define GRLGraph Grassland::Graphics

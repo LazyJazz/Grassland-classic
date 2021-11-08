@@ -42,22 +42,22 @@ namespace Grassland
 					Shader* geometry_shader = NULL
 				);
 				void Clear();
-				int32_t GetUniformLocation(const char* uniformName);
+				int32_t GetUniformLocation(const char* uniform_name);
 				void Use() const;
 				void SetFloat(int32_t location, float fvalue);
-				void SetVec2(int32_t location, const Math::Vec2& vec);
-				void SetVec3(int32_t location, const Math::Vec3& vec);
-				void SetVec4(int32_t location, const Math::Vec4& vec);
-				void SetMat2(int32_t location, const Math::Mat2& mat);
-				void SetMat3(int32_t location, const Math::Mat3& mat);
-				void SetMat4(int32_t location, const Math::Mat4& mat);
-				void SetFloat(const char* uname, float fvalue);
-				void SetVec2(const char* uname, const Math::Vec2& vec);
-				void SetVec3(const char* uname, const Math::Vec3& vec);
-				void SetVec4(const char* uname, const Math::Vec4& vec);
-				void SetMat2(const char* uname, const Math::Mat2& mat);
-				void SetMat3(const char* uname, const Math::Mat3& mat);
-				void SetMat4(const char* uname, const Math::Mat4& mat);
+				void SetVec2(int32_t location, const GRLVec2& vec);
+				void SetVec3(int32_t location, const GRLVec3& vec);
+				void SetVec4(int32_t location, const GRLVec4& vec);
+				void SetMat2(int32_t location, const GRLMat2& mat);
+				void SetMat3(int32_t location, const GRLMat3& mat);
+				void SetMat4(int32_t location, const GRLMat4& mat);
+				void SetFloat(const char* uniform_name, float fvalue);
+				void SetVec2(const char* uniform_name, const GRLVec2& vec);
+				void SetVec3(const char* uniform_name, const GRLVec3& vec);
+				void SetVec4(const char* uniform_name, const GRLVec4& vec);
+				void SetMat2(const char* uniform_name, const GRLMat2& mat);
+				void SetMat3(const char* uniform_name, const GRLMat3& mat);
+				void SetMat4(const char* uniform_name, const GRLMat4& mat);
 			private:
 				uint32_t __program_handle;
 				std::map<std::string, int32_t> __uniform_location_map;
