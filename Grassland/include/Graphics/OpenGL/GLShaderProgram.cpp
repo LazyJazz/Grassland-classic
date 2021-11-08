@@ -205,11 +205,12 @@ namespace Grassland
 				}
 				fseek(file, 0, SEEK_END);
 				int32_t length = ftell(file);
+				std::cout << "Code length:" << length << std::endl;
 				char* source_code = new char[length + 1];
 				fseek(file, 0, SEEK_SET);
 				fread(source_code, 1, length, file);
-				std::cout << source_code << std::endl;
 				source_code[length] = 0;
+				std::cout << source_code << std::endl;
 				fclose(file);
 
 				__shader_handle = glCreateShader(__OpenGLShaderTypeEnumToValue(__shader_type));

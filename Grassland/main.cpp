@@ -65,9 +65,9 @@ int main()
 		if (state == GLFW_PRESS)
 		{
 			H += 0.001;
-			puts("PRESS");
+			//puts("PRESS");
 		}
-		else puts("RELEASE");
+		//else puts("RELEASE");
 
 		//glClear();
 
