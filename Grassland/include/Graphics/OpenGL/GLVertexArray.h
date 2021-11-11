@@ -16,12 +16,12 @@ namespace Grassland
 			public:
 				VertexArray();
 				~VertexArray();
-				void BindVerticesData(float * vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
-				void BindIndicesData(uint32_t* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
+				void BindVerticesData(void * vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
+				void BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
 				void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset);
+				void EnableSlot(int32_t slot);
 				void DisableSlot(int32_t slot);
 				void Render();
-			private:
 				uint32_t __vertex_array_object;
 				uint32_t __vertex_buffer_object;
 				uint32_t __element_buffer_object;

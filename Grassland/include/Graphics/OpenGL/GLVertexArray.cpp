@@ -23,13 +23,15 @@ namespace Grassland
 
 			VertexArray::VertexArray()
 			{
-				glGenVertexArrays(1, &__vertex_array_object);
-				glGenBuffers(1, &__vertex_buffer_object);
-				glGenBuffers(1, &__element_buffer_object);
-				glBindVertexArray(__vertex_array_object);
-				glBindBuffer(GL_ARRAY_BUFFER, __vertex_buffer_object);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, __element_buffer_object);
-				glBindVertexArray(0);
+				__vertex_array_object = __vertex_buffer_object = __element_buffer_object = 0;
+				puts("Initializing");
+				
+				GRLGLCall(glGenVertexArrays(1, &__vertex_array_object));
+				GRLGLCall(glGenBuffers(1, &__vertex_buffer_object));
+				GRLGLCall(glGenBuffers(1, &__element_buffer_object));
+				GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, __element_buffer_object));
+				GRLGLCall(glBindVertexArray(0));//*/
 				__indices_cnt = 0;
 			}
 			VertexArray::~VertexArray()
@@ -38,45 +40,54 @@ namespace Grassland
 				glDeleteBuffers(1, &__vertex_buffer_object);
 				glDeleteBuffers(1, &__element_buffer_object);
 			}
-			void VertexArray::BindVerticesData(float* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
+			void VertexArray::BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
 			{
-				glBindVertexArray(__vertex_array_object);
-				glBufferData(
+				//GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glBindBuffer(GL_ARRAY_BUFFER, __vertex_buffer_object));
+				GRLGLCall(glBufferData(
 					GL_ARRAY_BUFFER,
 					sizeof(float) * data_count,
 					vertices_data,
 					__OpenGLLifecycleEnumToMacro(usage)
-					);
-				glBindVertexArray(0);
+					));
+				//GRLGLCall(glBindVertexArray(0));
 			}
-			void VertexArray::BindIndicesData(uint32_t* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
+			void VertexArray::BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
 			{
-				glBindVertexArray(__vertex_array_object);
-				glBufferData(
+				GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glBufferData(
 					GL_ELEMENT_ARRAY_BUFFER,
 					sizeof(uint32_t) * data_count,
 					indices_data,
 					__OpenGLLifecycleEnumToMacro(usage)
-				);
-				glBindVertexArray(0);
+				));
+				GRLGLCall(glBindVertexArray(0));
 				__indices_cnt = data_count;
 			}
 			void VertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset)
 			{
-				glBindVertexArray(__vertex_array_object);
-				glVertexAttribPointer(slot, bundle_size, GL_FLOAT, GL_FALSE, stride*sizeof(float), (void*)(offset * sizeof(float)));
-				glEnableVertexAttribArray(slot);
-				glBindVertexArray(0);
+				GRLGLCall(glBindBuffer(GL_ARRAY_BUFFER, __vertex_buffer_object));
+				GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glVertexAttribPointer(slot, bundle_size, GL_FLOAT, GL_FALSE, stride*sizeof(float), (void*)(offset * sizeof(float))));
+				GRLGLCall(glBindVertexArray(0));
+			}
+			void VertexArray::EnableSlot(int32_t slot)
+			{
+				GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glEnableVertexAttribArray(slot));
+				GRLGLCall(glBindVertexArray(0));
 			}
 			void VertexArray::DisableSlot(int32_t slot)
 			{
-				glDisableVertexAttribArray(slot);
+				GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glDisableVertexAttribArray(slot));
+				GRLGLCall(glBindVertexArray(0));
 			}
 			void VertexArray::Render()
 			{
-				glBindVertexArray(__vertex_array_object);
-				glDrawElements(GL_TRIANGLES, __indices_cnt, GL_UNSIGNED_INT, nullptr);
-				glBindVertexArray(0);
+				GRLGLCall(glBindVertexArray(__vertex_array_object));
+				GRLGLCall(glDrawElements(GL_TRIANGLES, __indices_cnt, GL_UNSIGNED_INT, nullptr));
+				GRLGLCall(glBindVertexArray(0));
 			}
 		}
 	}
