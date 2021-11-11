@@ -316,7 +316,7 @@ namespace Grassland
 		*ppShader = new GRLCOpenGLShader(pShader);
 		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCreateLinkedProgram(GRLIOpenGLShader* pVertexShader, GRLIOpenGLShader* pFragmentShader, GRLIOpenGLShader* pGeometryShader, GRLIOpenGLProgram** ppProgram)
+	GRL_RESULT GRLCreateOpenGLLinkedProgram(GRLIOpenGLShader* pVertexShader, GRLIOpenGLShader* pFragmentShader, GRLIOpenGLShader* pGeometryShader, GRLIOpenGLProgram** ppProgram)
 	{
 		Graphics::OpenGL::Program* pProgram = new Graphics::OpenGL::Program();
 		uint32_t vertex_shader = 0;
@@ -343,7 +343,7 @@ namespace Grassland
 		*ppProgram = new GRLCOpenGLProgram(pProgram);
 		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCreateProgramFromSourceFile(
+	GRL_RESULT GRLCreateOpenGLProgramFromSourceFile(
 		const char* vertex_shader_path,
 		const char* fragment_shader_path,
 		const char* geometry_shader_path,
@@ -388,7 +388,7 @@ namespace Grassland
 				return GRL_TRUE;
 			}
 		}
-		if (GRLCreateLinkedProgram(
+		if (GRLCreateOpenGLLinkedProgram(
 			pVertexShader, 
 			pFragmentShader,
 			pGeometryShader,

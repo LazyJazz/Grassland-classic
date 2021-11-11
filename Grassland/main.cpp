@@ -55,16 +55,16 @@ GRLVec3 block[8] =
 GRLVec3 vertices[8][2] = {};
 uint32_t indices[] = {
 	0b000, 0b011, 0b001,
-	0b000, 0b011, 0b010,
-	0b100, 0b111, 0b101,
+	0b000, 0b010, 0b011,
+	0b100, 0b101, 0b111,
 	0b100, 0b111, 0b110,
-	0b000, 0b101, 0b001,
+	0b000, 0b001, 0b101,
 	0b000, 0b101, 0b100,
 	0b010, 0b111, 0b011,
-	0b010, 0b111, 0b110,
+	0b010, 0b110, 0b111,
 	0b000, 0b110, 0b010,
-	0b000, 0b110, 0b100,
-	0b001, 0b111, 0b011,
+	0b000, 0b100, 0b110,
+	0b001, 0b011, 0b111,
 	0b001, 0b111, 0b101
 };
 
@@ -84,30 +84,48 @@ int main()
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 
 
-	uint32_t hFrameBuffer, hColorTex, hDepthTex;
+	uint32_t hFrameBuffer, hColorTex, hColorTex2, hDepthTex;
 
 	glGenFramebuffers(1, &hFrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
+
 	glGenTextures(1, &hColorTex);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, hColorTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-		800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F,
+		800, 600, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hColorTex, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glGenTextures(1, &hColorTex2);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, hColorTex2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F,
+		800, 600, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, hColorTex2, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
 	glGenTextures(1, &hDepthTex);
+	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, hDepthTex);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, hDepthTex, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		800, 600, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, hDepthTex, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	uint32_t drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, (GLenum*)drawBuffers);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	float H = 0.0, S = 1.0, V = 1.0;
@@ -115,13 +133,13 @@ int main()
 
 	GRLPtr<GRLIOpenGLProgram> pProgram, pOutImgProgram;
 
-	GRLCreateProgramFromSourceFile(
+	GRLCreateOpenGLProgramFromSourceFile(
 		"shaders/VertexShader.glsl",
 		"shaders/FragmentShader.glsl",
 		nullptr,
 		&pProgram
 	);
-	GRLCreateProgramFromSourceFile(
+	GRLCreateOpenGLProgramFromSourceFile(
 		"shaders/VertexShaderTex.glsl",
 		"shaders/FragmentShaderTex.glsl",
 		nullptr,
@@ -129,9 +147,9 @@ int main()
 	);
 
 
-	GRLPtr<GRLIVertexArray> va, vatex;
-	GRLCreateVertexArray(&va);
-	GRLCreateVertexArray(&vatex);
+	GRLPtr<GRLIOpenGLVertexArray> va, vatex;
+	GRLCreateOpenGLVertexArray(&va);
+	GRLCreateOpenGLVertexArray(&vatex);
 	va->ActiveVerticesLayout(0, 3, 6, 0);
 	va->ActiveVerticesLayout(1, 3, 6, 3);
 	vatex->ActiveVerticesLayout(0, 3, 5, 0);
@@ -210,11 +228,15 @@ int main()
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pOutImgProgram->Use();
-		glBindTexture(GL_TEXTURE_2D, hColorTex);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, hColorTex2);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, hColorTex2);
 
 		vatex->Render();
 		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
 		glfwPollEvents();
 	}
+	;
 	GRLOpenGLTerminate();//*/
 }

@@ -92,11 +92,11 @@ namespace Grassland
 		}
 	}
 
-	class GRLCVertexArray : public GRLIVertexArray
+	class GRLCOpenGLVertexArray : public GRLIOpenGLVertexArray
 	{
 	public:
-		GRLCVertexArray(Graphics::OpenGL::VertexArray* pVertexArray);
-		~GRLCVertexArray();
+		GRLCOpenGLVertexArray(Graphics::OpenGL::VertexArray* pVertexArray);
+		~GRLCOpenGLVertexArray();
 		virtual void BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
 		virtual void BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
 		virtual void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset);
@@ -110,55 +110,55 @@ namespace Grassland
 		int32_t __Ref_Cnt;
 	};
 
-	GRL_RESULT GRLCreateVertexArray(GRLIVertexArray** ppVertexArray)
+	GRL_RESULT GRLCreateOpenGLVertexArray(GRLIOpenGLVertexArray** ppVertexArray)
 	{
 		if (ppVertexArray)
-			*ppVertexArray = new GRLCVertexArray(
+			*ppVertexArray = new GRLCOpenGLVertexArray(
 				new Graphics::OpenGL::VertexArray()
 			);
 		else
 			return GRL_TRUE;
 		return GRL_FALSE;
 	}
-	GRLCVertexArray::GRLCVertexArray(Graphics::OpenGL::VertexArray* pVertexArray)
+	GRLCOpenGLVertexArray::GRLCOpenGLVertexArray(Graphics::OpenGL::VertexArray* pVertexArray)
 	{
 		__Ref_Cnt = 1;
 		__vertex_array = pVertexArray;
 	}
-	GRLCVertexArray::~GRLCVertexArray()
+	GRLCOpenGLVertexArray::~GRLCOpenGLVertexArray()
 	{
 		delete __vertex_array;
 	}
-	void GRLCVertexArray::BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
+	void GRLCOpenGLVertexArray::BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
 	{
 		__vertex_array->BindVerticesData(vertices_data, data_count, usage);
 	}
-	void GRLCVertexArray::BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
+	void GRLCOpenGLVertexArray::BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage)
 	{
 		__vertex_array->BindIndicesData(indices_data, data_count, usage);
 	}
-	void GRLCVertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset)
+	void GRLCOpenGLVertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset)
 	{
 		__vertex_array->ActiveVerticesLayout(slot, bundle_size, stride, offset);
 	}
-	void GRLCVertexArray::EnableSlot(int32_t slot)
+	void GRLCOpenGLVertexArray::EnableSlot(int32_t slot)
 	{
 		__vertex_array->EnableSlot(slot);
 	}
-	void GRLCVertexArray::DisableSlot(int32_t slot)
+	void GRLCOpenGLVertexArray::DisableSlot(int32_t slot)
 	{
 		__vertex_array->DisableSlot(slot);
 	}
-	void GRLCVertexArray::Render()
+	void GRLCOpenGLVertexArray::Render()
 	{
 		__vertex_array->Render();
 	}
-	GRL_RESULT GRLCVertexArray::AddRef()
+	GRL_RESULT GRLCOpenGLVertexArray::AddRef()
 	{
 		__Ref_Cnt++;
 		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCVertexArray::Release()
+	GRL_RESULT GRLCOpenGLVertexArray::Release()
 	{
 		__Ref_Cnt--;
 		if (!__Ref_Cnt)

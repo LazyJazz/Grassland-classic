@@ -105,14 +105,14 @@ namespace Grassland
 		GRLIOpenGLShader ** ppShader
 	);
 
-	GRL_RESULT GRLCreateLinkedProgram(
+	GRL_RESULT GRLCreateOpenGLLinkedProgram(
 		GRLIOpenGLShader* pVertexShader,
 		GRLIOpenGLShader* pFragmentShader,
 		GRLIOpenGLShader* pGeometryShader,
 		GRLIOpenGLProgram **ppProgram
 	);
 
-	GRL_RESULT GRLCreateProgramFromSourceFile(
+	GRL_RESULT GRLCreateOpenGLProgramFromSourceFile(
 		const char* vertex_shader_path,
 		const char* fragment_shader_path,
 		const char* geometry_shader_path,

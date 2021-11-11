@@ -31,7 +31,7 @@ namespace Grassland
 		}
 	}
 
-	class GRLIVertexArray : public GRLIBase
+	class GRLIOpenGLVertexArray : public GRLIBase
 	{
 	public:
 		virtual void BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage) = 0;
@@ -42,5 +42,5 @@ namespace Grassland
 		virtual void Render() = 0;
 	};
 
-	GRL_RESULT GRLCreateVertexArray(GRLIVertexArray ** ppVertexArray);
+	GRL_RESULT GRLCreateOpenGLVertexArray(GRLIOpenGLVertexArray ** ppVertexArray);
 }
