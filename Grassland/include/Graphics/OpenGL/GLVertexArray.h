@@ -22,6 +22,7 @@ namespace Grassland
 				void EnableSlot(int32_t slot);
 				void DisableSlot(int32_t slot);
 				void Render();
+			private:
 				uint32_t __vertex_array_object;
 				uint32_t __vertex_buffer_object;
 				uint32_t __element_buffer_object;
@@ -29,4 +30,17 @@ namespace Grassland
 			};
 		}
 	}
+
+	class GRLIVertexArray : public GRLIBase
+	{
+	public:
+		virtual void BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage) = 0;
+		virtual void BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage) = 0;
+		virtual void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset) = 0;
+		virtual void EnableSlot(int32_t slot) = 0;
+		virtual void DisableSlot(int32_t slot) = 0;
+		virtual void Render() = 0;
+	};
+
+	GRL_RESULT GRLCreateVertexArray(GRLIVertexArray ** ppVertexArray);
 }

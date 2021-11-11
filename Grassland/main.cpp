@@ -129,20 +129,17 @@ int main()
 	);
 
 
-	Graphics::OpenGL::VertexArray VAO;
-	Graphics::OpenGL::VertexArray vao;
-	VAO.BindVerticesData(tex_vertices, 20, GRL_OPENGL_BUFFER_USAGE_STATIC);
-	vao.BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STREAM);
-	VAO.BindIndicesData(tex_indices, 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
-	vao.BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
-	VAO.EnableSlot(0);
-	VAO.EnableSlot(1);
-	VAO.ActiveVerticesLayout(0, 3, 5, 0);
-	VAO.ActiveVerticesLayout(1, 2, 5, 3);
-	vao.ActiveVerticesLayout(0, 3, 6, 0);
-	vao.ActiveVerticesLayout(1, 3, 6, 3);
-	vao.EnableSlot(0);
-	vao.EnableSlot(1);
+	GRLPtr<GRLIVertexArray> va, vatex;
+	GRLCreateVertexArray(&va);
+	GRLCreateVertexArray(&vatex);
+	va->ActiveVerticesLayout(0, 3, 6, 0);
+	va->ActiveVerticesLayout(1, 3, 6, 3);
+	vatex->ActiveVerticesLayout(0, 3, 5, 0);
+	vatex->ActiveVerticesLayout(1, 2, 5, 3);
+	vatex->BindVerticesData(tex_vertices, 20, GRL_OPENGL_BUFFER_USAGE_STATIC);
+	va->BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STREAM);
+	vatex->BindIndicesData(tex_indices, 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
+	va->BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
 
 
 	float dpitch = 0.0, dyaw = 0.0, droll = 0.0;
@@ -202,10 +199,10 @@ int main()
 			vertices[i][0] = mat_block * block[i];
 			vertices[i][1] = block[i] * 0.5 + 0.5;
 		}
-		vao.BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STATIC);
+		va->BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STATIC);
 
-		vao.BindIndicesData(indices, distr_int(rand_dev) * 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
-		vao.Render();
+		va->BindIndicesData(indices, 6 * 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
+		va->Render();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, 800, 600);
@@ -215,7 +212,7 @@ int main()
 		pOutImgProgram->Use();
 		glBindTexture(GL_TEXTURE_2D, hColorTex);
 
-		VAO.Render();
+		vatex->Render();
 		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
 		glfwPollEvents();
 	}
