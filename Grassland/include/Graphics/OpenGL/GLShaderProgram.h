@@ -51,6 +51,7 @@ namespace Grassland
 				int32_t GetUniformLocation(const char* uniform_name);
 				void Use() const;
 				void SetFloat(int32_t location, float fvalue);
+				void SetInt(int32_t location, int value);
 				void SetVec2(int32_t location, const GRLVec2& vec);
 				void SetVec3(int32_t location, const GRLVec3& vec);
 				void SetVec4(int32_t location, const GRLVec4& vec);
@@ -58,6 +59,7 @@ namespace Grassland
 				void SetMat3(int32_t location, const GRLMat3& mat);
 				void SetMat4(int32_t location, const GRLMat4& mat);
 				void SetFloat(const char* uniform_name, float fvalue);
+				void SetInt(const char* uniform_name, int value);
 				void SetVec2(const char* uniform_name, const GRLVec2& vec);
 				void SetVec3(const char* uniform_name, const GRLVec3& vec);
 				void SetVec4(const char* uniform_name, const GRLVec4& vec);
@@ -84,6 +86,7 @@ namespace Grassland
 		virtual int32_t GetUniformLocation(const char* uniform_name) const = 0;
 		virtual GRL_RESULT Use() const = 0;
 		virtual GRL_RESULT SetFloat(int32_t location, float fvalue) const = 0;
+		virtual GRL_RESULT SetInt(int32_t location, int value) const = 0;
 		virtual GRL_RESULT SetVec2(int32_t location, const GRLVec2& vec) const = 0;
 		virtual GRL_RESULT SetVec3(int32_t location, const GRLVec3& vec) const = 0;
 		virtual GRL_RESULT SetVec4(int32_t location, const GRLVec4& vec) const = 0;
@@ -91,6 +94,7 @@ namespace Grassland
 		virtual GRL_RESULT SetMat3(int32_t location, const GRLMat3& mat) const = 0;
 		virtual GRL_RESULT SetMat4(int32_t location, const GRLMat4& mat) const = 0;
 		virtual GRL_RESULT SetFloat(const char* uniform_name, float fvalue) const = 0;
+		virtual GRL_RESULT SetInt(const char* uniform_name, int value) const = 0;
 		virtual GRL_RESULT SetVec2(const char* uniform_name, const GRLVec2& vec) const = 0;
 		virtual GRL_RESULT SetVec3(const char* uniform_name, const GRLVec3& vec) const = 0;
 		virtual GRL_RESULT SetVec4(const char* uniform_name, const GRLVec4& vec) const = 0;

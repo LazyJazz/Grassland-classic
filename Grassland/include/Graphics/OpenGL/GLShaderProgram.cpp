@@ -103,6 +103,10 @@ namespace Grassland
 			{
 				glProgramUniform1f(__program_handle, location, fvalue);
 			}
+			void Program::SetInt(int32_t location, int value)
+			{
+				glProgramUniform1i(__program_handle, location, value);
+			}
 			void Program::SetVec2(int32_t location, const GRLVec2& vec)
 			{
 				glProgramUniform2fv(__program_handle, location, 1, &vec[0]);
@@ -130,6 +134,10 @@ namespace Grassland
 			void Program::SetFloat(const char* uname, float fvalue)
 			{
 				SetFloat(GetUniformLocation(uname), fvalue);
+			}
+			void Program::SetInt(const char* uniform_name, int value)
+			{
+				SetInt(GetUniformLocation(uniform_name), value);
 			}
 			void Program::SetVec2(const char* uname, const GRLVec2& vec)
 			{
@@ -282,6 +290,7 @@ namespace Grassland
 		virtual int32_t GetUniformLocation(const char* uniform_name) const;
 		virtual GRL_RESULT Use() const;
 		virtual GRL_RESULT SetFloat(int32_t location, float fvalue) const;
+		virtual GRL_RESULT SetInt(int32_t location, int value) const;
 		virtual GRL_RESULT SetVec2(int32_t location, const GRLVec2& vec) const;
 		virtual GRL_RESULT SetVec3(int32_t location, const GRLVec3& vec) const;
 		virtual GRL_RESULT SetVec4(int32_t location, const GRLVec4& vec) const;
@@ -289,6 +298,7 @@ namespace Grassland
 		virtual GRL_RESULT SetMat3(int32_t location, const GRLMat3& mat) const;
 		virtual GRL_RESULT SetMat4(int32_t location, const GRLMat4& mat) const;
 		virtual GRL_RESULT SetFloat(const char* uniform_name, float fvalue) const;
+		virtual GRL_RESULT SetInt(const char* uniform_name, int value) const;
 		virtual GRL_RESULT SetVec2(const char* uniform_name, const GRLVec2& vec) const;
 		virtual GRL_RESULT SetVec3(const char* uniform_name, const GRLVec3& vec) const;
 		virtual GRL_RESULT SetVec4(const char* uniform_name, const GRLVec4& vec) const;
@@ -496,6 +506,16 @@ namespace Grassland
 		__program_pnter->SetFloat(location, fvalue);
 		return GRL_FALSE;
 	}
+	GRL_RESULT GRLCOpenGLProgram::SetInt(int32_t location, int value) const
+	{
+		if (!__program_pnter)
+		{
+			GRLSetErrorInfo("OpenGL Program Object not initialized. ");
+			return GRL_TRUE;
+		}
+		__program_pnter->SetInt(location, value);
+		return GRL_FALSE;
+	}
 	GRL_RESULT GRLCOpenGLProgram::SetVec2(int32_t location, const GRLVec2& vec) const
 	{
 		if (!__program_pnter)
@@ -564,6 +584,16 @@ namespace Grassland
 			return GRL_TRUE;
 		}
 		__program_pnter->SetFloat(uniform_name, fvalue);
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLCOpenGLProgram::SetInt(const char* uniform_name, int value) const
+	{
+		if (!__program_pnter)
+		{
+			GRLSetErrorInfo("OpenGL Program Object not initialized. ");
+			return GRL_TRUE;
+		}
+		__program_pnter->SetInt(uniform_name, value);
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCOpenGLProgram::SetVec2(const char* uniform_name, const GRLVec2& vec) const

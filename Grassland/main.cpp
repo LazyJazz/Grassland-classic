@@ -188,6 +188,11 @@ int main()
 	std::random_device rand_dev;
 	std::uniform_int_distribution<> distr_int(1, 6);
 
+	std::cout << "texture1: " << pOutImgProgram->GetUniformLocation("texture1") << std::endl;
+	std::cout << "texture0: " << pOutImgProgram->GetUniformLocation("texture0") << std::endl;
+	pOutImgProgram->SetInt("texture1", 1);
+	pOutImgProgram->SetInt("texture0", 0);
+
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
 		int state = glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_E);
@@ -230,6 +235,11 @@ int main()
 		pOutImgProgram->Use();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, hColorTex2);
+		//glUniform1i(pOutImgProgram->GetUniformLocation("texture0"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, hColorTex);
+		//glUniform1i(pOutImgProgram->GetUniformLocation("texture1"), 1);
+		//glActiveTexture(GL_TEXTURE0);
 		//glActiveTexture(GL_TEXTURE1);
 		//glBindTexture(GL_TEXTURE_2D, hColorTex2);
 
