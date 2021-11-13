@@ -183,7 +183,10 @@
     <ClInclude Include="include\Graphics\Util\Camera.h" />
     <ClInclude Include="include\Graphics\Util\Image.h" />
     <ClInclude Include="include\Graphics\Util\Color.h" />
+    <ClInclude Include="include\Graphics\Util\Message.h" />
+    <ClInclude Include="include\Graphics\Util\UtilDef.h" />
     <ClInclude Include="include\Graphics\Util\Mesh.h" />
+    <ClInclude Include="include\Graphics\Util\Transform.h" />
     <ClInclude Include="include\Graphics\Util\Util.h" />
     <ClInclude Include="include\Grassland.h" />
     <ClInclude Include="include\GrasslandDecl.h" />
@@ -200,6 +203,8 @@
     <ClInclude Include="include\Math\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="include\Graphics\Util\Camera.inl" />
+    <None Include="include\Graphics\Util\Transform.inl" />
     <None Include="include\Math\MathDecl.inl" />
     <None Include="include\Math\Matrix2x2.inl" />
     <None Include="include\Math\Matrix3x3.inl" />

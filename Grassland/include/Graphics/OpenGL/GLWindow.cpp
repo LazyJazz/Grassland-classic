@@ -63,4 +63,9 @@ namespace Grassland
 		glfwGetWindowSize(Graphics::OpenGL::GetGLFWWindow(), width, height);
 		return GRL_FALSE;
 	}
+
+	GLFWwindow* GRLOpenGLGetWindow()
+	{
+		return Graphics::OpenGL::GetGLFWWindow();
+	}
 }

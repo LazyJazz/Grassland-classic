@@ -26,6 +26,10 @@ namespace Grassland
 		template<int n, typename T> struct Vector;
 		template<int R, int C, typename T> struct Matrix;
 	}
+
+	template<typename T> T GRLRadian(T deg) { return Math::radian<T>(deg); }
+
+	template<typename T> T GRLDegree(T rad) { return Math::degree<T>(rad); }
 }
 
 #include"MathDecl.inl"

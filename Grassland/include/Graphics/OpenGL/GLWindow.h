@@ -26,4 +26,7 @@ namespace Grassland
 	GRL_RESULT GRLOpenGLTerminate();
 
 	GRL_RESULT GRLOpenGLGetWindowSize(int* width, int* height);
+
+	GLFWwindow* GRLOpenGLGetWindow();
+
 }

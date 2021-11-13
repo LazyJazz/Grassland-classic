@@ -188,6 +188,15 @@
     <ClInclude Include="include\Graphics\OpenGL\GLFrameBuffer.h">
       <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Transform.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Message.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\UtilDef.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
@@ -225,6 +234,12 @@
     </None>
     <None Include="shaders\VertexShaderTex.glsl">
       <Filter>资源文件</Filter>
+    </None>
+    <None Include="include\Graphics\Util\Camera.inl">
+      <Filter>头文件\Graphics\Util</Filter>
+    </None>
+    <None Include="include\Graphics\Util\Transform.inl">
+      <Filter>头文件\Graphics\Util</Filter>
     </None>
   </ItemGroup>
 </Project>
