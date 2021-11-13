@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -151,32 +151,42 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\Graphics\Bitmap.cpp" />
-    <ClCompile Include="include\Graphics\GL\GLFrameBuffer.cpp" />
-    <ClCompile Include="include\Graphics\GL\GLShader.cpp" />
-    <ClCompile Include="include\Graphics\GL\GLWindow.cpp" />
-    <ClCompile Include="include\Graphics\Transform.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLFrameBuffer.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLInput.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLTexture.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLVertexArray.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GLWindow.cpp" />
+    <ClCompile Include="include\Graphics\Util\Camera.cpp" />
+    <ClCompile Include="include\Graphics\Util\Color.cpp" />
+    <ClCompile Include="include\Graphics\Util\Image.cpp" />
+    <ClCompile Include="include\Graphics\Util\Mesh.cpp" />
     <ClCompile Include="include\Math\MathDecl.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Geometry\Geometry.h" />
     <ClInclude Include="include\Geometry\GeometryDecl.h" />
-    <ClInclude Include="include\Graphics\Bitmap.h" />
-    <ClInclude Include="include\Graphics\GL\GLAD\glad.h" />
-    <ClInclude Include="include\Graphics\GL\GLAD\khrplatform.h" />
-    <ClInclude Include="include\Graphics\GL\GLFrameBuffer.h" />
-    <ClInclude Include="include\Graphics\GL\GLFW\glfw3.h" />
-    <ClInclude Include="include\Graphics\GL\GLFW\glfw3native.h" />
-    <ClInclude Include="include\Graphics\GL\GLHeader.h" />
-    <ClInclude Include="include\Graphics\GL\GLShader.h" />
-    <ClInclude Include="include\Graphics\GL\GLTexture.h" />
-    <ClInclude Include="include\Graphics\GL\GLWindow.h" />
     <ClInclude Include="include\Graphics\Graphics.h" />
-    <ClInclude Include="include\Graphics\Image\ImageByte1.h" />
-    <ClInclude Include="include\Graphics\Image\ImageDef.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GL.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLFrameBuffer.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLHeader.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLInput.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLTexture.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLVertexArray.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLWindow.h" />
+    <ClInclude Include="include\Graphics\Util\Camera.h" />
+    <ClInclude Include="include\Graphics\Util\Image.h" />
+    <ClInclude Include="include\Graphics\Util\Color.h" />
+    <ClInclude Include="include\Graphics\Util\Mesh.h" />
+    <ClInclude Include="include\Graphics\Util\Util.h" />
     <ClInclude Include="include\Grassland.h" />
-    <ClInclude Include="include\Graphics\Transform.h" />
+    <ClInclude Include="include\GrasslandDecl.h" />
     <ClInclude Include="include\Math\Math.h" />
     <ClInclude Include="include\Math\MathDecl.h" />
     <ClInclude Include="include\Math\Matrix.h" />
@@ -190,7 +200,6 @@
     <ClInclude Include="include\Math\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\Graphics\Image\ImageByte1.inl" />
     <None Include="include\Math\MathDecl.inl" />
     <None Include="include\Math\Matrix2x2.inl" />
     <None Include="include\Math\Matrix3x3.inl" />

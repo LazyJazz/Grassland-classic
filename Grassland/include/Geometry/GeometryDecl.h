@@ -5,6 +5,7 @@ namespace Grassland
 {
 	namespace Geometry
 	{
+		using namespace Math;
 		;
 	}
 }

@@ -22,49 +22,70 @@
     <Filter Include="头文件\Graphics">
       <UniqueIdentifier>{4f25d02c-3f29-4014-8deb-933a90fc978e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics\GL">
-      <UniqueIdentifier>{45530985-9eeb-48c3-a768-5c3d0975fd84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Graphics\GL\GLAD">
-      <UniqueIdentifier>{43c1e462-d64e-4702-ab76-74885079ccc8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Graphics\GL\GLFW">
-      <UniqueIdentifier>{59d58b3a-210f-476b-931e-f634e1212523}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\Graphics">
       <UniqueIdentifier>{6dc739f0-25df-4740-963d-d48b3923b36e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Graphics\GL">
-      <UniqueIdentifier>{2b16880a-e84a-4c64-9619-d887340e3da1}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\Math">
       <UniqueIdentifier>{fc3cf61d-8cb7-426f-a437-357e9c0fe401}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics\Image">
-      <UniqueIdentifier>{296a8cfb-45c8-45bf-857d-e39bbb168192}</UniqueIdentifier>
+    <Filter Include="头文件\Graphics\Util">
+      <UniqueIdentifier>{93e95b7b-61e1-4930-a558-99070a59ca58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\OpenGL">
+      <UniqueIdentifier>{968607e3-b9c2-40e2-bd52-5cce46286826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\DirectX">
+      <UniqueIdentifier>{a2287170-165f-4217-88bc-43df8c9be328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\OpenGL\GLFW">
+      <UniqueIdentifier>{a0fa7ee0-f42a-4231-af3c-d9a7c9d372dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\OpenGL\GLAD">
+      <UniqueIdentifier>{6a85a5cb-73f1-457d-b62a-15850c4ff538}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Graphics\Util">
+      <UniqueIdentifier>{02eb344f-7414-4b53-80fc-9608c49db402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Graphics\OpenGL">
+      <UniqueIdentifier>{b2cb8cf4-a841-4254-81ca-a38e463fea84}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\GL\GLWindow.cpp">
-      <Filter>源文件\Graphics\GL</Filter>
-    </ClCompile>
     <ClCompile Include="include\Math\MathDecl.cpp">
       <Filter>源文件\Math</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\Transform.cpp">
-      <Filter>源文件\Graphics</Filter>
+    <ClCompile Include="include\Graphics\Util\Color.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\GL\GLShader.cpp">
-      <Filter>源文件\Graphics\GL</Filter>
+    <ClCompile Include="include\Graphics\Util\Image.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\GL\GLFrameBuffer.cpp">
-      <Filter>源文件\Graphics\GL</Filter>
+    <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\Bitmap.cpp">
-      <Filter>源文件\Graphics</Filter>
+    <ClCompile Include="include\Graphics\OpenGL\GLTexture.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLVertexArray.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLWindow.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Util\Camera.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Util\Mesh.cpp">
+      <Filter>源文件\Graphics\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLInput.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLFrameBuffer.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,47 +131,62 @@
     <ClInclude Include="include\Geometry\GeometryDecl.h">
       <Filter>头文件\Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLFW\glfw3.h">
-      <Filter>头文件\Graphics\GL\GLFW</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h">
+      <Filter>头文件\Graphics\OpenGL\GLAD</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLFW\glfw3native.h">
-      <Filter>头文件\Graphics\GL\GLFW</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h">
+      <Filter>头文件\Graphics\OpenGL\GLAD</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLAD\glad.h">
-      <Filter>头文件\Graphics\GL\GLAD</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h">
+      <Filter>头文件\Graphics\OpenGL\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLAD\khrplatform.h">
-      <Filter>头文件\Graphics\GL\GLAD</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h">
+      <Filter>头文件\Graphics\OpenGL\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLHeader.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Camera.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Image.h">
+      <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Util\Color.h">
+      <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Graphics.h">
       <Filter>头文件\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLHeader.h">
-      <Filter>头文件\Graphics\GL</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GL.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLWindow.h">
-      <Filter>头文件\Graphics\GL</Filter>
+    <ClInclude Include="include\GrasslandDecl.h">
+      <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Transform.h">
-      <Filter>头文件\Graphics</Filter>
+    <ClInclude Include="include\Graphics\Util\Util.h">
+      <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLShader.h">
-      <Filter>头文件\Graphics\GL</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLFrameBuffer.h">
-      <Filter>头文件\Graphics\GL</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLVertexArray.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\GL\GLTexture.h">
-      <Filter>头文件\Graphics\GL</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLTexture.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Bitmap.h">
-      <Filter>头文件\Graphics</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLWindow.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Image\ImageDef.h">
-      <Filter>头文件\Graphics\Image</Filter>
+    <ClInclude Include="include\Graphics\Util\Mesh.h">
+      <Filter>头文件\Graphics\Util</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Image\ImageByte1.h">
-      <Filter>头文件\Graphics\Image</Filter>
+    <ClInclude Include="include\Graphics\OpenGL\GLInput.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLFrameBuffer.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +225,6 @@
     </None>
     <None Include="shaders\VertexShaderTex.glsl">
       <Filter>资源文件</Filter>
-    </None>
-    <None Include="include\Graphics\Image\ImageByte1.inl">
-      <Filter>头文件\Graphics\Image</Filter>
     </None>
   </ItemGroup>
 </Project>
