@@ -85,7 +85,8 @@ namespace Grassland
 	template<typename __Ty>
 	inline GRLPtr<__Ty>::~GRLPtr()
 	{
-		__Pnter_Object->Release();
+		if (__Pnter_Object)
+			__Pnter_Object->Release();
 	}
 	template<typename __Ty>
 	inline void GRLPtr<__Ty>::Set(__Ty* pObject)

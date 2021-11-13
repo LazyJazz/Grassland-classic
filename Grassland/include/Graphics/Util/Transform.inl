@@ -43,8 +43,8 @@ namespace Grassland
 				0.0, 0.0, 0.0, 1.0
 				) *
 			Math::Matrix<4, 4, __Ty>(
-				cos(roll), -sin(roll), 0.0, 0.0,
-				sin(roll),  cos(roll), 0.0, 0.0,
+				cos(roll), sin(roll), 0.0, 0.0,
+				-sin(roll),  cos(roll), 0.0, 0.0,
 				0.0, 0.0, 1.0, 0.0,
 				0.0, 0.0, 0.0, 1.0
 				);

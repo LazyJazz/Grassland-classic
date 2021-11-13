@@ -107,9 +107,12 @@ void KeyCallback(GLFWwindow* window, int gl_key, int scannode, int action, int m
 	}
 }
 
+bool g_MouseNormal = true;
+bool g_block_mouse = true;
+
 uint64_t WinMsgHandler(uint64_t winid, uint64_t msg, uint64_t param0, uint64_t param1)
 {
-	std::cout << msg << " " << param0 << " " << param1 << std::endl;
+	//std::cout << msg << " " << param0 << " " << param1 << std::endl;
 	switch (msg)
 	{
 	case GRL_WM_SIZE:
@@ -117,14 +120,20 @@ uint64_t WinMsgHandler(uint64_t winid, uint64_t msg, uint64_t param0, uint64_t p
 		g_Height = param1;
 		g_WinSizeChanged = true;
 		break;
+	case GRL_WM_KEYDOWN:
+		if (param0 == GRL_KEY_LSHIFT)
+		{
+			glfwSetInputMode(GRLOpenGLGetWindow(), GLFW_CURSOR, g_MouseNormal ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+			g_MouseNormal = !g_MouseNormal;
+			g_block_mouse = true;
+		}
+		break;
 	}
 	return 0;
 }
 
 int main()
 {
-	auto aplusb = [](int a, int b) {return a + b; };
-	std::cout << aplusb(1,2) << std::endl;
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 
 	//glfwSetKeyCallback(GRLOpenGLGetWindow(), KeyCallback);
@@ -146,21 +155,10 @@ int main()
 	GRLPtr<GRLIOpenGLFrameBuffer> framebuffer;
 	GRLCreateOpenGLFrameBuffer(800, 600, &framebuffer);
 
-	uint32_t hFrameBuffer;
-
-	glGenFramebuffers(1, &hFrameBuffer);
-
 	//GRLGLCall(glNamedFramebufferTexture(hFrameBuffer, GL_COLOR_ATTACHMENT0, texture->GetHandle(), 0));
 	//GRLGLCall(glNamedFramebufferTexture(hFrameBuffer, GL_COLOR_ATTACHMENT1, texture2->GetHandle(), 0));
 	//GRLGLCall(glNamedFramebufferTexture(hFrameBuffer, GL_DEPTH_ATTACHMENT, depthmap->GetHandle(), 0));
 	//glNamedFramebufferTexture(hFrameBuffer, GL_DEPTH_ATTACHMENT, depthmap->GetHandle(), 0);
-	uint32_t drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetHandle(), 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texture2->GetHandle(), 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthmap->GetHandle(), 0);
-	glDrawBuffers(2, (GLenum*)drawBuffers);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	framebuffer->BindTexture(texture.Get(), GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR0);
 	framebuffer->BindTexture(texture2.Get(), GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR1);
 	framebuffer->BindTexture(depthmap.Get(), GRL_OPENGL_FRAMEBUFFER_SLOT_DEPTH);
@@ -197,33 +195,9 @@ int main()
 	va->BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
 
 
-	float dpitch = 0.0, dyaw = 0.0, droll = 0.0;
-
-	dpitch = Grassland::Math::radian(0.1);
-	dyaw = Grassland::Math::radian(0.21);
-	droll = Grassland::Math::radian(0.32);
-
-
-	Grassland::Math::Mat3x3
-		pitch(
-			cos(dpitch), -sin(dpitch), 0.0,
-			sin(dpitch), cos(dpitch), 0.0,
-			0.0, 0.0, 1.0
-		)
-		, yaw(
-			1.0, 0.0, 0.0,
-			0.0, cos(dyaw), -sin(dyaw),
-			0.0, sin(dyaw), cos(dyaw)
-		), roll(
-			cos(droll), 0.0, -sin(droll),
-			0.0, 1.0, 0.0,
-			sin(droll), 0.0, cos(droll)
-		), mat_block(1.0);
+	Grassland::Math::Mat3x3 mat_block(1.0);
 	glEnable(GL_DEPTH_TEST);
-	//glfwSwapInterval(1);
 	glfwSwapInterval(1);
-	std::random_device rand_dev;
-	std::uniform_int_distribution<> distr_int(1, 6);
 
 	pOutImgProgram->SetInt("texture1", 1);
 	pOutImgProgram->SetInt("texture0", 0);
@@ -233,12 +207,19 @@ int main()
 	GRLCameraNormal camera(GRLRadian(60.0f), 800.0f / 600.0f, 1.0f, 100.0f);
 	camera.LookAt(GRLVec3(0.0, 0.0, -5.0), GRLVec3(0.0, 0.0, 0.0));
 
+	float pitch = 0.0, yaw = 0.0, roll = 0.0;
+	GRLVec4 origin = GRLVec4(0.0, 0.0, -5.0, 1.0);
+
+	GRLMat4 RMat(1.0), MMat(1.0);
+
+	GRLMat4 projMat = GRLTransformProjection(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 100.0f);
+
+	double lastx = 0;
+	double lasty = 0;
+
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
-		int state = glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_E);
 		H += 0.001;
-
-		//glClear();
 
 		GRLColor color = 
 			//GRLColor(0.6, 0.7, 0.8);
@@ -249,7 +230,9 @@ int main()
 		glClearColor(0.6, 0.7, 0.8, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pProgram->Use();
-		pProgram->SetMat4("gMatrix", camera.GetShaderMatrix());
+		MMat = GRLTransformTranslate(origin[0], origin[1], origin[2]);
+		pProgram->SetMat4("gMatrix", projMat*(MMat*RMat).inverse());
+		//pProgram->SetMat4("gMatrix", camera.GetShaderMatrix());
 		/*pProgram->SetMat4("gMatrix", GRLTransformProjection(
 			GRLRadian(60.0f),
 			(float)g_Width / (float)g_Height,
@@ -301,22 +284,43 @@ int main()
 		{
 			framebuffer->Resize(g_Width, g_Height);
 			camera.SetFOV(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 100.0f);
+			projMat = GRLTransformProjection(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 100.0f);
 			g_WinSizeChanged = false;
 		}
 
-		float x = 0.0, y = 0.0, z = 0.0;
-		float roll = 0.0;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_W)) z += 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_S)) z -= 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_A)) x -= 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_D)) x += 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_R)) y += 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_F)) y -= 0.1;
-		if (glfwGetMouseButton(Graphics::OpenGL::GetGLFWWindow(), GLFW_MOUSE_BUTTON_LEFT)) roll -= GRLRadian(0.1);
-		if (glfwGetMouseButton(Graphics::OpenGL::GetGLFWWindow(), GLFW_MOUSE_BUTTON_RIGHT)) roll += GRLRadian(0.1);
+		float dx = 0.0, dy = 0.0, dz = 0.0;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_W)) dz += 0.1;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_S)) dz -= 0.1;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_A)) dx -= 0.1;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_D)) dx += 0.1;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_R)) dy += 0.1;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_F)) dy -= 0.1;
+		double xpos, ypos;
+		glfwGetCursorPos(GRLOpenGLGetWindow(), &xpos, &ypos);
 
-		camera.Translate(x, y, z);
-		camera.Rotation(0.0, 0.0, roll);
+		if (!g_block_mouse && !g_MouseNormal)
+		{
+			//std::cout << xpos << " " << ypos << std::endl;
+			pitch += (ypos - lasty) * GRLRadian(0.1f);
+			yaw -= (xpos - lastx) * GRLRadian(0.1f);
+			if (pitch > GRLRadian(90.0f)) pitch = GRLRadian(90.0f);
+			if (pitch < GRLRadian(-90.0f)) pitch = GRLRadian(-90.0f);
+			while (yaw > GRLRadian(180.0f)) yaw -= GRLRadian(360.0f);
+			while (yaw < GRLRadian(-180.0f)) yaw += GRLRadian(360.0f);
+		}
+		lastx = xpos;
+		lasty = ypos;
+		g_block_mouse = false;
+
+		RMat = GRLTransformRotation(pitch, yaw, roll);
+		origin = origin + RMat * GRLVec4(dx, dy, dz, 0.0);
+
+		
+		static std::chrono::steady_clock::time_point lasttp = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point this_frame = std::chrono::steady_clock::now();
+		auto period = this_frame - lasttp;
+		std::cout << std::chrono::milliseconds(1000) / period  << std::endl;
+		lasttp = this_frame;
 	}
 	;
 	GRLOpenGLTerminate();//*/
