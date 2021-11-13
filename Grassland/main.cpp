@@ -77,56 +77,55 @@ float tex_vertices[] = {
 };
 uint32_t tex_indices[] = { 0,1,2,3,1,2 };
 
+int g_Width = 800, g_Height = 600;
+bool g_WinSizeChanged = false;
+
+void ResizeCallBack(GLFWwindow* window, int width, int height)
+{
+	g_Width = width;
+	g_Height = height;
+	g_WinSizeChanged = true;
+}
+
 int main()
 {
 	auto aplusb = [](int a, int b) {return a + b; };
 	std::cout << aplusb(1,2) << std::endl;
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 
+	//Graphics::OpenGL::Texture texture(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB);
+	//Graphics::OpenGL::Texture texture2(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB);
+	//Graphics::OpenGL::Texture depthmap(800, 600, GRL_OPENGL_TEXTURE_FORMAT_DEPTH);
 
-	uint32_t hFrameBuffer, hColorTex, hColorTex2, hDepthTex;
+	GRLPtr<GRLIOpenGLTexture> texture, texture2, depthmap;
+	GRLCreateOpenGLTexture(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGBA, nullptr, &texture);
+	GRLCreateOpenGLTexture(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB, nullptr, &texture2);
+	GRLCreateOpenGLTexture(800, 600, GRL_OPENGL_TEXTURE_FORMAT_DEPTH, nullptr, &depthmap);
+
+	GRLPtr<GRLIImage> img;
+	GRLCreateImage(800, 600, &img);
+
+	GRLPtr<GRLIOpenGLFrameBuffer> framebuffer;
+	GRLCreateOpenGLFrameBuffer(800, 600, &framebuffer);
+
+	uint32_t hFrameBuffer;
 
 	glGenFramebuffers(1, &hFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
 
-	glGenTextures(1, &hColorTex);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, hColorTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F,
-		800, 600, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, hColorTex, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glGenTextures(1, &hColorTex2);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, hColorTex2);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F,
-		800, 600, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, hColorTex2, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
-	glGenTextures(1, &hDepthTex);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, hDepthTex);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, hDepthTex, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		800, 600, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//GRLGLCall(glNamedFramebufferTexture(hFrameBuffer, GL_COLOR_ATTACHMENT0, texture->GetHandle(), 0));
+	//GRLGLCall(glNamedFramebufferTexture(hFrameBuffer, GL_COLOR_ATTACHMENT1, texture2->GetHandle(), 0));
+	//GRLGLCall(glNamedFramebufferTexture(hFrameBuffer, GL_DEPTH_ATTACHMENT, depthmap->GetHandle(), 0));
+	//glNamedFramebufferTexture(hFrameBuffer, GL_DEPTH_ATTACHMENT, depthmap->GetHandle(), 0);
 	uint32_t drawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->GetHandle(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, texture2->GetHandle(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthmap->GetHandle(), 0);
 	glDrawBuffers(2, (GLenum*)drawBuffers);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	framebuffer->BindTexture(texture.Get(), GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR0);
+	framebuffer->BindTexture(texture2.Get(), GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR1);
+	framebuffer->BindTexture(depthmap.Get(), GRL_OPENGL_FRAMEBUFFER_SLOT_DEPTH);
 
 	float H = 0.0, S = 1.0, V = 1.0;
 
@@ -184,14 +183,14 @@ int main()
 		), mat_block(1.0);
 	glEnable(GL_DEPTH_TEST);
 	//glfwSwapInterval(1);
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 	std::random_device rand_dev;
 	std::uniform_int_distribution<> distr_int(1, 6);
 
-	std::cout << "texture1: " << pOutImgProgram->GetUniformLocation("texture1") << std::endl;
-	std::cout << "texture0: " << pOutImgProgram->GetUniformLocation("texture0") << std::endl;
 	pOutImgProgram->SetInt("texture1", 1);
 	pOutImgProgram->SetInt("texture0", 0);
+
+	glfwSetWindowSizeCallback(Graphics::OpenGL::GetGLFWWindow(), ResizeCallBack);
 
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
@@ -204,15 +203,14 @@ int main()
 			//GRLColor(0.6, 0.7, 0.8);
 			Graphics::Util::HSV_to_RGB(H, S, V);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, hFrameBuffer);
-		glViewport(0, 0, 800, 600);
+		GRLOpenGLBindFrameBuffer(framebuffer.Get());
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(0.6, 0.7, 0.8, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pProgram->Use();
 		pProgram->SetMat4("gMatrix", TransformProjection(
 			Grassland::Math::radian(60.0),
-			4.0f / 3.0f,
+			(float)g_Width / (float)g_Height,
 			2.0,
 			10.0
 		) * TransformTranslate(0.0, 0.0, 5.0));
@@ -227,25 +225,42 @@ int main()
 		va->BindIndicesData(indices, 6 * 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
 		va->Render();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, 800, 600);
+		static int last_press = 0;
+		if (glfwGetKey(Grassland::Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		{
+			if (!last_press)
+			{
+				texture->GetImage(img.Get());
+				img->StoreBMP("texture.bmp");
+			}
+			last_press = 1;
+		}
+		else last_press = 0;
+
+		//depthmap->GetImage(img.Get());
+		//img->StoreBMP("texture.bmp");
+
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glViewport(0, 0, g_Width, g_Height);
+
+		GRLOpenGLBindFrameBuffer(nullptr);
+
 		//glDisable(GL_DEPTH_TEST);
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pOutImgProgram->Use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, hColorTex2);
-		//glUniform1i(pOutImgProgram->GetUniformLocation("texture0"), 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, hColorTex);
-		//glUniform1i(pOutImgProgram->GetUniformLocation("texture1"), 1);
-		//glActiveTexture(GL_TEXTURE0);
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, hColorTex2);
+		texture2->BindTexture(0);
+		texture->BindTexture(1);
 
 		vatex->Render();
 		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
 		glfwPollEvents();
+		if (g_WinSizeChanged)
+		{
+			framebuffer->Resize(g_Width, g_Height);
+
+			g_WinSizeChanged = false;
+		}
 	}
 	;
 	GRLOpenGLTerminate();//*/

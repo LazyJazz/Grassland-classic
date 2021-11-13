@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Graphics\OpenGL\GLFrameBuffer.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GLInput.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GLTexture.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="include\Graphics\OpenGL\GL.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GLFrameBuffer.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLHeader.h" />

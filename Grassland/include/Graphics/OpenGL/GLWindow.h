@@ -24,4 +24,6 @@ namespace Grassland
 	GRL_RESULT GRLOpenGLInit(int32_t width, int32_t height, const char* window_title, bool full_screen = false);
 
 	GRL_RESULT GRLOpenGLTerminate();
+
+	GRL_RESULT GRLOpenGLGetWindowSize(int* width, int* height);
 }
