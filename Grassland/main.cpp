@@ -152,6 +152,12 @@ int main()
 	//glfwSetCursorPosCallback(GRLOpenGLGetWindow(), CursorPosCallback);
 	GRLOpenGLSetWindowProc(WinMsgHandler);
 
+	int max_size;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
+	std::cout << max_size << std::endl;
+	GRLOpenGLTerminate();
+	return 0;
+
 	//Graphics::OpenGL::Texture texture(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB);
 	//Graphics::OpenGL::Texture texture2(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB);
 	//Graphics::OpenGL::Texture depthmap(800, 600, GRL_OPENGL_TEXTURE_FORMAT_DEPTH);
@@ -317,6 +323,7 @@ int main()
 		texture2->BindTexture(1);
 		texture->BindTexture(0);
 		//depthmap->BindTexture(1);
+		
 
 		vatex->Render();
 		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
