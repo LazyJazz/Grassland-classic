@@ -54,17 +54,15 @@ namespace Grassland
 		__Ty* __Pnter_Object;
 	};
 
-	enum GRL_TYPE
-	{
-		GRL_TYPE_INT8 = 0,
-		GRL_TYPE_UNSIGNED_INT8,
-		GRL_TYPE_INT32,
-		GRL_TYPE_UNSIGNED_INT32,
-		GRL_TYPE_INT64,
-		GRL_TYPE_UNSIGNED_INT64,
-		GRL_TYPE_FLOAT,
-		GRL_TYPE_DOUBLE
-	};
+	typedef uint32_t GRL_TYPE;
+#define GRL_TYPE_INT8 0
+#define GRL_TYPE_UNSIGNED_INT8 1
+#define GRL_TYPE_INT32 2
+#define GRL_TYPE_UNSIGNED_INT32 3
+#define GRL_TYPE_INT64 4
+#define GRL_TYPE_UNSIGNED_INT64 5
+#define GRL_TYPE_FLOAT 6
+#define GRL_TYPE_DOUBLE 7
 
 	typedef uint8_t Byte;
 	typedef float float32;

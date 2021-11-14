@@ -152,11 +152,11 @@ int main()
 	//glfwSetCursorPosCallback(GRLOpenGLGetWindow(), CursorPosCallback);
 	GRLOpenGLSetWindowProc(WinMsgHandler);
 
-	int max_size;
+	/*int max_size;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
 	std::cout << max_size << std::endl;
 	GRLOpenGLTerminate();
-	return 0;
+	return 0;//*/
 
 	//Graphics::OpenGL::Texture texture(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB);
 	//Graphics::OpenGL::Texture texture2(800, 600, GRL_OPENGL_TEXTURE_FORMAT_RGB);
@@ -203,10 +203,10 @@ int main()
 	GRLPtr<GRLIOpenGLVertexArray> va, vatex;
 	GRLCreateOpenGLVertexArray(&va);
 	GRLCreateOpenGLVertexArray(&vatex);
-	va->ActiveVerticesLayout(0, 3, 6, 0);
-	va->ActiveVerticesLayout(1, 3, 6, 3);
-	vatex->ActiveVerticesLayout(0, 3, 5, 0);
-	vatex->ActiveVerticesLayout(1, 2, 5, 3);
+	va->ActiveVerticesLayout(0, 3, GRL_TYPE_FLOAT, 6 * 4, 0);
+	va->ActiveVerticesLayout(1, 3, GRL_TYPE_FLOAT, 6 * 4, 12);
+	vatex->ActiveVerticesLayout(0, 3, GRL_TYPE_FLOAT, 20, 0);
+	vatex->ActiveVerticesLayout(1, 2, GRL_TYPE_FLOAT, 20, 12);
 	vatex->BindVerticesData(tex_vertices, 20, GRL_OPENGL_BUFFER_USAGE_STATIC);
 	//va->BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STREAM);
 	vatex->BindIndicesData(tex_indices, 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
@@ -237,7 +237,7 @@ int main()
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-
+	 
 	std::queue<double> frame_tp_Q;
 
 	std::chrono::steady_clock::time_point start_tp = std::chrono::steady_clock::now();

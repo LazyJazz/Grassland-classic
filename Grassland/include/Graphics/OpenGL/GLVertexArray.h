@@ -18,7 +18,7 @@ namespace Grassland
 				~VertexArray();
 				void BindVerticesData(void * vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
 				void BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
-				void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset);
+				void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, GRL_TYPE bundle_type, int32_t stride, int32_t offset);
 				void EnableSlot(int32_t slot);
 				void DisableSlot(int32_t slot);
 				void Render();
@@ -36,7 +36,7 @@ namespace Grassland
 	public:
 		virtual void BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage) = 0;
 		virtual void BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage) = 0;
-		virtual void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset) = 0;
+		virtual void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, uint32_t bundle_type, int32_t stride, int32_t offset) = 0;
 		virtual void EnableSlot(int32_t slot) = 0;
 		virtual void DisableSlot(int32_t slot) = 0;
 		virtual void Render() = 0;

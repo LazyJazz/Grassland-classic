@@ -63,11 +63,32 @@ namespace Grassland
 				GRLGLCall(glBindVertexArray(0));
 				__indices_cnt = data_count;
 			}
-			void VertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset)
+
+			uint32_t __OpenGLTypeTranslate(GRL_TYPE grl_type)
+			{
+				switch (grl_type)
+				{
+				case GRL_TYPE_DOUBLE:
+					return GL_DOUBLE;
+				case GRL_TYPE_FLOAT:
+					return GL_FLOAT;
+				case GRL_TYPE_INT8:
+					return GL_BYTE;
+				case GRL_TYPE_INT32:
+					return GL_INT;
+				case GRL_TYPE_UNSIGNED_INT8:
+					return GL_UNSIGNED_BYTE;
+				case GRL_TYPE_UNSIGNED_INT32:
+					return GL_UNSIGNED_INT;
+				}
+				return GL_NONE;
+			}
+
+			void VertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, GRL_TYPE bundle_type, int32_t stride, int32_t offset)
 			{
 				GRLGLCall(glBindBuffer(GL_ARRAY_BUFFER, __vertex_buffer_object));
 				GRLGLCall(glBindVertexArray(__vertex_array_object));
-				GRLGLCall(glVertexAttribPointer(slot, bundle_size, GL_FLOAT, GL_FALSE, stride*sizeof(float), (void*)(offset * sizeof(float))));
+				GRLGLCall(glVertexAttribPointer(slot, bundle_size, __OpenGLTypeTranslate(bundle_type), GL_FALSE, stride, (void*)(offset)));
 				GRLGLCall(glEnableVertexAttribArray(slot));
 				GRLGLCall(glBindVertexArray(0));
 			}
@@ -99,7 +120,7 @@ namespace Grassland
 		~GRLCOpenGLVertexArray();
 		virtual void BindVerticesData(void* vertices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
 		virtual void BindIndicesData(void* indices_data, int32_t data_count, GRL_OPENGL_BUFFER_USAGE usage);
-		virtual void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset);
+		virtual void ActiveVerticesLayout(int32_t slot, int32_t bundle_size, GRL_TYPE bundle_type, int32_t stride, int32_t offset);
 		virtual void EnableSlot(int32_t slot);
 		virtual void DisableSlot(int32_t slot);
 		virtual void Render();
@@ -137,9 +158,9 @@ namespace Grassland
 	{
 		__vertex_array->BindIndicesData(indices_data, data_count, usage);
 	}
-	void GRLCOpenGLVertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, int32_t stride, int32_t offset)
+	void GRLCOpenGLVertexArray::ActiveVerticesLayout(int32_t slot, int32_t bundle_size, GRL_TYPE bundle_type, int32_t stride, int32_t offset)
 	{
-		__vertex_array->ActiveVerticesLayout(slot, bundle_size, stride, offset);
+		__vertex_array->ActiveVerticesLayout(slot, bundle_size, bundle_type, stride, offset);
 	}
 	void GRLCOpenGLVertexArray::EnableSlot(int32_t slot)
 	{
