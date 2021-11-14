@@ -16,6 +16,7 @@
 #include <chrono>
 #include <io.h>
 #include <fcntl.h>
+#include <queue>
 
 using namespace Grassland;
 
@@ -72,12 +73,12 @@ uint32_t indices[] = {
 
 
 float tex_vertices[] = {
-	-1.0f, -0.9f, 0.0f, 0.0f, 0.0f,
-	-1.0f, 0.9f, 0.0f, 0.0f, 1.0f,
-	1.0f, -0.9f, 0.0f, 1.0f, 0.0f,
-	1.0f, 0.9f, 0.0f, 1.0f, 1.0f
+	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+	-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+	1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f, 1.0f, 1.0f
 };
-uint32_t tex_indices[] = { 0,1,2,3,1,2 };
+uint32_t tex_indices[] = { 0,2,1,1,2,3 };
 
 int g_Width = 800, g_Height = 600;
 bool g_WinSizeChanged = false;
@@ -132,9 +133,20 @@ uint64_t WinMsgHandler(uint64_t winid, uint64_t msg, uint64_t param0, uint64_t p
 	return 0;
 }
 
+class MeshBuffer
+{
+public:
+	GRLVec3* vbuffer;
+	uint32_t* ibuffer;
+	int32_t vcnt;
+	int32_t icnt;
+}mesh_buffer;
+
 int main()
 {
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
+	mesh_buffer.vbuffer = new GRLVec3[21*21*21*8*2];
+	mesh_buffer.ibuffer = new uint32_t[21*21*21*36];
 
 	//glfwSetKeyCallback(GRLOpenGLGetWindow(), KeyCallback);
 	//glfwSetCursorPosCallback(GRLOpenGLGetWindow(), CursorPosCallback);
@@ -190,14 +202,14 @@ int main()
 	vatex->ActiveVerticesLayout(0, 3, 5, 0);
 	vatex->ActiveVerticesLayout(1, 2, 5, 3);
 	vatex->BindVerticesData(tex_vertices, 20, GRL_OPENGL_BUFFER_USAGE_STATIC);
-	va->BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STREAM);
+	//va->BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STREAM);
 	vatex->BindIndicesData(tex_indices, 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
-	va->BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
+	//va->BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
 
 
 	Grassland::Math::Mat3x3 mat_block(1.0);
 	glEnable(GL_DEPTH_TEST);
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);
 
 	pOutImgProgram->SetInt("texture1", 1);
 	pOutImgProgram->SetInt("texture0", 0);
@@ -212,10 +224,17 @@ int main()
 
 	GRLMat4 RMat(1.0), MMat(1.0);
 
-	GRLMat4 projMat = GRLTransformProjection(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 100.0f);
+	GRLMat4 projMat = GRLTransformProjection(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 300.0f);
 
 	double lastx = 0;
 	double lasty = 0;
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	std::queue<double> frame_tp_Q;
+
+	std::chrono::steady_clock::time_point start_tp = std::chrono::steady_clock::now();
 
 	while (!glfwWindowShouldClose(Graphics::OpenGL::GetGLFWWindow()))
 	{
@@ -230,8 +249,9 @@ int main()
 		glClearColor(0.6, 0.7, 0.8, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pProgram->Use();
+		pProgram->SetMat4("gMatrix", projMat * (MMat * RMat).inverse());
 		MMat = GRLTransformTranslate(origin[0], origin[1], origin[2]);
-		pProgram->SetMat4("gMatrix", projMat*(MMat*RMat).inverse());
+		
 		//pProgram->SetMat4("gMatrix", camera.GetShaderMatrix());
 		/*pProgram->SetMat4("gMatrix", GRLTransformProjection(
 			GRLRadian(60.0f),
@@ -245,9 +265,29 @@ int main()
 			vertices[i][0] = mat_block * block[i];
 			vertices[i][1] = block[i] * 0.5 + 0.5;
 		}
-		va->BindVerticesData(vertices, 8 * 2 * 3, GRL_OPENGL_BUFFER_USAGE_STATIC);
+		mesh_buffer.icnt = 0;
+		mesh_buffer.vcnt = 0;
+		for (int x = -10; x <= 10; x++)
+			for (int y = -10; y <= 10; y++)
+				for (int z = -10; z <= 10; z++)
+				{
+					float fx = x * 10.0, fy = y * 10.0, fz = z * 10.0;
+					for (int i = 0; i < 36; i++)
+					{
+						mesh_buffer.ibuffer[mesh_buffer.icnt++] = indices[i] + mesh_buffer.vcnt;
+					}
+					for (int i = 0; i < 8; i++)
+					{
+						mesh_buffer.vbuffer[mesh_buffer.vcnt * 2] = vertices[i][0] + GRLVec3(fx, fy, fz);
+						mesh_buffer.vbuffer[mesh_buffer.vcnt * 2 + 1] = vertices[i][1];
+						mesh_buffer.vcnt++;
+					}
+						
+				}
+		va->BindVerticesData(mesh_buffer.vbuffer, 8 * 2 * 3 * 21 * 21 * 21, GRL_OPENGL_BUFFER_USAGE_DYNAMIC);
+		va->BindIndicesData(mesh_buffer.ibuffer, 36 * 21 * 21 * 21, GRL_OPENGL_BUFFER_USAGE_DYNAMIC);
 
-		va->BindIndicesData(indices, 6 * 6, GRL_OPENGL_BUFFER_USAGE_STATIC);
+		//va->BindIndicesData(indices, 6 * 6, GRL_OPENGL_BUFFER_USAGE_DYNAMIC);
 		va->Render();
 
 		static int last_press = 0;
@@ -274,8 +314,9 @@ int main()
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pOutImgProgram->Use();
-		texture2->BindTexture(0);
-		texture->BindTexture(1);
+		texture2->BindTexture(1);
+		texture->BindTexture(0);
+		//depthmap->BindTexture(1);
 
 		vatex->Render();
 		glfwSwapBuffers(Graphics::OpenGL::GetGLFWWindow());
@@ -284,19 +325,39 @@ int main()
 		{
 			framebuffer->Resize(g_Width, g_Height);
 			camera.SetFOV(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 100.0f);
-			projMat = GRLTransformProjection(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 100.0f);
+			projMat = GRLTransformProjection(GRLRadian(60.0f), (float)g_Width / (float)g_Height, 1.0f, 300.0f);
 			g_WinSizeChanged = false;
 		}
 
+		static std::chrono::steady_clock::time_point lasttp = std::chrono::steady_clock::now();
+		std::chrono::steady_clock::time_point this_frame = std::chrono::steady_clock::now();
+		auto period = this_frame - lasttp;
+		double stampd = (this_frame - start_tp).count() * 1e-9;
+		frame_tp_Q.push(stampd);
+		while (frame_tp_Q.size() > 100)
+			frame_tp_Q.pop();
+		double durationd = stampd - frame_tp_Q.front();
+		if (durationd > Math::epsd)
+		{
+			std::cout <<  100.0 / durationd  << "fps" << std::endl;
+		}
+
+		//std::cout << std::chrono::milliseconds(1000) / period << std::endl;
+		lasttp = this_frame;
+
 		float dx = 0.0, dy = 0.0, dz = 0.0;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_W)) dz += 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_S)) dz -= 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_A)) dx -= 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_D)) dx += 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_R)) dy += 0.1;
-		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_F)) dy -= 0.1;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_W)) dz += 30;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_S)) dz -= 30;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_A)) dx -= 30;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_D)) dx += 30;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_R)) dy += 30;
+		if (glfwGetKey(Graphics::OpenGL::GetGLFWWindow(), GLFW_KEY_F)) dy -= 30;
 		double xpos, ypos;
 		glfwGetCursorPos(GRLOpenGLGetWindow(), &xpos, &ypos);
+		//std::cout << period.count() << " " << std::chrono::nanoseconds(1000000000).count() << std::endl;
+		dx *= period.count()* 1e-9;
+		dy *= period.count() * 1e-9;
+		dz *= period.count() * 1e-9;
 
 		if (!g_block_mouse && !g_MouseNormal)
 		{
@@ -315,12 +376,7 @@ int main()
 		RMat = GRLTransformRotation(pitch, yaw, roll);
 		origin = origin + RMat * GRLVec4(dx, dy, dz, 0.0);
 
-		
-		static std::chrono::steady_clock::time_point lasttp = std::chrono::steady_clock::now();
-		std::chrono::steady_clock::time_point this_frame = std::chrono::steady_clock::now();
-		auto period = this_frame - lasttp;
-		std::cout << std::chrono::milliseconds(1000) / period  << std::endl;
-		lasttp = this_frame;
+
 	}
 	;
 	GRLOpenGLTerminate();//*/

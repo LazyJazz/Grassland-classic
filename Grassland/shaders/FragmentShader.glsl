@@ -20,7 +20,7 @@ void main()
     /*if (FragColor2.x < 0.0)FragColor2.x = 0.0;
     if (FragColor2.y < 0.0)FragColor2.y = 0.0;
     if (FragColor2.z < 0.0)FragColor2.z = 0.0;*/
-    FragColor2 = vec4((FragColor2.xyz + 1.0) * 0.5, 1.0);
+    FragColor2 = vec4((FragColor2.xyz + 1.0) * 0.005, 1.0);
     //if (gl_FragCoord.x < 400 && gl_FragCoord.y<300)
     //    FragColor2 = vec4(0.5, 0.5, 0.5, 1.0);
     //FragColor2 = vec4(FragColor.xy, oz, FragColor.w);

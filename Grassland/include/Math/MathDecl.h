@@ -6,6 +6,10 @@ namespace Grassland
 {
 	namespace Math
 	{
+		const double pi = 3.14159265358979323846264338327950288419716939937510;
+		const double epsd = 1e-8;
+		const double eps = 1e-4;
+
 		template<typename T> T Pi() { return 3.14159265358979323846264338327950288419716939937510; };
 		template<typename T> T EPS();
 		
