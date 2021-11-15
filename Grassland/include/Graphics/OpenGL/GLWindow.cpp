@@ -68,4 +68,65 @@ namespace Grassland
 	{
 		return Graphics::OpenGL::GetGLFWWindow();
 	}
+	GRL_RESULT GRLOpenGLSetDepthTestState(uint32_t enable)
+	{
+		if (enable)
+			glEnable(GL_DEPTH_TEST);
+		else
+			glDisable(GL_DEPTH_TEST);
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLOpenGLSetBlendState(uint32_t enable)
+	{
+		if (enable)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else
+			glDisable(GL_BLEND);
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLOpenGLSetFaceCullState(uint32_t enable)
+	{
+		if (enable)
+		{
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+		}
+		else
+			glDisable(GL_CULL_FACE);
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLOpenGLSetVSyncState(uint32_t enable)
+	{
+		glfwSwapInterval(enable);
+		return GRL_FALSE;
+	}
+
+	GRL_RESULT GRLOpenGLSetClearColor(GRLColor color)
+	{
+		glClearColor(color.r, color.g, color.b, color.a);
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLOpenGLClear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		return GRL_FALSE;
+	}
+
+	GRL_RESULT GRLOpenGLPollEvents()
+	{
+		glfwPollEvents();
+		return GRL_FALSE;
+	}
+	bool GRLOpenGLShouldClose()
+	{
+		return glfwWindowShouldClose(GRLOpenGLGetWindow());
+	}
+	GRL_RESULT GRLOpenGLSwapBuffers()
+	{
+		glfwSwapBuffers(GRLOpenGLGetWindow());
+		return GRL_FALSE;
+	}
 }

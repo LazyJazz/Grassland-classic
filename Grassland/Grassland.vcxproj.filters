@@ -49,6 +49,9 @@
     <Filter Include="源文件\Graphics\OpenGL">
       <UniqueIdentifier>{b2cb8cf4-a841-4254-81ca-a38e463fea84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="资源文件\OpenGL">
+      <UniqueIdentifier>{88752bb1-b3f9-4be0-944a-bce1263d807b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -88,6 +91,15 @@
       <Filter>源文件\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLText.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GL2DBasic.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GL2DImage.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GL2D.cpp">
       <Filter>源文件\Graphics\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,6 +215,27 @@
     <ClInclude Include="include\Graphics\OpenGL\GLText.h">
       <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GL2D.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GL2DHeader.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Geometry\GeometryEllipse.h">
+      <Filter>头文件\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Geometry\GeometryRectangle.h">
+      <Filter>头文件\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Geometry\GeometryTriangle.h">
+      <Filter>头文件\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GL2DBasic.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GL2DImage.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
@@ -246,6 +279,24 @@
     </None>
     <None Include="include\Graphics\Util\Transform.inl">
       <Filter>头文件\Graphics\Util</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dimagefs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dimagevs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dtrianglefs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dtrianglevs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dellipsefs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dellipsevs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -46,5 +46,7 @@ namespace Grassland
 
 	GRL_RESULT GRLCreateOpenGLTexture(int32_t width, int32_t height, GRL_OPENGL_TEXTURE_FORMAT format, void* init_data, GRLIOpenGLTexture** ppTexture);
 
+	GRL_RESULT GRLCreateOpenGLTextureFromImage(GRLIImage* pImg, GRLIOpenGLTexture** ppTexture);
+
 	//GRL_RESULT GRLCreateOpenGLTextureFromImage(GRLIImage * pImg);
 }

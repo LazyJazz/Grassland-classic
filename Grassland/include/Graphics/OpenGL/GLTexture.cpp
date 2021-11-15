@@ -144,6 +144,21 @@ namespace Grassland
 		return GRL_FALSE;
 	}
 
+	GRL_RESULT GRLCreateOpenGLTextureFromImage(GRLIImage* pImg, GRLIOpenGLTexture** ppTexture)
+	{
+		GRLColor* revColorBuffer = new GRLColor[pImg->GetWidth() * pImg->GetHeight()];
+		GRLColor* ColorBuffer;
+		pImg->GetImageBuffer(&ColorBuffer);
+		for (int y = 0; y < pImg->GetHeight(); y++)
+			memcpy(revColorBuffer + y * pImg->GetWidth(),
+				ColorBuffer + (pImg->GetHeight() - 1 - y) * pImg->GetWidth(),
+				pImg->GetWidth() * sizeof(GRLColor)
+				);
+		GRL_RESULT res = GRLCreateOpenGLTexture(pImg->GetWidth(), pImg->GetHeight(), GRL_OPENGL_TEXTURE_FORMAT_RGBA, revColorBuffer, ppTexture);
+		delete[] revColorBuffer;
+		return res;
+	}
+
 
 	GRLCOpenGLTexture::GRLCOpenGLTexture(Graphics::OpenGL::Texture* pTexture)
 	{

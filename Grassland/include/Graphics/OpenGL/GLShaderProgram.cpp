@@ -219,6 +219,8 @@ namespace Grassland
 				memset(source_code, 0, length + 1);
 				fseek(file, 0, SEEK_SET);
 				fread(source_code, 1, length, file);
+				//std::cout << "Shader Path:" << shader_file_path << std::endl;
+				//std::cout << "Shader Code:" << std::endl << source_code << std::endl;
 				//std::cout << source_code << std::endl;
 				fclose(file);
 

@@ -151,6 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\Graphics\OpenGL\GL2D.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GL2DBasic.cpp" />
+    <ClCompile Include="include\Graphics\OpenGL\GL2DImage.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GLFrameBuffer.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GLInput.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp" />
@@ -168,8 +171,15 @@
   <ItemGroup>
     <ClInclude Include="include\Geometry\Geometry.h" />
     <ClInclude Include="include\Geometry\GeometryDecl.h" />
+    <ClInclude Include="include\Geometry\GeometryEllipse.h" />
+    <ClInclude Include="include\Geometry\GeometryRectangle.h" />
+    <ClInclude Include="include\Geometry\GeometryTriangle.h" />
     <ClInclude Include="include\Graphics\Graphics.h" />
     <ClInclude Include="include\Graphics\OpenGL\GL.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GL2D.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GL2DBasic.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GL2DHeader.h" />
+    <ClInclude Include="include\Graphics\OpenGL\GL2DImage.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h" />
     <ClInclude Include="include\Graphics\OpenGL\GLFrameBuffer.h" />
@@ -217,6 +227,12 @@
     <None Include="include\Math\Vector4.inl" />
     <None Include="shaders\FragmentShader.glsl" />
     <None Include="shaders\FragmentShaderTex.glsl" />
+    <None Include="shaders\OpenGL\gl2dellipsefs.glsl" />
+    <None Include="shaders\OpenGL\gl2dellipsevs.glsl" />
+    <None Include="shaders\OpenGL\gl2dimagefs.glsl" />
+    <None Include="shaders\OpenGL\gl2dimagevs.glsl" />
+    <None Include="shaders\OpenGL\gl2dtrianglefs.glsl" />
+    <None Include="shaders\OpenGL\gl2dtrianglevs.glsl" />
     <None Include="shaders\VertexShader.glsl" />
     <None Include="shaders\VertexShaderTex.glsl" />
   </ItemGroup>

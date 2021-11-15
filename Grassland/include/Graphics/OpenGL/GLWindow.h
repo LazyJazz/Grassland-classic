@@ -29,4 +29,22 @@ namespace Grassland
 
 	GLFWwindow* GRLOpenGLGetWindow();
 
+	GRL_RESULT GRLOpenGLSetDepthTestState(uint32_t enable);
+
+	GRL_RESULT GRLOpenGLSetBlendState(uint32_t enable);
+
+	GRL_RESULT GRLOpenGLSetFaceCullState(uint32_t enable);
+
+	GRL_RESULT GRLOpenGLSetVSyncState(uint32_t enable);
+
+	GRL_RESULT GRLOpenGLSetClearColor(GRLColor color);
+
+	GRL_RESULT GRLOpenGLClear();
+
+	GRL_RESULT GRLOpenGLPollEvents();
+
+	bool GRLOpenGLShouldClose();
+
+	GRL_RESULT GRLOpenGLSwapBuffers();
+
 }
