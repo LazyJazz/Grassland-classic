@@ -128,7 +128,7 @@ int main()
 	while (!GRLOpenGLShouldClose())
 	{
 		H += 0.001;
-		GRLColor bkcolor = Graphics::Util::HSV_to_RGB(H, S, V);
+		GRLColor bkcolor = Graphics::Util::HSV_to_RGB(H, S, V, 0.7);
 		GRLOpenGLBindFrameBuffer(0);
 		GRLOpenGLSetClearColor(bkcolor);
 		GRLOpenGLClear();
@@ -143,7 +143,7 @@ int main()
 		GRLOpenGL2DDrawRectangle(200, 200, 300, 300);
 		GRLOpenGLTextSetColor(bkcolor);
 		GRLOpenGL2DDrawRectangle(0, 0, 800, 64);
-		GRLOpenGLTextRender(0, 56, u8"Hello,World! 你好，世界！");
+		GRLOpenGLTextRender(0, 500, u8"Hello,World! 你好，世界！");
 		
 		GRLOpenGLSwapBuffers();
 		GRLOpenGLPollEvents();

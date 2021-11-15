@@ -72,7 +72,7 @@ namespace Grassland
 					R = C; G = 0; B = X;
 					break;
 				}
-				return Color(R + m, G + m, B + m, A);
+				return Color((R + m) * A, (G + m) * A, (B + m) * A, A);
 			}
 
 			int32_t Color_Float_to_Int(float color)
