@@ -89,7 +89,7 @@ int main()
 
 		//GRLOpenGL2DPutImage(0.0f, 0.0f, 1.0f, 1.0f, pTexture.Get());
 
-		GRLOpenGL2DPutImage(0, 0, 800, 400, pTexture.Get());
+		GRLOpenGL2DPutImage_p(0, 0, pTexture.Get());
 		
 		GRLOpenGLSwapBuffers();
 		GRLOpenGLPollEvents();
