@@ -37,7 +37,7 @@ namespace Grassland
 		return GRL_FALSE;
 	}
 
-	GRL_RESULT GRLOpenGL2DPutImage(float x, float y, float width, float height, GRLIOpenGLTexture* pTexture)
+	GRL_RESULT GRLOpenGL2DPutImage_s(float x, float y, float width, float height, GRLIOpenGLTexture* pTexture)
 	{
 		y = 1.0 - (y + height);
 		x = x * 2.0 - 1.0;
@@ -54,18 +54,18 @@ namespace Grassland
 		return GRL_FALSE;
 	}
 
-	GRL_RESULT GRLOpenGL2DPutImage_p(float x, float y, float width, float height, GRLIOpenGLTexture* pTexture)
+	GRL_RESULT GRLOpenGL2DPutImage(float x, float y, float width, float height, GRLIOpenGLTexture* pTexture)
 	{
 		int scr_width, scr_height;
 		GRLOpenGLGetFrameBufferSize(&scr_width, &scr_height);
 		float coe_width = 1.0f / (float)scr_width, coe_height = 1.0f / (float)scr_height;
 		//std::cout << scr_width << " " << scr_height << std::endl;
-		return GRLOpenGL2DPutImage(x * coe_width, y * coe_height, width * coe_width, height * coe_height, pTexture);
+		return GRLOpenGL2DPutImage_s(x * coe_width, y * coe_height, width * coe_width, height * coe_height, pTexture);
 	}
 
-	GRL_RESULT GRLOpenGL2DPutImage_p(float x, float y, GRLIOpenGLTexture* pTexture)
+	GRL_RESULT GRLOpenGL2DPutImage(float x, float y, GRLIOpenGLTexture* pTexture)
 	{
-		return GRLOpenGL2DPutImage_p(x, y, pTexture->GetWidth(), pTexture->GetHeight(), pTexture);
+		return GRLOpenGL2DPutImage(x, y, pTexture->GetWidth(), pTexture->GetHeight(), pTexture);
 	}
 }
 

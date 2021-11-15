@@ -32,6 +32,9 @@ int main()
 		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
 
 	FT_Face face;
+	GRLPtr<GRLIImage> text_img;
+	GRLColor* text_img_buffer;
+
 	if (FT_New_Face(ft, "fonts/STKAITI.TTF", 0, &face))
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
@@ -40,10 +43,8 @@ int main()
 	if (FT_Load_Char(face, L'ýQ', FT_LOAD_RENDER))
 		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
 
-	GRLPtr<GRLIImage> text_img;
 	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);
 
-	GRLColor* text_img_buffer;
 	text_img->GetImageBuffer(&text_img_buffer);
 	for (int i = 0; i < text_img->GetWidth() * text_img->GetHeight(); i++)
 	{
@@ -51,6 +52,20 @@ int main()
 		text_img_buffer[i] = GRLColor(greyness, greyness, greyness);
 	}
 	text_img->StoreBMP("text.bmp");
+	text_img.Reset();
+
+	if (FT_Load_Char(face, L'ÖÐ', FT_LOAD_RENDER))
+		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+
+	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);
+
+	text_img->GetImageBuffer(&text_img_buffer);
+	for (int i = 0; i < text_img->GetWidth() * text_img->GetHeight(); i++)
+	{
+		float greyness = face->glyph->bitmap.buffer[i] * 1.0f / 255.0f;
+		text_img_buffer[i] = GRLColor(greyness, greyness, greyness);
+	}
+	text_img->StoreBMP("text2.bmp");
 	text_img.Reset();
 
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
@@ -78,9 +93,9 @@ int main()
 	std::chrono::steady_clock::time_point start_tp = std::chrono::steady_clock::now();
 
 	float H = 0.0, S = 1.0, V = 1.0;
+	GRLOpenGLSetDepthTestState(false);
 	while (!GRLOpenGLShouldClose())
 	{
-		
 		H += 0.001;
 		GRLColor bkcolor = Graphics::Util::HSV_to_RGB(H, S, V);
 		GRLOpenGLBindFrameBuffer(0);
@@ -89,7 +104,10 @@ int main()
 
 		//GRLOpenGL2DPutImage(0.0f, 0.0f, 1.0f, 1.0f, pTexture.Get());
 
-		GRLOpenGL2DPutImage_p(0, 0, pTexture.Get());
+
+		GRLOpenGL2DPutImage(0, 0, 800, 400, pTexture.Get());
+		GRLOpenGL2DSetDrawColor(GRLColor(0.7, 0.7, 0.7, 0.7));
+		GRLOpenGL2DDrawEllipse(0, 0.5, 0.2, 0.2);
 		
 		GRLOpenGLSwapBuffers();
 		GRLOpenGLPollEvents();

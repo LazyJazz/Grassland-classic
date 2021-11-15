@@ -10,7 +10,7 @@ namespace Grassland
 
 	GRLColor GRLOpenGL2DGetDrawColor();
 
-	GRL_RESULT GRLOpenGL2DDrawCircle(float originx, float originy, float radius);
+	GRL_RESULT GRLOpenGL2DDrawEllipse(float originx, float originy, float x_axis, float y_axis);
 
 	GRL_RESULT GRLOpenGL2DDrawRectangle(float left_down_x, float left_down_y, float right_down_x, float right_down_y);
 
