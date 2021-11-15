@@ -50,7 +50,7 @@ namespace Grassland
 
 	std::wstring GRLStringUTF8toUnicode(std::string utf8_str)
 	{
-		std::wstring result;
+		std::wstring result = L"";
 		int32_t len = 0;
 		for (uint8_t c : utf8_str)
 		{
@@ -67,10 +67,10 @@ namespace Grassland
 					c &= ~mask;
 					mask >>= 1;
 				}
-				result[len] = c;
+				result += c;
 				len++;
 			}
 		}
-		return result;
+		return result + L'\0\0';
 	}
 }

@@ -310,5 +310,11 @@
     <None Include="shaders\OpenGL\gl2dellipsevs.glsl">
       <Filter>资源文件\OpenGL</Filter>
     </None>
+    <None Include="shaders\OpenGL\gl2dtextfs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dtextvs.glsl">
+      <Filter>资源文件\OpenGL</Filter>
+    </None>
   </ItemGroup>
 </Project>

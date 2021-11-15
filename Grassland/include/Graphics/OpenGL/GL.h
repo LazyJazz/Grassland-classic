@@ -6,3 +6,4 @@
 #include "GLShaderProgram.h"
 #include "GLFrameBuffer.h"
 #include "GLInput.h"
+#include "GLText.h"

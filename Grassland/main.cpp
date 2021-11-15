@@ -23,15 +23,12 @@
 
 using namespace Grassland;
 
+/*
 
-
-int main()
-{
 	char cstr[] = u8"我爱你";
 	wchar_t wstr[10];
 
 	std::cout << GRLStringUTF8toUnicode(cstr, wstr) << std::endl;
-
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
@@ -43,6 +40,7 @@ int main()
 	if (FT_New_Face(ft, "fonts/STKAITI.TTF", 0, &face))
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
 
+	std::cout << face->style_name << std::endl;
 	FT_Set_Pixel_Sizes(face, 0, 48);
 
 	if (FT_Load_Char(face, wstr[0], FT_LOAD_RENDER))
@@ -73,6 +71,10 @@ int main()
 	text_img->StoreBMP("text2.bmp");
 	text_img.Reset();
 
+*/
+
+int main()
+{
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 	//va->BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
 
@@ -82,6 +84,30 @@ int main()
 	if (GRLOpenGL2DInit())
 	{
 		GRLSetErrorInfo("Grassland OpenGL 2D Library Init Failed!");
+		return 0;
+	}
+	if (GRLOpenGLTextInit())
+	{
+		GRLSetErrorInfo("Grassland OpenGL Text Library Init Failed!");
+		return 0;
+	}
+
+	if (GRLOpenGLTextSetASCIIFont("fonts/consola.ttf"))
+	{
+		GRLSetErrorInfo("Grassland OpenGL Text Set ASCII Font Failed!");
+		return 0;
+	}
+
+	if (GRLOpenGLTextSetNonASCIIFont("fonts/msyh.ttc"))
+	{
+		GRLSetErrorInfo("Grassland OpenGL Text Set Non-ASCII Font Failed!");
+		return 0;
+	}
+
+	if (GRLOpenGLTextSetSize(0, 64))
+	{
+		GRLSetErrorInfo("Grassland OpenGL Text Set Size Failed!");
+		return 0;
 	}
 
 	//glfwSetWindowSizeCallback(Graphics::OpenGL::GetGLFWWindow(), ResizeCallBack);
@@ -115,6 +141,9 @@ int main()
 		GRLOpenGL2DDrawCircle(0, 0, 100);
 		GRLOpenGL2DDrawTriangle(80, 60, 100, 200, 200, 100);
 		GRLOpenGL2DDrawRectangle(200, 200, 300, 300);
+		GRLOpenGLTextSetColor(bkcolor);
+		GRLOpenGL2DDrawRectangle(0, 0, 800, 64);
+		GRLOpenGLTextRender(0, 56, u8"Hello,World! 你好，世界！");
 		
 		GRLOpenGLSwapBuffers();
 		GRLOpenGLPollEvents();

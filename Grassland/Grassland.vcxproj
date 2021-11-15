@@ -233,6 +233,8 @@
     <None Include="shaders\OpenGL\gl2dellipsevs.glsl" />
     <None Include="shaders\OpenGL\gl2dimagefs.glsl" />
     <None Include="shaders\OpenGL\gl2dimagevs.glsl" />
+    <None Include="shaders\OpenGL\gl2dtextfs.glsl" />
+    <None Include="shaders\OpenGL\gl2dtextvs.glsl" />
     <None Include="shaders\OpenGL\gl2dtrianglefs.glsl" />
     <None Include="shaders\OpenGL\gl2dtrianglevs.glsl" />
     <None Include="shaders\VertexShader.glsl" />
