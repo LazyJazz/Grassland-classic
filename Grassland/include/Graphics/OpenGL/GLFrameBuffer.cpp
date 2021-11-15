@@ -153,8 +153,11 @@ namespace Grassland
 		return GRL_FALSE;
 	}
 
+	GRLPtr<GRLIOpenGLFrameBuffer> g_active_framebuffer((GRLIOpenGLFrameBuffer*)nullptr);
+
 	GRL_RESULT GRLOpenGLBindFrameBuffer(GRLIOpenGLFrameBuffer* pFramebuffer)
 	{
+		g_active_framebuffer.Set(pFramebuffer);
 		int width, height;
 		if (!pFramebuffer)
 		{
@@ -167,6 +170,20 @@ namespace Grassland
 			glBindFramebuffer(GL_FRAMEBUFFER, pFramebuffer->GetHandle());
 		}
 		glViewport(0, 0, width, height);
+		return GRL_FALSE;
+	}
+	
+	GRL_RESULT GRLOpenGLGetFrameBufferSize(int32_t* width, int32_t* height)
+	{
+		if (g_active_framebuffer.Get())
+		{
+			if (width) *width = g_active_framebuffer->GetWidth();
+			if (height) *height = g_active_framebuffer->GetHeight();
+		}
+		else
+		{
+			GRLOpenGLGetWindowSize(width, height);
+		}
 		return GRL_FALSE;
 	}
 }

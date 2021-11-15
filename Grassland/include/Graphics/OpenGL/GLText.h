@@ -12,6 +12,7 @@ namespace Grassland
 			;
 		}
 	}
+
 	void GRLOpenGLTextSetFont(const char * font_path);
 
 	void GRLOpenGLTextSetSize();

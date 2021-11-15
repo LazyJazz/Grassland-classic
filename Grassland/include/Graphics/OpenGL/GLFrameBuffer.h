@@ -55,4 +55,6 @@ namespace Grassland
 	GRL_RESULT GRLCreateOpenGLFrameBuffer(int32_t width, int32_t height, GRLIOpenGLFrameBuffer** ppFrameBuffer);
 
 	GRL_RESULT GRLOpenGLBindFrameBuffer(GRLIOpenGLFrameBuffer * pFramebuffer);
+
+	GRL_RESULT GRLOpenGLGetFrameBufferSize(int32_t* width, int32_t* height);
 }

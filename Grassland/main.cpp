@@ -388,8 +388,6 @@ int main()
 
 		RMat = GRLTransformRotation(pitch, yaw, roll);
 		origin = origin + RMat * GRLVec4(dx, dy, dz, 0.0);
-
-
 	}
 	;
 	GRLOpenGLTerminate();//*/
