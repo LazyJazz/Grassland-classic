@@ -5,15 +5,7 @@
 
 namespace Grassland
 {
-	namespace Graphics
-	{
-		namespace OpenGL
-		{
-			;
-		}
-	}
+	GRL_RESULT GRLOpenGLTextInit();
 
-	void GRLOpenGLTextSetFont(const char * font_path);
-
-	void GRLOpenGLTextSetSize();
+	GRL_RESULT GRLOpenGLTextSetFont(const char* font_path, int32_t width, int32_t height);
 }

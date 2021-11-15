@@ -27,6 +27,11 @@ using namespace Grassland;
 
 int main()
 {
+	char cstr[] = u8"ÎÒ°®Äã";
+	wchar_t wstr[10];
+
+	std::cout << GRLStringUTF8toUnicode(cstr, wstr) << std::endl;
+
 	FT_Library ft;
 	if (FT_Init_FreeType(&ft))
 		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
@@ -40,7 +45,7 @@ int main()
 
 	FT_Set_Pixel_Sizes(face, 0, 48);
 
-	if (FT_Load_Char(face, L'ýQ', FT_LOAD_RENDER))
+	if (FT_Load_Char(face, wstr[0], FT_LOAD_RENDER))
 		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
 
 	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);
@@ -54,7 +59,7 @@ int main()
 	text_img->StoreBMP("text.bmp");
 	text_img.Reset();
 
-	if (FT_Load_Char(face, L'ÖÐ', FT_LOAD_RENDER))
+	if (FT_Load_Char(face, wstr[1], FT_LOAD_RENDER))
 		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
 
 	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);

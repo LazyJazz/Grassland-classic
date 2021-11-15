@@ -166,6 +166,7 @@
     <ClCompile Include="include\Graphics\Util\Image.cpp" />
     <ClCompile Include="include\Graphics\Util\Mesh.cpp" />
     <ClCompile Include="include\Math\MathDecl.cpp" />
+    <ClCompile Include="include\String\String.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -213,6 +214,7 @@
     <ClInclude Include="include\Math\Vector2.h" />
     <ClInclude Include="include\Math\Vector3.h" />
     <ClInclude Include="include\Math\Vector4.h" />
+    <ClInclude Include="include\String\String.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Graphics\Util\Camera.inl" />
