@@ -13,6 +13,8 @@ namespace Grassland
 {
 	GRL_RESULT GRLOpenGLTextInit();
 
+	GRL_RESULT GRLOpenGLTextInit(const char * ascii_font, const char * non_ascii_font, int32_t pixel_width, int32_t pixel_height);
+
 	GRL_RESULT GRLOpenGLTextSetASCIIFont(const char* font_path);
 
 	GRL_RESULT GRLOpenGLTextSetNonASCIIFont(const char* font_path);

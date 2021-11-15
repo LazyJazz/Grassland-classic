@@ -175,6 +175,16 @@ namespace Grassland
 		return GRL_FALSE;
 	}
 
+	GRL_RESULT GRLOpenGLTextInit(const char* ascii_font, const char* non_ascii_font, int32_t pixel_width, int32_t pixel_height)
+	{
+		if (GRLOpenGLTextInit()) return GRL_TRUE;
+		if (GRLOpenGLTextSetASCIIFont(ascii_font)) return GRL_TRUE;
+		if (!non_ascii_font) non_ascii_font = ascii_font;
+		if (GRLOpenGLTextSetNonASCIIFont(non_ascii_font)) return GRL_TRUE;
+		if (GRLOpenGLTextSetSize(pixel_width, pixel_height)) return GRL_TRUE;
+		return GRL_FALSE;
+	}
+
 	GRL_RESULT GRLOpenGLTextSetASCIIFont(const char* font_path)
 	{
 		return grl_text_ascii_factory.__grl_set_font(font_path);

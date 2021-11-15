@@ -86,27 +86,12 @@ int main()
 		GRLSetErrorInfo("Grassland OpenGL 2D Library Init Failed!");
 		return 0;
 	}
-	if (GRLOpenGLTextInit())
+	if (GRLOpenGLTextInit(
+		"fonts/consola.ttf",
+		"fonts/msyh.ttc",
+		0, 32))
 	{
 		GRLSetErrorInfo("Grassland OpenGL Text Library Init Failed!");
-		return 0;
-	}
-
-	if (GRLOpenGLTextSetASCIIFont("fonts/consola.ttf"))
-	{
-		GRLSetErrorInfo("Grassland OpenGL Text Set ASCII Font Failed!");
-		return 0;
-	}
-
-	if (GRLOpenGLTextSetNonASCIIFont("fonts/msyh.ttc"))
-	{
-		GRLSetErrorInfo("Grassland OpenGL Text Set Non-ASCII Font Failed!");
-		return 0;
-	}
-
-	if (GRLOpenGLTextSetSize(0, 64))
-	{
-		GRLSetErrorInfo("Grassland OpenGL Text Set Size Failed!");
 		return 0;
 	}
 
@@ -127,7 +112,7 @@ int main()
 	GRLOpenGLSetDepthTestState(false);
 	while (!GRLOpenGLShouldClose())
 	{
-		H += 0.001;
+		H += 0.0001;
 		GRLColor bkcolor = Graphics::Util::HSV_to_RGB(H, S, V, 0.7);
 		GRLOpenGLBindFrameBuffer(0);
 		GRLOpenGLSetClearColor(bkcolor);
@@ -143,7 +128,7 @@ int main()
 		GRLOpenGL2DDrawRectangle(200, 200, 300, 300);
 		GRLOpenGLTextSetColor(bkcolor);
 		GRLOpenGL2DDrawRectangle(0, 0, 800, 64);
-		GRLOpenGLTextRender(0, 500, u8"Hello,World! ÄãºÃ£¬ÊÀ½ç£¡");
+		GRLOpenGLTextRender(0, 500, u8"Hello,World! ¤Á¤È¤¹¤¹¤æ¤¹¤á¤¿¤«¤¦¤¢£¡");
 		
 		GRLOpenGLSwapBuffers();
 		GRLOpenGLPollEvents();
