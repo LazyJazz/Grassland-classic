@@ -105,9 +105,11 @@ int main()
 		//GRLOpenGL2DPutImage(0.0f, 0.0f, 1.0f, 1.0f, pTexture.Get());
 
 
-		GRLOpenGL2DPutImage(0, 0, 800, 400, pTexture.Get());
-		GRLOpenGL2DSetDrawColor(GRLColor(0.7, 0.7, 0.7, 0.7));
-		GRLOpenGL2DDrawEllipse(0, 0.5, 0.2, 0.2);
+		GRLOpenGL2DPutImage(0, 0, pTexture.Get());
+		GRLOpenGL2DSetDrawColor(GRLColor(0.7, 0.2, 0.7, 0.7));
+		GRLOpenGL2DDrawCircle(0, 0, 100);
+		GRLOpenGL2DDrawTriangle(80, 60, 100, 200, 200, 100);
+		GRLOpenGL2DDrawRectangle(200, 200, 300, 300);
 		
 		GRLOpenGLSwapBuffers();
 		GRLOpenGLPollEvents();

@@ -52,6 +52,9 @@
     <Filter Include="资源文件\OpenGL">
       <UniqueIdentifier>{88752bb1-b3f9-4be0-944a-bce1263d807b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\String">
+      <UniqueIdentifier>{6f186291-4e0e-4a71-b23a-1d70d31f3e63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
