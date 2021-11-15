@@ -87,6 +87,9 @@
     <ClCompile Include="include\Graphics\OpenGL\GLFrameBuffer.cpp">
       <Filter>源文件\Graphics\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="include\Graphics\OpenGL\GLText.cpp">
+      <Filter>源文件\Graphics\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Grassland.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\UtilDef.h">
       <Filter>头文件\Graphics\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\OpenGL\GLText.h">
+      <Filter>头文件\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

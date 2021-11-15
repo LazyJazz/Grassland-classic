@@ -18,30 +18,10 @@
 #include <fcntl.h>
 #include <queue>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 using namespace Grassland;
-
-
-
-GRLMat4 TransformProjection(float FOVangle, float aspect, float Near, float Far)
-{
-	float INVtanFOVangle = 1.0 / tan(FOVangle * 0.5);
-	return GRLMat4(
-		INVtanFOVangle / aspect, 0.0, 0.0, 0.0,
-		0.0, INVtanFOVangle, 0.0, 0.0,
-		0.0, 0.0, Far / (Far - Near), -(Near * Far) / (Far - Near),
-		0.0, 0.0, 1.0, 0.0
-	);
-}
-
-GRLMat4 TransformTranslate(float x, float y, float z)
-{
-	return GRLMat4(
-		1.0, 0.0, 0.0, x,
-		0.0, 1.0, 0.0, y,
-		0.0, 0.0, 1.0, z,
-		0.0, 0.0, 0.0, 1.0
-	);
-}
 
 /*这一段是用于正方体模型的*/
 GRLVec3 block[8] =
@@ -144,6 +124,32 @@ public:
 
 int main()
 {
+	FT_Library ft;
+	if (FT_Init_FreeType(&ft))
+		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+
+	FT_Face face;
+	if (FT_New_Face(ft, "fonts/STKAITI.TTF", 0, &face))
+		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+
+	FT_Set_Pixel_Sizes(face, 0, 48);
+
+	if (FT_Load_Char(face, L'齉', FT_LOAD_RENDER))
+		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+
+	GRLPtr<GRLIImage> text_img;
+	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);
+
+	GRLColor* text_img_buffer;
+	text_img->GetImageBuffer(&text_img_buffer);
+	for (int i = 0; i < text_img->GetWidth() * text_img->GetHeight(); i++)
+	{
+		float greyness = face->glyph->bitmap.buffer[i] * 1.0f / 255.0f;
+		text_img_buffer[i] = GRLColor(greyness, greyness, greyness);
+	}
+	text_img->StoreBMP("text.bmp");
+	text_img.Reset();
+
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
 	mesh_buffer.vbuffer = new GRLVec3[21*21*21*8*2];
 	mesh_buffer.ibuffer = new uint32_t[21*21*21*36];
