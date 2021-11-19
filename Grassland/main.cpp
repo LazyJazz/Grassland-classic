@@ -1,83 +1,20 @@
-#include <iostream>
 #include <Grassland.h>
-#include <ctime>
-#include <queue>
-#include <string>
-#include <random>
-#include <cmath>
 
 #include <Windows.h>
-#include <fstream>
 #include <d3d12.h>
 #include <memory>
 
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <io.h>
-#include <fcntl.h>
 #include <queue>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 using namespace Grassland;
 
-/*
-
-	char cstr[] = u8"ÎÒ°®Äã";
-	wchar_t wstr[10];
-
-	std::cout << GRLStringUTF8toUnicode(cstr, wstr) << std::endl;
-	FT_Library ft;
-	if (FT_Init_FreeType(&ft))
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-
-	FT_Face face;
-	GRLPtr<GRLIImage> text_img;
-	GRLColor* text_img_buffer;
-
-	if (FT_New_Face(ft, "fonts/STKAITI.TTF", 0, &face))
-		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-
-	std::cout << face->style_name << std::endl;
-	FT_Set_Pixel_Sizes(face, 0, 48);
-
-	if (FT_Load_Char(face, wstr[0], FT_LOAD_RENDER))
-		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-
-	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);
-
-	text_img->GetImageBuffer(&text_img_buffer);
-	for (int i = 0; i < text_img->GetWidth() * text_img->GetHeight(); i++)
-	{
-		float greyness = face->glyph->bitmap.buffer[i] * 1.0f / 255.0f;
-		text_img_buffer[i] = GRLColor(greyness, greyness, greyness);
-	}
-	text_img->StoreBMP("text.bmp");
-	text_img.Reset();
-
-	if (FT_Load_Char(face, wstr[1], FT_LOAD_RENDER))
-		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-
-	GRLCreateImage(face->glyph->bitmap.width, face->glyph->bitmap.rows, &text_img);
-
-	text_img->GetImageBuffer(&text_img_buffer);
-	for (int i = 0; i < text_img->GetWidth() * text_img->GetHeight(); i++)
-	{
-		float greyness = face->glyph->bitmap.buffer[i] * 1.0f / 255.0f;
-		text_img_buffer[i] = GRLColor(greyness, greyness, greyness);
-	}
-	text_img->StoreBMP("text2.bmp");
-	text_img.Reset();
-
-*/
 
 int main()
 {
 	GRLOpenGLInit(800, 600, "Grassland Project 1", false);
-	//va->BindIndicesData(indices, 36, GRL_OPENGL_BUFFER_USAGE_STATIC);
-
 	GRLOpenGLSetDepthTestState(true);
 	GRLOpenGLSetVSyncState(false);
 
@@ -95,13 +32,10 @@ int main()
 		return 0;
 	}
 
-	//glfwSetWindowSizeCallback(Graphics::OpenGL::GetGLFWWindow(), ResizeCallBack);
 	GRLPtr<GRLIImage> pImage;
 	GRLCreateImage(800, 600, &pImage);
 	pImage->LoadBMP("earth.bmp");
-	//pImage->StoreBMP("earth_copy.bmp");
 	puts("Bitmap Loaded");
-
 	GRLPtr<GRLIOpenGLTexture> pTexture;
 	GRLCreateOpenGLTextureFromImage(pImage.Get(), &pTexture);
 
