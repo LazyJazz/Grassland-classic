@@ -9,9 +9,13 @@
 #include <chrono>
 #include <queue>
 
+
 using namespace Grassland;
 
 int main()
 {
-	WNDCLASSEX wndclass;
+    SetConsoleOutputCP(936);
+    
+    GRLDirectXInit(800, 600, "Grassland D3D12", false);
+    while (!GRLDirectXPollEvent());
 }

@@ -58,6 +58,9 @@
     <Filter Include="源文件\String">
       <UniqueIdentifier>{e1938fcd-13cc-4a36-ab5e-962353a1b29d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Graphics\DirectX">
+      <UniqueIdentifier>{087cd2c4-fadb-465f-806c-2d8826e91705}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -110,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="include\String\String.cpp">
       <Filter>源文件\String</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\DirectX\DXWindow.cpp">
+      <Filter>源文件\Graphics\DirectX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +253,18 @@
     </ClInclude>
     <ClInclude Include="include\String\String.h">
       <Filter>头文件\String</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\DirectX\DXHeader.h">
+      <Filter>头文件\Graphics\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\DirectX\DX.h">
+      <Filter>头文件\Graphics\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\DirectX\d3dx12.h">
+      <Filter>头文件\Graphics\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\DirectX\DXWindow.h">
+      <Filter>头文件\Graphics\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
