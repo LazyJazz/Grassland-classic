@@ -2,6 +2,8 @@
 
 namespace Grassland
 {
+    HWND g_dx_hwnd;
+
     LRESULT __stdcall GRLDirectXWinProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         UINT FileCount;
@@ -34,7 +36,7 @@ namespace Grassland
         AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
         // Create the window and store a handle to it.
-        HWND hWnd = CreateWindow(
+        g_dx_hwnd = CreateWindow(
             windowClass.lpszClassName,
             L"Grassland Window",
             WS_OVERLAPPEDWINDOW,
@@ -47,8 +49,8 @@ namespace Grassland
             hInstance,
             nullptr);
 
-        ShowWindow(hWnd, SW_SHOW);
-        DragAcceptFiles(hWnd, TRUE);
+        ShowWindow(g_dx_hwnd, SW_SHOW);
+        DragAcceptFiles(g_dx_hwnd, TRUE);
         return GRL_FALSE;
 	}
 
@@ -65,4 +67,8 @@ namespace Grassland
         }
         return msg.message == WM_QUIT;
 	}
+    HWND GRLDirectXGetHWnd()
+    {
+        return g_dx_hwnd;
+    }
 }
