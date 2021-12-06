@@ -2,75 +2,6 @@
 
 namespace Grassland
 {
-    HWND g_dx_hwnd;
-
-    LRESULT __stdcall GRLDirectXWinProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-    {
-        UINT FileCount;
-        switch (Msg)
-        {
-        case WM_CLOSE:
-            DestroyWindow(hWnd);
-            return 0;
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            return 0;
-        }
-        //printf("%x", Msg);
-        //std::cout << " " << (LONG)wParam << " " << (LONG)lParam << std::endl;
-        return DefWindowProc(hWnd, Msg, wParam, lParam);
-    }
-    GRL_RESULT GRLDirectXInit(int32_t width, int32_t height, const char* window_title, bool full_screen)
-	{
-        HINSTANCE hInstance = GetModuleHandle(nullptr);
-        WNDCLASSEX windowClass = { 0 };
-        windowClass.cbSize = sizeof(WNDCLASSEX);
-        windowClass.style = CS_HREDRAW | CS_VREDRAW;
-        windowClass.lpfnWndProc = GRLDirectXWinProc;
-        windowClass.hInstance = hInstance;
-        windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-        windowClass.lpszClassName = L"GrasslandWindowClass";
-        RegisterClassEx(&windowClass);
-
-        RECT windowRect = { 0, 0, static_cast<LONG>(800), static_cast<LONG>(600) };
-        AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-
-        // Create the window and store a handle to it.
-        g_dx_hwnd = CreateWindow(
-            windowClass.lpszClassName,
-            L"Grassland Window",
-            WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            windowRect.right - windowRect.left,
-            windowRect.bottom - windowRect.top,
-            nullptr,        // We have no parent window.
-            nullptr,        // We aren't using menus.
-            hInstance,
-            nullptr);
-
-        ShowWindow(g_dx_hwnd, SW_SHOW);
-        DragAcceptFiles(g_dx_hwnd, TRUE);
-        return GRL_FALSE;
-	}
-
-
-
-	GRL_RESULT GRLDirectXPollEvent()
-	{
-        MSG msg = {};
-        while (msg.message != WM_QUIT && PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            // Process any messages in the queue.
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        return msg.message == WM_QUIT;
-	}
-    HWND GRLDirectXGetHWnd()
-    {
-        return g_dx_hwnd;
-    }
 
     GRL_RESULT GRLDirectXSelectAdapter(IDXGIFactory* pFactory, IDXGIAdapter1** ppAdapter)
     {
@@ -180,6 +111,42 @@ namespace Grassland
     {
         return m_hWnd;
     }
+
+    ID3D12CommandList* GRLCDirectXEnvironment::StartDraw()
+    {
+        GRLComCall(m_commandAllocator->Reset());
+        GRLComCall(m_commandList->Reset(m_commandAllocator.Get(), nullptr));
+
+        return m_commandList.Get();
+    }
+
+    void GRLCDirectXEnvironment::EndDraw()
+    {
+        GRLComCall(m_commandList->Close());
+
+        ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+
+        m_commandQueue->ExecuteCommandLists(1, ppCommandLists);
+
+        GRLComCall(m_swapChain->Present(1, 0));
+        WaitForPreviousFrame();
+    }
+
+    void GRLCDirectXEnvironment::ClearBackFrameColor(float* color)
+    {
+
+        CD3DX12_RESOURCE_BARRIER rb0 = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        m_commandList->ResourceBarrier(1, &rb0);
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+
+        m_commandList->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
+
+
+        CD3DX12_RESOURCE_BARRIER rb1 = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        m_commandList->ResourceBarrier(1, &rb1);
+    }
+
     LRESULT __stdcall GRLCDirectXEnvironment::GRLDirectXEnvironmentProcFunc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         static std::map<HWND, GRLCDirectXEnvironment*> env_map;
