@@ -1,341 +1,352 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{e58fbf68-ce38-4e4a-a953-972b04a56cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\DirectX">
+      <UniqueIdentifier>{b49e4866-5ac8-477f-b6c0-062bd1013a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\OpenGL">
+      <UniqueIdentifier>{88752bb1-b3f9-4be0-944a-bce1263d807b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="头文件">
+    <Filter Include="Sources\Graphics">
+      <UniqueIdentifier>{6dc739f0-25df-4740-963d-d48b3923b36e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Graphics\Util">
+      <UniqueIdentifier>{02eb344f-7414-4b53-80fc-9608c49db402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Graphics\OpenGL">
+      <UniqueIdentifier>{b2cb8cf4-a841-4254-81ca-a38e463fea84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Graphics\DirectX">
+      <UniqueIdentifier>{087cd2c4-fadb-465f-806c-2d8826e91705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Math">
+      <UniqueIdentifier>{fc3cf61d-8cb7-426f-a437-357e9c0fe401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\String">
+      <UniqueIdentifier>{e1938fcd-13cc-4a36-ab5e-962353a1b29d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="头文件\Math">
+    <Filter Include="Headers\Math">
       <UniqueIdentifier>{bd73f6ce-d492-4364-a7fd-37bfa2f500ae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Geometry">
+    <Filter Include="Headers\Geometry">
       <UniqueIdentifier>{d0ea2825-de59-47be-91f3-86a9a5a85946}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics">
+    <Filter Include="Headers\Graphics">
       <UniqueIdentifier>{4f25d02c-3f29-4014-8deb-933a90fc978e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Graphics">
-      <UniqueIdentifier>{6dc739f0-25df-4740-963d-d48b3923b36e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Math">
-      <UniqueIdentifier>{fc3cf61d-8cb7-426f-a437-357e9c0fe401}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Graphics\Util">
+    <Filter Include="Headers\Graphics\Util">
       <UniqueIdentifier>{93e95b7b-61e1-4930-a558-99070a59ca58}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics\OpenGL">
+    <Filter Include="Headers\Graphics\OpenGL">
       <UniqueIdentifier>{968607e3-b9c2-40e2-bd52-5cce46286826}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics\OpenGL\GLFW">
+    <Filter Include="Headers\Graphics\OpenGL\GLFW">
       <UniqueIdentifier>{a0fa7ee0-f42a-4231-af3c-d9a7c9d372dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics\OpenGL\GLAD">
+    <Filter Include="Headers\Graphics\OpenGL\GLAD">
       <UniqueIdentifier>{6a85a5cb-73f1-457d-b62a-15850c4ff538}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Graphics\Util">
-      <UniqueIdentifier>{02eb344f-7414-4b53-80fc-9608c49db402}</UniqueIdentifier>
+    <Filter Include="Headers\Graphics\DirectX">
+      <UniqueIdentifier>{a2287170-165f-4217-88bc-43df8c9be328}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Graphics\OpenGL">
-      <UniqueIdentifier>{b2cb8cf4-a841-4254-81ca-a38e463fea84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="资源文件\OpenGL">
-      <UniqueIdentifier>{88752bb1-b3f9-4be0-944a-bce1263d807b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\String">
+    <Filter Include="Headers\String">
       <UniqueIdentifier>{6f186291-4e0e-4a71-b23a-1d70d31f3e63}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\String">
-      <UniqueIdentifier>{e1938fcd-13cc-4a36-ab5e-962353a1b29d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Graphics\DirectX">
-      <UniqueIdentifier>{087cd2c4-fadb-465f-806c-2d8826e91705}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Graphics\DirectX">
-      <UniqueIdentifier>{a2287170-165f-4217-88bc-43df8c9be328}</UniqueIdentifier>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="include\Math\MathDecl.cpp">
-      <Filter>源文件\Math</Filter>
+      <Filter>Sources\Math</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\Util\Color.cpp">
-      <Filter>源文件\Graphics\Util</Filter>
+      <Filter>Sources\Graphics\Util</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\Util\Image.cpp">
-      <Filter>源文件\Graphics\Util</Filter>
+      <Filter>Sources\Graphics\Util</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLShaderProgram.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLTexture.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLVertexArray.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLWindow.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\Util\Camera.cpp">
-      <Filter>源文件\Graphics\Util</Filter>
+      <Filter>Sources\Graphics\Util</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\Util\Mesh.cpp">
-      <Filter>源文件\Graphics\Util</Filter>
+      <Filter>Sources\Graphics\Util</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLInput.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLFrameBuffer.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GLText.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GL2DBasic.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GL2DImage.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GL2D.cpp">
-      <Filter>源文件\Graphics\OpenGL</Filter>
+      <Filter>Sources\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="include\String\String.cpp">
-      <Filter>源文件\String</Filter>
+      <Filter>Sources\String</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\DirectX\DXEnvironment.cpp">
-      <Filter>源文件\Graphics\DirectX</Filter>
+      <Filter>Sources\Graphics\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="include\Graphics\DirectX\DXHeader.cpp">
-      <Filter>源文件\Graphics\DirectX</Filter>
+      <Filter>Sources\Graphics\DirectX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Grassland.h">
-      <Filter>头文件</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Math.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\MathDecl.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Vector2.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Vector3.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Vector4.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Matrix2x2.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Matrix3x3.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Matrix4x4.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Vector.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\Matrix.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Math\MatrixCommon.h">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </ClInclude>
     <ClInclude Include="include\Geometry\Geometry.h">
-      <Filter>头文件\Geometry</Filter>
+      <Filter>Headers\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="include\Geometry\GeometryDecl.h">
-      <Filter>头文件\Geometry</Filter>
+      <Filter>Headers\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLAD\glad.h">
-      <Filter>头文件\Graphics\OpenGL\GLAD</Filter>
+      <Filter>Headers\Graphics\OpenGL\GLAD</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLAD\khrplatform.h">
-      <Filter>头文件\Graphics\OpenGL\GLAD</Filter>
+      <Filter>Headers\Graphics\OpenGL\GLAD</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3.h">
-      <Filter>头文件\Graphics\OpenGL\GLFW</Filter>
+      <Filter>Headers\Graphics\OpenGL\GLFW</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLFW\glfw3native.h">
-      <Filter>头文件\Graphics\OpenGL\GLFW</Filter>
+      <Filter>Headers\Graphics\OpenGL\GLFW</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLHeader.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Camera.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Image.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Color.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Graphics.h">
-      <Filter>头文件\Graphics</Filter>
+      <Filter>Headers\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GL.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\GrasslandDecl.h">
-      <Filter>头文件</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Util.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLShaderProgram.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLVertexArray.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLTexture.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLWindow.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Mesh.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLInput.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLFrameBuffer.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Transform.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\Message.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\Util\UtilDef.h">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GLText.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GL2D.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GL2DHeader.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Geometry\GeometryEllipse.h">
-      <Filter>头文件\Geometry</Filter>
+      <Filter>Headers\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="include\Geometry\GeometryRectangle.h">
-      <Filter>头文件\Geometry</Filter>
+      <Filter>Headers\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="include\Geometry\GeometryTriangle.h">
-      <Filter>头文件\Geometry</Filter>
+      <Filter>Headers\Geometry</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GL2DBasic.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\OpenGL\GL2DImage.h">
-      <Filter>头文件\Graphics\OpenGL</Filter>
+      <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="include\String\String.h">
-      <Filter>头文件\String</Filter>
+      <Filter>Headers\String</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\DirectX\d3dx12.h">
-      <Filter>头文件\Graphics\DirectX</Filter>
+      <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\DirectX\DX.h">
-      <Filter>头文件\Graphics\DirectX</Filter>
+      <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\DirectX\DXHeader.h">
-      <Filter>头文件\Graphics\DirectX</Filter>
+      <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\DirectX\DXEnvironment.h">
-      <Filter>头文件\Graphics\DirectX</Filter>
+      <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\Vector3.inl">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\Vector4.inl">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\Matrix2x2.inl">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\MatrixCommon.inl">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\Matrix3x3.inl">
-      <Filter>头文件\Math</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\Matrix4x4.inl">
-      <Filter>头文件\Math</Filter>
-    </None>
-    <None Include="shaders\FragmentShader.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="shaders\VertexShader.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Math\MathDecl.inl">
-      <Filter>头文件\Math</Filter>
-    </None>
-    <None Include="shaders\FragmentShaderTex.glsl">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="shaders\VertexShaderTex.glsl">
-      <Filter>资源文件</Filter>
+      <Filter>Headers\Math</Filter>
     </None>
     <None Include="include\Graphics\Util\Camera.inl">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </None>
     <None Include="include\Graphics\Util\Transform.inl">
-      <Filter>头文件\Graphics\Util</Filter>
+      <Filter>Headers\Graphics\Util</Filter>
     </None>
-    <None Include="shaders\OpenGL\gl2dimagefs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
+    <None Include="shaders\VertexShader.glsl">
+      <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\OpenGL\gl2dimagevs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
-    </None>
-    <None Include="shaders\OpenGL\gl2dtrianglefs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
-    </None>
-    <None Include="shaders\OpenGL\gl2dtrianglevs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
+    <None Include="shaders\VertexShaderTex.glsl">
+      <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dellipsefs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
+      <Filter>Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dellipsevs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dimagefs.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dimagevs.glsl">
+      <Filter>Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dtextfs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
+      <Filter>Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dtextvs.glsl">
-      <Filter>资源文件\OpenGL</Filter>
+      <Filter>Shaders\OpenGL</Filter>
     </None>
+    <None Include="shaders\OpenGL\gl2dtrianglefs.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\OpenGL\gl2dtrianglevs.glsl">
+      <Filter>Shaders\OpenGL</Filter>
+    </None>
+    <None Include="shaders\FragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\FragmentShaderTex.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\DirectX\shaders.hlsl">
+      <Filter>Shaders\DirectX</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
