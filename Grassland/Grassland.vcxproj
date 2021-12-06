@@ -151,7 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\Graphics\DirectX\DXWindow.cpp" />
+    <ClCompile Include="include\Graphics\DirectX\DXEnvironment.cpp" />
+    <ClCompile Include="include\Graphics\DirectX\DXHeader.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GL2D.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GL2DBasic.cpp" />
     <ClCompile Include="include\Graphics\OpenGL\GL2DImage.cpp" />
@@ -179,7 +180,7 @@
     <ClInclude Include="include\Graphics\DirectX\d3dx12.h" />
     <ClInclude Include="include\Graphics\DirectX\DX.h" />
     <ClInclude Include="include\Graphics\DirectX\DXHeader.h" />
-    <ClInclude Include="include\Graphics\DirectX\DXWindow.h" />
+    <ClInclude Include="include\Graphics\DirectX\DXEnvironment.h" />
     <ClInclude Include="include\Graphics\Graphics.h" />
     <ClInclude Include="include\Graphics\OpenGL\GL.h" />
     <ClInclude Include="include\Graphics\OpenGL\GL2D.h" />

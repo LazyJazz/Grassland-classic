@@ -180,12 +180,12 @@ void Render()
 int main()
 {
     SetConsoleOutputCP(936);
-    
-    GRLDirectXInit(800, 600, "Grassland D3D12", false);
-    LoadPipeline();
-    LoadAssets();
-    while (!GRLDirectXPollEvent())
+
+    GRLCDirectXEnvironment environment(800, 600, "Grassland D3D12", false);
+    //std::cout << (void*) & environment << std::endl;
+    while (!environment.PollEvents())
     {
-        Render();
+        ;
     }
+    return 0;
 }

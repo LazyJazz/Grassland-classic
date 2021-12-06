@@ -73,4 +73,30 @@ namespace Grassland
 		}
 		return result + L'\0\0';
 	}
+	std::string GRLStringUnicodetoUTF8(std::wstring unicode_str)
+	{
+		std::string res = "";
+		for (wchar_t c : unicode_str)
+		{
+			if (c & 0b1111111110000000)
+			{
+				if (c & 0b1111100000000000)
+				{
+					res += (char)(((c >> 12) & 0b00001111) | 0b11100000);
+					res += (char)(((c >> 6) & 0b00111111) | 0b10000000);
+					res += (char)((c & 0b00111111) | 0b10000000);
+				}
+				else
+				{
+					res += (char)(((c >> 6) & 0b00011111) | 0b11000000);
+					res += (char)((c & 0b00111111) | 0b10000000);
+				}
+			}
+			else
+			{
+				res += (char)(c&0b01111111);
+			}
+		}
+		return res + '\0';
+	}
 }

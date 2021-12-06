@@ -34,9 +34,6 @@
     <Filter Include="头文件\Graphics\OpenGL">
       <UniqueIdentifier>{968607e3-b9c2-40e2-bd52-5cce46286826}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Graphics\DirectX">
-      <UniqueIdentifier>{a2287170-165f-4217-88bc-43df8c9be328}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Graphics\OpenGL\GLFW">
       <UniqueIdentifier>{a0fa7ee0-f42a-4231-af3c-d9a7c9d372dc}</UniqueIdentifier>
     </Filter>
@@ -60,6 +57,9 @@
     </Filter>
     <Filter Include="源文件\Graphics\DirectX">
       <UniqueIdentifier>{087cd2c4-fadb-465f-806c-2d8826e91705}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Graphics\DirectX">
+      <UniqueIdentifier>{a2287170-165f-4217-88bc-43df8c9be328}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,7 +114,10 @@
     <ClCompile Include="include\String\String.cpp">
       <Filter>源文件\String</Filter>
     </ClCompile>
-    <ClCompile Include="include\Graphics\DirectX\DXWindow.cpp">
+    <ClCompile Include="include\Graphics\DirectX\DXEnvironment.cpp">
+      <Filter>源文件\Graphics\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\DirectX\DXHeader.cpp">
       <Filter>源文件\Graphics\DirectX</Filter>
     </ClCompile>
   </ItemGroup>
@@ -254,16 +257,16 @@
     <ClInclude Include="include\String\String.h">
       <Filter>头文件\String</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\DirectX\DXHeader.h">
+    <ClInclude Include="include\Graphics\DirectX\d3dx12.h">
       <Filter>头文件\Graphics\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="include\Graphics\DirectX\DX.h">
       <Filter>头文件\Graphics\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\DirectX\d3dx12.h">
+    <ClInclude Include="include\Graphics\DirectX\DXHeader.h">
       <Filter>头文件\Graphics\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\DirectX\DXWindow.h">
+    <ClInclude Include="include\Graphics\DirectX\DXEnvironment.h">
       <Filter>头文件\Graphics\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
