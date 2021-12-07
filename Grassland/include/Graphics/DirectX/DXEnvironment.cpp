@@ -346,7 +346,15 @@ namespace Grassland
 
         m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
     }
-    GRLCPipelineStateAndRootSignature::GRLCPipelineStateAndRootSignature(GRLCDirectXEnvironment* pEnvironment, const char* shaderFilePath, uint32_t numberRenderTarget, DXGI_FORMAT* formats, uint32_t numberConstantBuffer, uint32_t numberTexture)
+    GRLCDirectXPipelineStateAndRootSignature::GRLCDirectXPipelineStateAndRootSignature(
+        GRLCDirectXEnvironment* pEnvironment, 
+        const char* shaderFilePath, 
+        uint32_t numberRenderTarget, 
+        DXGI_FORMAT* formats, 
+        uint32_t numberConstantBuffer, 
+        uint32_t numberTexture,
+        bool enableDepthTest
+    )
     {
         __Ref_Cnt = 1;
         ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
@@ -445,10 +453,15 @@ namespace Grassland
             psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
             psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
             psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-            psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+            //psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
             psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
             psoDesc.DepthStencilState.DepthEnable = FALSE;
             psoDesc.DepthStencilState.StencilEnable = FALSE;
+            if (enableDepthTest)
+            {
+                psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+                psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+            }
             psoDesc.SampleMask = UINT_MAX;
             psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
             psoDesc.NumRenderTargets = numberRenderTarget;
@@ -459,27 +472,27 @@ namespace Grassland
             GRLComCall(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
         }
     }
-    ID3D12RootSignature* GRLCPipelineStateAndRootSignature::GetRootSignature()
+    ID3D12RootSignature* GRLCDirectXPipelineStateAndRootSignature::GetRootSignature()
     {
         return m_rootSignature.Get();
     }
-    ID3D12PipelineState* GRLCPipelineStateAndRootSignature::GetPipelineState()
+    ID3D12PipelineState* GRLCDirectXPipelineStateAndRootSignature::GetPipelineState()
     {
         return m_pipelineState.Get();
     }
-    GRL_RESULT GRLCPipelineStateAndRootSignature::AddRef()
+    GRL_RESULT GRLCDirectXPipelineStateAndRootSignature::AddRef()
     {
         __Ref_Cnt++;
         return GRL_FALSE;
     }
-    GRL_RESULT GRLCPipelineStateAndRootSignature::Release()
+    GRL_RESULT GRLCDirectXPipelineStateAndRootSignature::Release()
     {
         __Ref_Cnt--;
         if (!__Ref_Cnt)
             delete this;
         return GRL_FALSE;
     }
-    GRLCBuffer::GRLCBuffer(GRLCDirectXEnvironment* pEnvironment, uint64_t size)
+    GRLCDirectXBuffer::GRLCDirectXBuffer(GRLCDirectXEnvironment* pEnvironment, uint64_t size)
     {
         __Ref_Cnt = 1;
         m_size = size;
@@ -495,11 +508,11 @@ namespace Grassland
             IID_PPV_ARGS(&m_buffer)));
     }
     
-    ID3D12Resource* GRLCBuffer::GetResource()
+    ID3D12Resource* GRLCDirectXBuffer::GetResource()
     {
         return m_buffer.Get();
     }
-    D3D12_VERTEX_BUFFER_VIEW GRLCBuffer::GetVertexBufferView(uint32_t stride)
+    D3D12_VERTEX_BUFFER_VIEW GRLCDirectXBuffer::GetVertexBufferView(uint32_t stride)
     {
         D3D12_VERTEX_BUFFER_VIEW res;
         res.BufferLocation = m_buffer->GetGPUVirtualAddress();
@@ -508,7 +521,7 @@ namespace Grassland
         return res;
     }
 
-    D3D12_INDEX_BUFFER_VIEW GRLCBuffer::GetIndexBufferView()
+    D3D12_INDEX_BUFFER_VIEW GRLCDirectXBuffer::GetIndexBufferView()
     {
         D3D12_INDEX_BUFFER_VIEW res;
         res.BufferLocation = m_buffer->GetGPUVirtualAddress();
@@ -516,12 +529,12 @@ namespace Grassland
         res.Format = DXGI_FORMAT_R32_UINT;
         return res;
     }
-    uint64_t GRLCBuffer::GetBufferSize()
+    uint64_t GRLCDirectXBuffer::GetBufferSize()
     {
         return m_size;
     }
     
-    void GRLCBuffer::SetBufferData(void* pData, uint64_t data_size, uint64_t buffer_offset)
+    void GRLCDirectXBuffer::SetBufferData(void* pData, uint64_t data_size, uint64_t buffer_offset)
     {
         CD3DX12_RANGE range(0, 0);
         uint8_t* pDest;
@@ -531,12 +544,66 @@ namespace Grassland
         m_buffer->Unmap(0, nullptr);
     }
 
-    GRL_RESULT GRLCBuffer::AddRef()
+    
+    GRL_RESULT GRLCDirectXBuffer::AddRef()
     {
         __Ref_Cnt++;
         return GRL_FALSE;
     }
-    GRL_RESULT GRLCBuffer::Release()
+
+    GRL_RESULT GRLCDirectXBuffer::Release()
+    {
+        __Ref_Cnt--;
+        if (!__Ref_Cnt)
+            delete this;
+        return GRL_FALSE;
+    }
+    
+    GRLCDirectXDepthMap::GRLCDirectXDepthMap(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height)
+    {
+        __Ref_Cnt = 1;
+        m_width = width;
+        m_height = height;
+        ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
+        CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        CD3DX12_RESOURCE_DESC d3dx12_resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+        D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+        depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+        depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+        depthOptimizedClearValue.DepthStencil.Stencil = 0;
+        GRLComCall(device->CreateCommittedResource(
+            &d3dx12_heap_properties,
+            D3D12_HEAP_FLAG_NONE,
+            &d3dx12_resource_desc,
+            D3D12_RESOURCE_STATE_DEPTH_WRITE,
+            &depthOptimizedClearValue,
+            IID_PPV_ARGS(&m_depthMap)));
+
+        D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+
+        dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        dsvHeapDesc.NumDescriptors = 1;
+
+        GRLComCall(
+            device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap))
+        );
+
+        device->CreateDepthStencilView(m_depthMap.Get(), nullptr, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+    }
+
+    D3D12_CPU_DESCRIPTOR_HANDLE GRLCDirectXDepthMap::GetDSVHandle()
+    {
+        return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+    }
+
+    GRL_RESULT GRLCDirectXDepthMap::AddRef()
+    {
+        __Ref_Cnt++;
+        return GRL_FALSE;
+    }
+
+    GRL_RESULT GRLCDirectXDepthMap::Release()
     {
         __Ref_Cnt--;
         if (!__Ref_Cnt)

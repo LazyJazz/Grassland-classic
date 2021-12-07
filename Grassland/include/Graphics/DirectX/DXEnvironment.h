@@ -60,10 +60,10 @@ namespace Grassland
 		uint32_t __Ref_Cnt;
 	};
 
-	class GRLCBuffer : public GRLIBase
+	class GRLCDirectXBuffer : public GRLIBase
 	{
 	public:
-		GRLCBuffer(GRLCDirectXEnvironment * pEnvironment, uint64_t size);
+		GRLCDirectXBuffer(GRLCDirectXEnvironment * pEnvironment, uint64_t size);
 		virtual ID3D12Resource* GetResource();
 		virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32_t stride);
 		virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView();
@@ -77,16 +77,17 @@ namespace Grassland
 		uint32_t __Ref_Cnt;
 	};
 
-	class GRLCPipelineStateAndRootSignature : public GRLIBase
+	class GRLCDirectXPipelineStateAndRootSignature : public GRLIBase
 	{
 	public:
-		GRLCPipelineStateAndRootSignature(
-			GRLCDirectXEnvironment * pEnvironment,
-			const char * shaderFilePath,
-			uint32_t numberRenderTarget, 
-			DXGI_FORMAT * formats,
+		GRLCDirectXPipelineStateAndRootSignature(
+			GRLCDirectXEnvironment* pEnvironment,
+			const char* shaderFilePath,
+			uint32_t numberRenderTarget,
+			DXGI_FORMAT* formats,
 			uint32_t numberConstantBuffer,
-			uint32_t numberTexture
+			uint32_t numberTexture,
+			bool enableDepthTest = false
 			);
 		virtual ID3D12RootSignature* GetRootSignature();
 		virtual ID3D12PipelineState* GetPipelineState();
@@ -96,5 +97,32 @@ namespace Grassland
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;
 		uint32_t __Ref_Cnt;
+	};
+
+	class GRLCDirectXTexture : public GRLIBase
+	{
+	public:
+		virtual GRL_RESULT AddRef();
+		virtual GRL_RESULT Release();
+	private:
+		ComPtr<ID3D12Resource> m_texture;
+		ComPtr<ID3D12DescriptorHeap> m_srvHeap;
+		ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+		uint32_t __Ref_Cnt;
+	};
+
+	class GRLCDirectXDepthMap : public GRLIBase
+	{
+	public:
+		GRLCDirectXDepthMap(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height);
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle();
+		virtual GRL_RESULT AddRef();
+		virtual GRL_RESULT Release();
+	private:
+		ComPtr<ID3D12Resource> m_depthMap;
+		ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
+		uint32_t __Ref_Cnt;
+		uint32_t m_width;
+		uint32_t m_height;
 	};
 }

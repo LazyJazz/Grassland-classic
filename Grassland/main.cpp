@@ -42,13 +42,14 @@ int main()
 
     GRLCDirectXEnvironment environment(1280, 720, "Grassland D3D12", false);
     DXGI_FORMAT formats[] = { DXGI_FORMAT_R8G8B8A8_UNORM };
-    GRLCPipelineStateAndRootSignature *psoAndRootSignature = new GRLCPipelineStateAndRootSignature(
+    GRLCDirectXPipelineStateAndRootSignature *psoAndRootSignature = new GRLCDirectXPipelineStateAndRootSignature(
         &environment,
         "shaders\\DirectX\\shaders.hlsl",
         1,
         formats,
         1,
-        0
+        0,
+        true
     );
 
     Vertex vertices[] = {
@@ -67,24 +68,27 @@ int main()
         1,3,2,
         4,5,6,
         5,7,6,
-        0,2,6,
+        0,6,2,
         0,4,6,
-        1,3,5,
+        1,5,3,
         3,5,7,
-        2,3,6,
+        2,6,3,
         3,6,7,
         0,1,4,
-        1,4,5
+        1,5,4
     };
 
     ConstantBuffer<ConstantBufferConstant> cb;
 
 
-    GRLCBuffer* pVertexBuffer = new GRLCBuffer(&environment, sizeof(vertices));
+    GRLCDirectXBuffer* pVertexBuffer = new GRLCDirectXBuffer(&environment, sizeof(vertices));
     pVertexBuffer->SetBufferData(vertices, sizeof(vertices), 0);
-    GRLCBuffer* pIndexBuffer= new GRLCBuffer(&environment, sizeof(indices));
+    GRLCDirectXBuffer* pIndexBuffer= new GRLCDirectXBuffer(&environment, sizeof(indices));
     pIndexBuffer->SetBufferData(indices, sizeof(indices), 0);
-    GRLCBuffer* pConstantBuffer = new GRLCBuffer(&environment, sizeof(cb));
+    GRLCDirectXBuffer* pConstantBuffer = new GRLCDirectXBuffer(&environment, sizeof(cb));
+
+    GRLCDirectXDepthMap* pDepthMap = new GRLCDirectXDepthMap(&environment, 1280, 720);
+
 
     //std::cout << (void*) & environment << std::endl;
 
@@ -119,14 +123,8 @@ int main()
 
         rot *= GRLTransformRotation(GRLRadian(0.1f), GRLRadian(0.2f), GRLRadian(0.3f));
 
-        cb.content.mat = /*GRLMat4(
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );*/
-            (
-                GRLTransformProjection(GRLRadian(60.0f), (float)scr_width / (float)scr_height, 1.0f, 10.0f) *
+        cb.content.mat =
+            (GRLTransformProjection(GRLRadian(30.0f), (float)scr_width / (float)scr_height, 1.0f, 10.0f) *
                 GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rot).transpose();
         pConstantBuffer->SetBufferData(&cb, sizeof(cb), 0);
 
@@ -137,11 +135,13 @@ int main()
         commandList->ResourceBarrier(1, &resourceBarrier);
 
         D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = environment.GetBackFrameRTVHandle();
+        D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = pDepthMap->GetDSVHandle();
 
-        commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+        commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
 
         environment.ClearBackFrameColor(clearcolor);
+        commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0, 0, 0, nullptr);
 
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
