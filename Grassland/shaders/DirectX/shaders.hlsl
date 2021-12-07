@@ -1,8 +1,8 @@
-//cbuffer GlobalSettings: register(b0)
-//{
-//	uint opcode;
-//	float __padding[63];
-//};
+cbuffer GlobalSettings: register(b0)
+{
+	float4x4 transform;
+	float __padding[48];
+};
 
 //Texture2D g_texture : register(t0);
 //SamplerState g_sampler_nearest : register (s0);
@@ -21,7 +21,7 @@ PSInput VSMain(
 	)
 {
 	PSInput res;
-	res.Position = pos;
+	res.Position = mul(transform, pos);
 	res.Normal = norm;
 	res.TexCoord = texcoord;
 	return res;

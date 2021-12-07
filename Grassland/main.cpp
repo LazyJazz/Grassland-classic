@@ -22,6 +22,20 @@ struct Vertex
     DirectX::XMFLOAT4 texcoord;
 };
 
+struct ConstantBufferConstant
+{
+    GRLMat4 mat;
+};
+
+#define CBPaddingSize(x) ((((x)+255) & 0xffffff00u)-(x))
+
+template<typename _Ty>
+struct ConstantBuffer
+{
+    _Ty content;
+    char padding[CBPaddingSize(sizeof(_Ty))];
+};
+
 int main()
 {
     SetConsoleOutputCP(936);
@@ -33,18 +47,44 @@ int main()
         "shaders\\DirectX\\shaders.hlsl",
         1,
         formats,
-        0,
+        1,
         0
     );
 
     Vertex vertices[] = {
-        { {0.0f, 0.25f,0.0f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {1.0f, 0.0f,0.0f,1.0f}},
-        { {0.25f, -0.25f,0.0f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {0.0f, 1.0f,0.0f,1.0f}},
-        { {-0.25f, -0.25f,0.0f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {0.0f, 0.0f,1.0f,1.0f}}
+        { {-0.5f, -0.5f,0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {0.0f, 0.0f,1.0f,1.0f}},
+        { {-0.5f, 0.5f,0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {0.0f, 1.0f,1.0f,1.0f}},
+        { {0.5f, -0.5f,0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {1.0f, 0.0f,1.0f,1.0f}},
+        { {0.5f, 0.5f,0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {1.0f, 1.0f,1.0f,1.0f}},
+        { {-0.5f, -0.5f,-0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {0.0f, 0.0f,0.0f,1.0f}},
+        { {-0.5f, 0.5f,-0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {0.0f, 1.0f,0.0f,1.0f}},
+        { {0.5f, -0.5f,-0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {1.0f, 0.0f,0.0f,1.0f}},
+        { {0.5f, 0.5f,-0.5f,1.0f}, {1.0f, 0.0f,0.0f,0.0f}, {1.0f, 1.0f,0.0f,1.0f}}
     };
 
-    GRLCBuffer* pBuffer = new GRLCBuffer(&environment, sizeof(vertices));
-    pBuffer->SetBufferData(vertices, sizeof(vertices), 0);
+    uint32_t indices[] = {
+        0,1,2,
+        1,3,2,
+        4,5,6,
+        5,7,6,
+        0,2,6,
+        0,4,6,
+        1,3,5,
+        3,5,7,
+        2,3,6,
+        3,6,7,
+        0,1,4,
+        1,4,5
+    };
+
+    ConstantBuffer<ConstantBufferConstant> cb;
+
+
+    GRLCBuffer* pVertexBuffer = new GRLCBuffer(&environment, sizeof(vertices));
+    pVertexBuffer->SetBufferData(vertices, sizeof(vertices), 0);
+    GRLCBuffer* pIndexBuffer= new GRLCBuffer(&environment, sizeof(indices));
+    pIndexBuffer->SetBufferData(indices, sizeof(indices), 0);
+    GRLCBuffer* pConstantBuffer = new GRLCBuffer(&environment, sizeof(cb));
 
     //std::cout << (void*) & environment << std::endl;
 
@@ -56,11 +96,16 @@ int main()
     //m_device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&m_pipelineState));
 
     DirectX::XMFLOAT4 hsv(0.5, 1.0, 1.0, 1.0), rgba;
+    float x = 0.0;
+    GRLMat4 rot(1);
     while (!environment.PollEvents())
     {
+        x += GRLRadian(0.5);
+        //cb.content.offset = sinf(x);
         hsv.x += 0.001;
         DirectX::XMStoreFloat4(&rgba, DirectX::XMColorHSVToRGB(DirectX::XMLoadFloat4(&hsv)));
-        float clearcolor[4] = { rgba.x,rgba.y,rgba.z,1.0 };
+        //float clearcolor[4] = { rgba.x,rgba.y,rgba.z,1.0 };
+        float clearcolor[4] = { 0.6,0.7,0.8,1.0 };
         ID3D12GraphicsCommandList * commandList = environment.StartDraw();
         commandList->SetPipelineState(psoAndRootSignature->GetPipelineState());
         commandList->SetGraphicsRootSignature(psoAndRootSignature->GetRootSignature());
@@ -72,6 +117,18 @@ int main()
         CD3DX12_VIEWPORT viewPort(0.0f, 0.0f, (float)scr_width, (float)scr_height);
         CD3DX12_RECT scissorRect(0, 0, (LONG)scr_width, (LONG)scr_height);
 
+        rot *= GRLTransformRotation(GRLRadian(0.1f), GRLRadian(0.2f), GRLRadian(0.3f));
+
+        cb.content.mat = /*GRLMat4(
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        );*/
+            (
+                GRLTransformProjection(GRLRadian(60.0f), (float)scr_width / (float)scr_height, 1.0f, 10.0f) *
+                GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rot).transpose();
+        pConstantBuffer->SetBufferData(&cb, sizeof(cb), 0);
 
         commandList->RSSetScissorRects(1, &scissorRect);
         commandList->RSSetViewports(1, &viewPort);
@@ -88,10 +145,15 @@ int main()
 
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pBuffer->GetVertexBufferView(sizeof(Vertex));
+        D3D12_VERTEX_BUFFER_VIEW vertexBufferView = pVertexBuffer->GetVertexBufferView(sizeof(Vertex));
         commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+        D3D12_INDEX_BUFFER_VIEW indexBufferView = pIndexBuffer->GetIndexBufferView();
+        commandList->IASetIndexBuffer(&indexBufferView);
 
-        commandList->DrawInstanced(3, 1, 0, 0);
+        commandList->SetGraphicsRootConstantBufferView(0, pConstantBuffer->GetResource()->GetGPUVirtualAddress());
+
+        //commandList->DrawInstanced(3, 1, 0, 0);
+        commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
         resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(environment.GetFrameResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
         commandList->ResourceBarrier(1, &resourceBarrier);
@@ -99,7 +161,7 @@ int main()
         environment.EndDraw();
     }
 
-    pBuffer->Release();
+    pVertexBuffer->Release();
     psoAndRootSignature->Release();
     return 0;
 }

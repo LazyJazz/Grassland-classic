@@ -51,6 +51,7 @@ namespace Grassland
 			Vector<4, T> operator * (const Vector<4, U>& vec) const;
 
 			Matrix<4, 4, T> inverse() const;
+			Matrix<4, 4, T> transpose() const;
 			T determinant() const;
 		};
 
