@@ -1,15 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{e58fbf68-ce38-4e4a-a953-972b04a56cd5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\DirectX">
-      <UniqueIdentifier>{b49e4866-5ac8-477f-b6c0-062bd1013a99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\OpenGL">
-      <UniqueIdentifier>{88752bb1-b3f9-4be0-944a-bce1263d807b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -66,6 +57,18 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{99ef819b-ee43-4085-8c50-c9892a8fa26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders">
+      <UniqueIdentifier>{e58fbf68-ce38-4e4a-a953-972b04a56cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders\DirectX">
+      <UniqueIdentifier>{b49e4866-5ac8-477f-b6c0-062bd1013a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders\OpenGL">
+      <UniqueIdentifier>{88752bb1-b3f9-4be0-944a-bce1263d807b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -308,45 +311,45 @@
       <Filter>Headers\Graphics\Util</Filter>
     </None>
     <None Include="shaders\VertexShader.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Assets\Shaders</Filter>
     </None>
     <None Include="shaders\VertexShaderTex.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Assets\Shaders</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dellipsefs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dellipsevs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dimagefs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dimagevs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dtextfs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dtextvs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dtrianglefs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\OpenGL\gl2dtrianglevs.glsl">
-      <Filter>Shaders\OpenGL</Filter>
+      <Filter>Assets\Shaders\OpenGL</Filter>
     </None>
     <None Include="shaders\FragmentShader.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Assets\Shaders</Filter>
     </None>
     <None Include="shaders\FragmentShaderTex.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Assets\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\DirectX\shaders.hlsl">
-      <Filter>Shaders\DirectX</Filter>
+      <Filter>Assets\Shaders\DirectX</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

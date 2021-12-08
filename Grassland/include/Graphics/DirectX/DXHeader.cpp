@@ -6,7 +6,7 @@ namespace Grassland
 	{
 		if (FAILED(hr))
 		{
-			std::cout << "[ComCall Error!] code: " << hr << std::endl
+			std::cout << "[ComCall Error!] code: " << std::hex << hr << std::endl
 				<< '(' << file << ":" << line << ')' << code << std::endl;
 		}
 		return hr;

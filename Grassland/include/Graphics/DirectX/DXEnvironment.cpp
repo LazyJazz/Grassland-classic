@@ -63,7 +63,7 @@ namespace Grassland
 
         RECT windowRect = { 0, 0, static_cast<LONG>(screen_width), static_cast<LONG>(screen_height) };
         AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-
+        
         // Create the window and store a handle to it.
         m_hWnd = CreateWindow(
             windowClass.lpszClassName,
@@ -107,6 +107,36 @@ namespace Grassland
         if (!__Ref_Cnt) delete this;
         return 0;
     }
+    void GRLCDirectXEnvironment::WaitForGpu()
+    {
+        GRLComCall(m_commandQueue->Signal(m_fence.Get(), m_fenceValues[m_frameIndex]));
+
+        // Wait until the fence has been processed.
+        GRLComCall(m_fence->SetEventOnCompletion(m_fenceValues[m_frameIndex], m_fenceEvent));
+        WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
+
+        // Increment the fence value for the current frame.
+        m_fenceValues[m_frameIndex]++;
+    }
+    void GRLCDirectXEnvironment::MoveToNextFrame()
+    {
+        // Schedule a Signal command in the queue.
+        const UINT64 currentFenceValue = m_fenceValues[m_frameIndex];
+        GRLComCall(m_commandQueue->Signal(m_fence.Get(), currentFenceValue));
+
+        // Update the frame index.
+        m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+        // If the next frame is not ready to be rendered yet, wait until it is ready.
+        if (m_fence->GetCompletedValue() < m_fenceValues[m_frameIndex])
+        {
+            GRLComCall(m_fence->SetEventOnCompletion(m_fenceValues[m_frameIndex], m_fenceEvent));
+            WaitForSingleObjectEx(m_fenceEvent, INFINITE, FALSE);
+        }
+
+        // Set the fence value for the next frame.
+        m_fenceValues[m_frameIndex] = currentFenceValue + 1;
+    }
     HWND GRLCDirectXEnvironment::GetHWnd()
     {
         return m_hWnd;
@@ -127,8 +157,11 @@ namespace Grassland
         ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
 
         m_commandQueue->ExecuteCommandLists(1, ppCommandLists);
+    }
 
-        GRLComCall(m_swapChain->Present(1, 0));
+    void GRLCDirectXEnvironment::Present(uint32_t enableInterval)
+    {
+        GRLComCall(m_swapChain->Present(enableInterval, 0));
         WaitForPreviousFrame();
     }
 
@@ -177,6 +210,11 @@ namespace Grassland
         return m_renderTargets[frameIndex].Get();
     }
 
+    void GRLCDirectXEnvironment::Resize(uint32_t width, uint32_t height)
+    {
+        SetWindowPos(m_hWnd, NULL, 0, 0, width, height, SWP_NOMOVE);
+    }
+
     LRESULT __stdcall GRLCDirectXEnvironment::GRLDirectXEnvironmentProcFunc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         static std::map<HWND, GRLCDirectXEnvironment*> env_map;
@@ -190,8 +228,7 @@ namespace Grassland
             env_map[hWnd] = pEnv;
             return 0;
         case WM_SIZE:
-            pEnv->m_width = LOWORD(lParam);
-            pEnv->m_height = HIWORD(lParam);
+            pEnv->OnResize(LOWORD(lParam), HIWORD(lParam));
             return 0;
         case WM_CLOSE:
             DestroyWindow(hWnd);
@@ -208,6 +245,26 @@ namespace Grassland
     GRL_RESULT GRLCDirectXEnvironment::OnInit()
     {
         return LoadPipeline();
+    }
+
+    GRL_RESULT GRLCDirectXEnvironment::OnResize(uint32_t width, uint32_t height)
+    {
+        m_width = width;
+        m_height = height;
+
+        for (UINT n = 0; n < GRLFrameCount; n++)
+        {
+            m_renderTargets[n].Reset();
+            m_fenceValues[n] = m_fenceValues[m_frameIndex];
+        }
+
+        DXGI_SWAP_CHAIN_DESC1 desc = {};
+        m_swapChain->GetDesc1(&desc);
+        GRLComCall(m_swapChain->ResizeBuffers(GRLFrameCount, m_width, m_height, DXGI_FORMAT_UNKNOWN, desc.Flags));
+        m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+        __build_rtvResources();
+        return GRL_FALSE;
     }
 
     GRL_RESULT GRLCDirectXEnvironment::LoadPipeline()
@@ -281,26 +338,8 @@ namespace Grassland
         GRLComCall(m_factory->MakeWindowAssociation(m_hWnd, DXGI_MWA_NO_ALT_ENTER));
 
         GRLComCall(swapChain.As(&m_swapChain));
-        m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
-
-        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-        rtvHeapDesc.NumDescriptors = GRLFrameCount;
-        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-
-        m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
-
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-        uint32_t m_rtvDescripterSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-        for (int index = 0; index < GRLFrameCount; index++)
-        {
-            GRLComCall(m_swapChain->GetBuffer(index, IID_PPV_ARGS(&m_renderTargets[index])));
-            m_device->CreateRenderTargetView(m_renderTargets[index].Get(), nullptr, rtvHandle);
-
-            rtvHandle.Offset(m_rtvDescripterSize);
-        }
-
+        
+        __build_rtvResources();
 
         return GRL_FALSE;
     }
@@ -324,27 +363,43 @@ namespace Grassland
     GRL_RESULT GRLCDirectXEnvironment::__create_fence()
     {
         GRLComCall(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
-        m_fenceValue = 1;
+        for (int n = 0; n < GRLFrameCount; n++)
+            m_fenceValues[n] = 1;
 
         m_fenceEvent = CreateEvent(0, 0, 0, 0);
         WaitForPreviousFrame();
         return GRL_FALSE;
     }
+
+    GRL_RESULT GRLCDirectXEnvironment::__build_rtvResources()
+    {
+        m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+
+        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+        rtvHeapDesc.NumDescriptors = GRLFrameCount;
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+
+        m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+        uint32_t m_rtvDescripterSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+        for (int index = 0; index < GRLFrameCount; index++)
+        {
+            GRLComCall(m_swapChain->GetBuffer(index, IID_PPV_ARGS(&m_renderTargets[index])));
+            m_device->CreateRenderTargetView(m_renderTargets[index].Get(), nullptr, rtvHandle);
+
+            rtvHandle.Offset(m_rtvDescripterSize);
+        }
+
+        return GRL_FALSE;
+    }
     
     void GRLCDirectXEnvironment::WaitForPreviousFrame()
     {
-        const UINT64 fence = m_fenceValue;
-        GRLComCall(m_commandQueue->Signal(m_fence.Get(), fence));
-        m_fenceValue++;
-
-        // Wait until the previous frame is finished.
-        if (m_fence->GetCompletedValue() != fence)
-        {
-            GRLComCall(m_fence->SetEventOnCompletion(fence, m_fenceEvent));
-            WaitForSingleObject(m_fenceEvent, INFINITE);
-        }
-
-        m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
+        MoveToNextFrame();
+        WaitForGpu();
     }
     GRLCDirectXPipelineStateAndRootSignature::GRLCDirectXPipelineStateAndRootSignature(
         GRLCDirectXEnvironment* pEnvironment, 
@@ -422,8 +477,25 @@ namespace Grassland
             for (int index = 0; index < numberConstantBuffer; index++)
                 rootParameters[index + numberTexture].InitAsConstantBufferView(index);
 
+            D3D12_STATIC_SAMPLER_DESC sampler = {};
+            sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+            sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+            sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+            sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+            sampler.MipLODBias = 0;
+            sampler.MaxAnisotropy = 0;
+            sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+            sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+            sampler.MinLOD = 0.0f;
+            sampler.MaxLOD = D3D12_FLOAT32_MAX;
+            sampler.ShaderRegister = 0;
+            sampler.RegisterSpace = 0;
+            sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+
+
             CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-            rootSignatureDesc.Init_1_1(numberTexture + numberConstantBuffer, rootParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+            rootSignatureDesc.Init_1_1(numberTexture + numberConstantBuffer, rootParameters, numberTexture ? 1 : 0, numberTexture ? &sampler : nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
             ComPtr<ID3DBlob> signature;
             ComPtr<ID3DBlob> error;
@@ -492,21 +564,22 @@ namespace Grassland
             delete this;
         return GRL_FALSE;
     }
-    GRLCDirectXBuffer::GRLCDirectXBuffer(GRLCDirectXEnvironment* pEnvironment, uint64_t size)
+    GRLCDirectXBuffer::GRLCDirectXBuffer(GRLCDirectXEnvironment* pEnvironment, uint64_t size, uint32_t uploadBuffer, D3D12_RESOURCE_STATES resourceState)
     {
         __Ref_Cnt = 1;
         m_size = size;
         ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
-        CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(uploadBuffer ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT);
         CD3DX12_RESOURCE_DESC d3dx12_resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
         GRLComCall(device->CreateCommittedResource(
             &d3dx12_heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &d3dx12_resource_desc,
-            D3D12_RESOURCE_STATE_GENERIC_READ,
+            resourceState,
             nullptr,
             IID_PPV_ARGS(&m_buffer)));
     }
+    
     
     ID3D12Resource* GRLCDirectXBuffer::GetResource()
     {
@@ -534,14 +607,20 @@ namespace Grassland
         return m_size;
     }
     
-    void GRLCDirectXBuffer::SetBufferData(void* pData, uint64_t data_size, uint64_t buffer_offset)
+    GRL_RESULT GRLCDirectXBuffer::SetBufferData(void* pData, uint64_t data_size, uint64_t buffer_offset)
     {
         CD3DX12_RANGE range(0, 0);
         uint8_t* pDest;
-        GRLComCall(m_buffer->Map(0, &range, reinterpret_cast<void**>(&pDest)));
+        if (FAILED(
+            GRLComCall(m_buffer->Map(0, &range, reinterpret_cast<void**>(&pDest)))
+        ))
+        {
+            return GRL_TRUE;
+        }
         pDest = pDest + buffer_offset;
         memcpy(pDest, pData, min(data_size, m_size - buffer_offset));
         m_buffer->Unmap(0, nullptr);
+        return GRL_FALSE;
     }
 
     
@@ -564,9 +643,48 @@ namespace Grassland
         __Ref_Cnt = 1;
         m_width = width;
         m_height = height;
-        ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
+
+        __build_resource(pEnvironment->GetDevice());
+    }
+
+    ID3D12Resource* GRLCDirectXDepthMap::GetResource()
+    {
+        return m_depthMap.Get();
+    }
+
+    D3D12_CPU_DESCRIPTOR_HANDLE GRLCDirectXDepthMap::GetDSVHandle()
+    {
+        return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+    }
+
+    void GRLCDirectXDepthMap::Resize(uint32_t width, uint32_t height)
+    {
+        m_width = width;
+        m_height = height;
+        ComPtr<ID3D12Device> device;
+        m_depthMap->GetDevice(IID_PPV_ARGS(&device));
+        m_dsvHeap.Reset();
+        m_depthMap.Reset();
+        __build_resource(device.Get());
+    }
+
+    GRL_RESULT GRLCDirectXDepthMap::AddRef()
+    {
+        __Ref_Cnt++;
+        return GRL_FALSE;
+    }
+
+    GRL_RESULT GRLCDirectXDepthMap::Release()
+    {
+        __Ref_Cnt--;
+        if (!__Ref_Cnt)
+            delete this;
+        return GRL_FALSE;
+    }
+    void GRLCDirectXDepthMap::__build_resource(ID3D12Device * device)
+    {
         CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-        CD3DX12_RESOURCE_DESC d3dx12_resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+        CD3DX12_RESOURCE_DESC d3dx12_resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, m_width, m_height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
         D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
         depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
         depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
@@ -591,23 +709,82 @@ namespace Grassland
 
         device->CreateDepthStencilView(m_depthMap.Get(), nullptr, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
     }
-
-    D3D12_CPU_DESCRIPTOR_HANDLE GRLCDirectXDepthMap::GetDSVHandle()
+    GRLCDirectXTexture::GRLCDirectXTexture(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height, void* pData)
     {
-        return m_dsvHeap->GetCPUDescriptorHandleForHeapStart();
+        __Ref_Cnt = 1;
+        m_width = width;
+        m_height = height;
+        ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
+        __build_resource(device.Get());
     }
-
-    GRL_RESULT GRLCDirectXDepthMap::AddRef()
+    D3D12_CPU_DESCRIPTOR_HANDLE GRLCDirectXTexture::GetRTV()
+    {
+        return m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
+    }
+    D3D12_GPU_DESCRIPTOR_HANDLE GRLCDirectXTexture::GetSRV()
+    {
+        return m_srvHeap->GetGPUDescriptorHandleForHeapStart();
+    }
+    ID3D12DescriptorHeap* GRLCDirectXTexture::GetSRVHeap()
+    {
+        return m_srvHeap.Get();
+    }
+    ID3D12Resource* GRLCDirectXTexture::GetResource()
+    {
+        return m_texture.Get();
+    }
+    GRL_RESULT GRLCDirectXTexture::AddRef()
     {
         __Ref_Cnt++;
         return GRL_FALSE;
     }
-
-    GRL_RESULT GRLCDirectXDepthMap::Release()
+    GRL_RESULT GRLCDirectXTexture::Release()
     {
         __Ref_Cnt--;
         if (!__Ref_Cnt)
             delete this;
         return GRL_FALSE;
+    }
+    void GRLCDirectXTexture::__build_resource(ID3D12Device* device)
+    {
+        CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        CD3DX12_RESOURCE_DESC d3dx12_resource_desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R32G32B32A32_FLOAT, m_width, m_height
+        ,1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
+        
+        GRLComCall(
+            device->CreateCommittedResource(
+                &d3dx12_heap_properties,
+                D3D12_HEAP_FLAG_NONE,
+                &d3dx12_resource_desc,
+                D3D12_RESOURCE_STATE_COMMON,
+                nullptr,
+                IID_PPV_ARGS(&m_texture)
+            ));
+        
+
+        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        rtvHeapDesc.NumDescriptors = 1;
+        GRLComCall(device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
+
+        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+
+        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        srvHeapDesc.NumDescriptors = 1;
+        GRLComCall(device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srvHeap)));
+
+        
+        device->CreateRenderTargetView(m_texture.Get(), nullptr, m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+
+        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srvDesc.Format = d3dx12_resource_desc.Format;
+        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Texture2D.MipLevels = 1;
+        device->CreateShaderResourceView(m_texture.Get(), nullptr, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
     }
 }

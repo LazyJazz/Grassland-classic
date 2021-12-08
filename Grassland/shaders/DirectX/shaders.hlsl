@@ -27,6 +27,10 @@ PSInput VSMain(
 	return res;
 }
 
+Texture2D g_texture : register(t0);
+SamplerState g_sampler : register(s0);
+
+
 struct PSOutput
 {
 	float4 Color0 : SV_TARGET0;
@@ -38,6 +42,11 @@ struct PSOutput
 PSOutput PSMain(PSInput input)
 {
 	PSOutput res;
-	res.Color0 = input.TexCoord;
+	//res.Color0 = input.TexCoord;
+	res.Color0 = g_texture.Sample(g_sampler, input.TexCoord.xy);
+	if (res.Color0.x == 0.0 && res.Color0.y == 0.0 && res.Color0.z == 0.0)
+	{
+		//res.Color0 = input.TexCoord;
+	}
 	return res;
 }

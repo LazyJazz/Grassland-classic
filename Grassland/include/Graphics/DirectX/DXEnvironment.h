@@ -17,6 +17,7 @@ namespace Grassland
 		virtual HWND GetHWnd();
 		virtual ID3D12GraphicsCommandList* StartDraw();
 		virtual void EndDraw();
+		virtual void Present(uint32_t enableInterval);
 		virtual ID3D12GraphicsCommandList* GetCommandList();
 		virtual ID3D12Device* GetDevice();
 		virtual void GetWindowSize(uint32_t* width, uint32_t* height);
@@ -25,18 +26,23 @@ namespace Grassland
 		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetBackFrameRTVHandle();
 		virtual ID3D12Resource* GetFrameResource();
 		virtual ID3D12Resource* GetFrameResource(int frameIndex);
+		virtual void Resize(uint32_t width, uint32_t height);
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
+		virtual void WaitForGpu();
+		virtual void MoveToNextFrame();
 	private:
 		static LRESULT WINAPI GRLDirectXEnvironmentProcFunc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 		GRL_RESULT OnInit();
+		GRL_RESULT OnResize(uint32_t width, uint32_t height);
 		GRL_RESULT LoadPipeline();
 
 		GRL_RESULT __create_d3d12_device();
 		GRL_RESULT __create_swapchain();
 		GRL_RESULT __create_command_queue();
 		GRL_RESULT __create_fence();
+		GRL_RESULT __build_rtvResources();
 
 		void WaitForPreviousFrame();
 
@@ -47,15 +53,13 @@ namespace Grassland
 		ComPtr<ID3D12Resource> m_renderTargets[GRLFrameCount];
 		ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 		ComPtr<ID3D12Fence> m_fence;
-		CD3DX12_RECT m_scissorRect;
-		CD3DX12_VIEWPORT m_viewport;
 		ComPtr<ID3D12CommandQueue> m_commandQueue;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		ComPtr<ID3D12GraphicsCommandList> m_commandList;
 		HANDLE m_fenceEvent;
 		uint32_t m_width, m_height;
 		uint32_t m_frameIndex;
-		uint64_t m_fenceValue;
+		uint64_t m_fenceValues[GRLFrameCount];
 
 		uint32_t __Ref_Cnt;
 	};
@@ -63,12 +67,12 @@ namespace Grassland
 	class GRLCDirectXBuffer : public GRLIBase
 	{
 	public:
-		GRLCDirectXBuffer(GRLCDirectXEnvironment * pEnvironment, uint64_t size);
+		GRLCDirectXBuffer(GRLCDirectXEnvironment* pEnvironment, uint64_t size, uint32_t uploadBuffer = 1, D3D12_RESOURCE_STATES resourceState = D3D12_RESOURCE_STATE_GENERIC_READ);
 		virtual ID3D12Resource* GetResource();
 		virtual D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32_t stride);
 		virtual D3D12_INDEX_BUFFER_VIEW GetIndexBufferView();
 		virtual uint64_t GetBufferSize();
-		virtual void SetBufferData(void * pData, uint64_t data_size, uint64_t buffer_offset);
+		virtual GRL_RESULT SetBufferData(void * pData, uint64_t data_size, uint64_t buffer_offset);
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
 	private:
@@ -102,12 +106,20 @@ namespace Grassland
 	class GRLCDirectXTexture : public GRLIBase
 	{
 	public:
+		GRLCDirectXTexture(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height, void* pData);
+		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetRTV();
+		virtual D3D12_GPU_DESCRIPTOR_HANDLE GetSRV();
+		virtual ID3D12DescriptorHeap* GetSRVHeap();
+		virtual ID3D12Resource* GetResource();
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
 	private:
+		void __build_resource(ID3D12Device * device);
 		ComPtr<ID3D12Resource> m_texture;
 		ComPtr<ID3D12DescriptorHeap> m_srvHeap;
 		ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+		uint32_t m_width;
+		uint32_t m_height;
 		uint32_t __Ref_Cnt;
 	};
 
@@ -115,10 +127,13 @@ namespace Grassland
 	{
 	public:
 		GRLCDirectXDepthMap(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height);
+		virtual ID3D12Resource* GetResource();
 		virtual D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle();
+		virtual void Resize(uint32_t width, uint32_t height);
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
 	private:
+		void __build_resource(ID3D12Device* device);
 		ComPtr<ID3D12Resource> m_depthMap;
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
 		uint32_t __Ref_Cnt;
