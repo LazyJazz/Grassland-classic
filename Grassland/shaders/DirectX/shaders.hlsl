@@ -1,7 +1,8 @@
 cbuffer GlobalSettings: register(b0)
 {
 	float4x4 transform;
-	float __padding[48];
+	int mode;
+	float __padding[47];
 };
 
 //Texture2D g_texture : register(t0);
@@ -10,8 +11,8 @@ cbuffer GlobalSettings: register(b0)
 struct PSInput
 {
 	float4 Position : SV_POSITION;
-	float4 Normal : NORMAL;
-	float4 TexCoord : TEXCOORD;
+	float4 Normal : NORMAL0;
+	float4 TexCoord : TEXCOORD0;
 };
 
 PSInput VSMain(
@@ -22,7 +23,7 @@ PSInput VSMain(
 {
 	PSInput res;
 	res.Position = mul(transform, pos);
-	res.Normal = norm;
+	res.Normal = mul(transform, norm);
 	res.TexCoord = texcoord;
 	return res;
 }
@@ -43,10 +44,17 @@ PSOutput PSMain(PSInput input)
 {
 	PSOutput res;
 	//res.Color0 = input.TexCoord;
-	res.Color0 = g_texture.Sample(g_sampler, input.TexCoord.xy);
-	if (res.Color0.x == 0.0 && res.Color0.y == 0.0 && res.Color0.z == 0.0)
+	//res.Color0 = input.Position;
+	if (mode)
 	{
-		//res.Color0 = input.TexCoord;
+		float scale = max(dot(normalize(input.Normal), normalize(float4(0.0, 1.0, -1.0, 0.0))), 0.0) * 0.5;
+		scale += 0.5;
+		res.Color0 = g_texture.Sample(g_sampler, input.TexCoord.xy);
+		res.Color0 = float4(res.Color0.xyz * scale, res.Color0.w);
+		//res.Color0 = (input.Normal + 1.0) * 0.5;
 	}
+	else res.Color0 = input.TexCoord;
+
+
 	return res;
 }

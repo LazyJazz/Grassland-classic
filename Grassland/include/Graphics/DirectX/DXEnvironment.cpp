@@ -527,6 +527,13 @@ namespace Grassland
             psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
             //psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
             psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+            //psoDesc.BlendState.IndependentBlendEnable = TRUE;
+            //for (int i = 0; i < numberRenderTarget; i++)
+            //{
+            //    psoDesc.BlendState.RenderTarget[i].BlendEnable = TRUE;
+            //    psoDesc.BlendState.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
+            //    psoDesc.BlendState.RenderTarget[i].DestBlend = D3D12_BLEND_DEST_ALPHA;
+            //}
             psoDesc.DepthStencilState.DepthEnable = FALSE;
             psoDesc.DepthStencilState.StencilEnable = FALSE;
             if (enableDepthTest)
@@ -756,7 +763,7 @@ namespace Grassland
                 &d3dx12_heap_properties,
                 D3D12_HEAP_FLAG_NONE,
                 &d3dx12_resource_desc,
-                D3D12_RESOURCE_STATE_COMMON,
+                D3D12_RESOURCE_STATE_COPY_DEST,
                 nullptr,
                 IID_PPV_ARGS(&m_texture)
             ));
@@ -785,6 +792,6 @@ namespace Grassland
         srvDesc.Format = d3dx12_resource_desc.Format;
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
-        device->CreateShaderResourceView(m_texture.Get(), nullptr, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
+        device->CreateShaderResourceView(m_texture.Get(), &srvDesc, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
     }
 }
