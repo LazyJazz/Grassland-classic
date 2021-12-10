@@ -742,6 +742,7 @@ namespace Grassland
             device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap))
         );
 
+
         device->CreateDepthStencilView(m_depthMap.Get(), nullptr, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
     }
     GRLCDirectXTexture::GRLCDirectXTexture(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height, void* pData)

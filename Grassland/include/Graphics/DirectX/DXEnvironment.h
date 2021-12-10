@@ -137,6 +137,7 @@ namespace Grassland
 		void __build_resource(ID3D12Device* device);
 		ComPtr<ID3D12Resource> m_depthMap;
 		ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
+		ComPtr<ID3D12DescriptorHeap> m_srvHeap;
 		uint32_t __Ref_Cnt;
 		uint32_t m_width;
 		uint32_t m_height;
