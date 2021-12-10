@@ -408,7 +408,8 @@ namespace Grassland
         DXGI_FORMAT* formats, 
         uint32_t numberConstantBuffer, 
         uint32_t numberTexture,
-        bool enableDepthTest
+        bool enableDepthTest,
+        bool enableBlend
     )
     {
         __Ref_Cnt = 1;
@@ -477,7 +478,7 @@ namespace Grassland
             for (int index = 0; index < numberConstantBuffer; index++)
                 rootParameters[index + numberTexture].InitAsConstantBufferView(index);
 
-            D3D12_STATIC_SAMPLER_DESC sampler = {};
+            D3D12_STATIC_SAMPLER_DESC sampler = {}, samplers[2];
             sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
             sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
             sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
@@ -491,15 +492,31 @@ namespace Grassland
             sampler.ShaderRegister = 0;
             sampler.RegisterSpace = 0;
             sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-
+            samplers[0] = sampler;
+            sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+            sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+            sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+            sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+            sampler.MipLODBias = 0;
+            sampler.MaxAnisotropy = 0;
+            sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+            sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+            sampler.MinLOD = 0.0f;
+            sampler.MaxLOD = D3D12_FLOAT32_MAX;
+            sampler.ShaderRegister = 1;
+            sampler.RegisterSpace = 0;
+            samplers[1] = sampler;
 
 
             CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-            rootSignatureDesc.Init_1_1(numberTexture + numberConstantBuffer, rootParameters, numberTexture ? 1 : 0, numberTexture ? &sampler : nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+            rootSignatureDesc.Init_1_1(numberTexture + numberConstantBuffer, rootParameters, numberTexture ? 2 : 0, numberTexture ? (samplers) : nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
             ComPtr<ID3DBlob> signature;
             ComPtr<ID3DBlob> error;
-            GRLComCall(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
+            if (FAILED(GRLComCall(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error))))
+            {
+                std::cout << "[Create Root Signature ERROR] : \n" << (char*)error->GetBufferPointer() << std::endl;
+            }
             GRLComCall(device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
 
             if (ranges)
@@ -519,6 +536,22 @@ namespace Grassland
                 { "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
             };
 
+            D3D12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+            if(enableBlend)
+            {
+                blendDesc.AlphaToCoverageEnable = FALSE;
+                blendDesc.IndependentBlendEnable = FALSE;
+                blendDesc.RenderTarget[0].BlendEnable = TRUE;
+                blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
+                blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+                blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+                blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+                blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+                blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+                blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+            }
+
             D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
             psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
             psoDesc.pRootSignature = m_rootSignature.Get();
@@ -526,14 +559,9 @@ namespace Grassland
             psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
             psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
             //psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-            psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-            //psoDesc.BlendState.IndependentBlendEnable = TRUE;
-            //for (int i = 0; i < numberRenderTarget; i++)
-            //{
-            //    psoDesc.BlendState.RenderTarget[i].BlendEnable = TRUE;
-            //    psoDesc.BlendState.RenderTarget[i].BlendOp = D3D12_BLEND_OP_ADD;
-            //    psoDesc.BlendState.RenderTarget[i].DestBlend = D3D12_BLEND_DEST_ALPHA;
-            //}
+            psoDesc.BlendState = blendDesc; //CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
+            
             psoDesc.DepthStencilState.DepthEnable = FALSE;
             psoDesc.DepthStencilState.StencilEnable = FALSE;
             if (enableDepthTest)

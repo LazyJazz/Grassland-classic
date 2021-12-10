@@ -91,7 +91,8 @@ namespace Grassland
 			DXGI_FORMAT* formats,
 			uint32_t numberConstantBuffer,
 			uint32_t numberTexture,
-			bool enableDepthTest = false
+			bool enableDepthTest = false,
+			bool enableBlend = false
 			);
 		virtual ID3D12RootSignature* GetRootSignature();
 		virtual ID3D12PipelineState* GetPipelineState();

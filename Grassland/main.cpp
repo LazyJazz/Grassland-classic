@@ -42,14 +42,25 @@ int main()
     SetConsoleOutputCP(936);
 
     GRLCDirectXEnvironment environment(1280, 720, "Grassland D3D12", false);
-    DXGI_FORMAT formats[] = { DXGI_FORMAT_R8G8B8A8_UNORM };
-    GRLCDirectXPipelineStateAndRootSignature *psoAndRootSignature = new GRLCDirectXPipelineStateAndRootSignature(
+    DXGI_FORMAT formats[] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32G32B32A32_FLOAT};
+    GRLCDirectXPipelineStateAndRootSignature* psoAndRootSignature = new GRLCDirectXPipelineStateAndRootSignature(
         &environment,
         "shaders\\DirectX\\shaders.hlsl",
         1,
         formats,
         1,
         1,
+        true,
+        true
+    );
+    GRLCDirectXPipelineStateAndRootSignature* psoAndRootSignatureTex = new GRLCDirectXPipelineStateAndRootSignature(
+        &environment,
+        "shaders\\DirectX\\shaders.hlsl",
+        1,
+        formats + 1,
+        1,
+        1,
+        true,
         true
     );
 
@@ -130,8 +141,8 @@ int main()
     GRLCDirectXBuffer* pConstantBufferTex = new GRLCDirectXBuffer(&environment, sizeof(cb));
 
     GRLCDirectXDepthMap* pDepthMap = new GRLCDirectXDepthMap(&environment, 1280, 720);
-    GRLCDirectXDepthMap* pDepthMapTex = new GRLCDirectXDepthMap(&environment, 1024, 1024);
-    GRLCDirectXTexture* pTexture = new GRLCDirectXTexture(&environment, 1024, 1024, nullptr);
+    GRLCDirectXDepthMap* pDepthMapTex = new GRLCDirectXDepthMap(&environment, 32, 32);
+    GRLCDirectXTexture* pTexture = new GRLCDirectXTexture(&environment, 32, 32, nullptr);
     //GRLCDirectXBuffer* pTextureUpload = new GRLCDirectXBuffer(&environment, GetRequiredIntermediateSize(pTexture->GetResource(), 0, 1), 1);
 
     //GRLColor* pData = new GRLColor[256*256];
@@ -220,8 +231,8 @@ int main()
         //std::cout << "[" << scr_width << ", " << scr_height << "]" << std::endl;
         CD3DX12_VIEWPORT viewPort(0.0f, 0.0f, (float)scr_width, (float)scr_height);
         CD3DX12_RECT scissorRect(0, 0, (LONG)scr_width, (LONG)scr_height);
-        CD3DX12_VIEWPORT viewPortTex(0.0f, 0.0f, (float)1024, (float)1024);
-        CD3DX12_RECT scissorRectTex(0, 0, (LONG)1024, (LONG)1024);
+        CD3DX12_VIEWPORT viewPortTex(0.0f, 0.0f, (float)32, (float)32);
+        CD3DX12_RECT scissorRectTex(0, 0, (LONG)32, (LONG)32);
 
         rot *= GRLTransformRotation(GRLRadian(0.03f), GRLRadian(0.02f), GRLRadian(0.01f));
         rotTex *= GRLTransformRotation(GRLRadian(0.1f), GRLRadian(0.2f), GRLRadian(0.3f));
@@ -245,8 +256,8 @@ int main()
         DirectX::XMStoreFloat4(&rgba, DirectX::XMColorHSVToRGB(DirectX::XMLoadFloat4(&hsv)));
         //float clearcolor[4] = { rgba.x,rgba.y,rgba.z,1.0 };
         ID3D12GraphicsCommandList * commandList = environment.StartDraw();
-        commandList->SetPipelineState(psoAndRootSignature->GetPipelineState());
-        commandList->SetGraphicsRootSignature(psoAndRootSignature->GetRootSignature());
+        commandList->SetPipelineState(psoAndRootSignatureTex->GetPipelineState());
+        commandList->SetGraphicsRootSignature(psoAndRootSignatureTex->GetRootSignature());
         CD3DX12_RESOURCE_BARRIER resourceBarrier[8];
 
         pConstantBuffer->SetBufferData(&cb, sizeof(cb), 0);
