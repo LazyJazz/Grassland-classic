@@ -11,14 +11,14 @@ cbuffer GlobalSettings: register(b0)
 struct PSInput
 {
 	float4 Position : SV_POSITION;
-	float4 Normal : NORMAL0;
-	float4 TexCoord : TEXCOORD0;
+	float4 Normal : DATA0;
+	float4 TexCoord : DATA1;
 };
 
 PSInput VSMain(
-	float4 pos : POSITION,
-	float4 norm : NORMAL,
-	float4 texcoord : TEXCOORD
+	float4 pos : DATA0,
+	float4 norm : DATA1,
+	float4 texcoord : DATA2
 	)
 {
 	PSInput res;

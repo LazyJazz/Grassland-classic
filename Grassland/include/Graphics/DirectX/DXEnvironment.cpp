@@ -531,9 +531,9 @@ namespace Grassland
         {
             D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
             {
-                { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-                { "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-                { "TEXCOORD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+                { "DATA", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+                { "DATA", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+                { "DATA", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
             };
 
             D3D12_BLEND_DESC blendDesc = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -604,7 +604,7 @@ namespace Grassland
         __Ref_Cnt = 1;
         m_size = size;
         ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
-        CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(uploadBuffer ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_DEFAULT);
+        CD3DX12_HEAP_PROPERTIES d3dx12_heap_properties = CD3DX12_HEAP_PROPERTIES(uploadBuffer ? ((uploadBuffer == 1) ? D3D12_HEAP_TYPE_UPLOAD : D3D12_HEAP_TYPE_READBACK) : D3D12_HEAP_TYPE_DEFAULT);
         CD3DX12_RESOURCE_DESC d3dx12_resource_desc = CD3DX12_RESOURCE_DESC::Buffer(size);
         GRLComCall(device->CreateCommittedResource(
             &d3dx12_heap_properties,
