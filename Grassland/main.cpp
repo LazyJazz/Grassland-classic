@@ -36,111 +36,6 @@ struct ConstantBuffer
     _Ty content;
     char padding[CBPaddingSize(sizeof(_Ty))];
 };
-inline UINT64 StoreSubresources(
-    _In_ ID3D12GraphicsCommandList* pCmdList,
-    _In_ ID3D12Resource* pDestinationResource,
-    _In_ ID3D12Resource* pIntermediate,
-    _In_range_(0, D3D12_REQ_SUBRESOURCES) UINT FirstSubresource,
-    _In_range_(0, D3D12_REQ_SUBRESOURCES - FirstSubresource) UINT NumSubresources,
-    UINT64 RequiredSize,
-    _In_reads_(NumSubresources) const D3D12_PLACED_SUBRESOURCE_FOOTPRINT* pLayouts,
-    _In_reads_(NumSubresources) const UINT* pNumRows,
-    _In_reads_(NumSubresources) const UINT64* pRowSizesInBytes,
-    _In_reads_(NumSubresources) const D3D12_SUBRESOURCE_DATA* pSrcData) noexcept;
-
-inline UINT64 StoreSubresources(
-    _In_ ID3D12GraphicsCommandList* pCmdList,
-    _In_ ID3D12Resource* pDestinationResource,
-    _In_ ID3D12Resource* pIntermediate,
-    UINT64 IntermediateOffset,
-    _In_range_(0, D3D12_REQ_SUBRESOURCES) UINT FirstSubresource,
-    _In_range_(0, D3D12_REQ_SUBRESOURCES - FirstSubresource) UINT NumSubresources,
-    _In_reads_(NumSubresources) const D3D12_SUBRESOURCE_DATA* pSrcData) noexcept
-{
-    UINT64 RequiredSize = 0;
-    auto MemToAlloc = static_cast<UINT64>(sizeof(D3D12_PLACED_SUBRESOURCE_FOOTPRINT) + sizeof(UINT) + sizeof(UINT64)) * NumSubresources;
-    if (MemToAlloc > SIZE_MAX)
-    {
-        return 0;
-    }
-    void* pMem = HeapAlloc(GetProcessHeap(), 0, static_cast<SIZE_T>(MemToAlloc));
-    if (pMem == nullptr)
-    {
-        return 0;
-    }
-    auto pLayouts = static_cast<D3D12_PLACED_SUBRESOURCE_FOOTPRINT*>(pMem);
-    auto pRowSizesInBytes = reinterpret_cast<UINT64*>(pLayouts + NumSubresources);
-    auto pNumRows = reinterpret_cast<UINT*>(pRowSizesInBytes + NumSubresources);
-
-    auto Desc = pDestinationResource->GetDesc();
-    ID3D12Device* pDevice = nullptr;
-    pDestinationResource->GetDevice(IID_ID3D12Device, reinterpret_cast<void**>(&pDevice));
-    pDevice->GetCopyableFootprints(&Desc, FirstSubresource, NumSubresources, IntermediateOffset, pLayouts, pNumRows, pRowSizesInBytes, &RequiredSize);
-    pDevice->Release();
-
-    UINT64 Result = StoreSubresources(pCmdList, pDestinationResource, pIntermediate, FirstSubresource, NumSubresources, RequiredSize, pLayouts, pNumRows, pRowSizesInBytes, pSrcData);
-    HeapFree(GetProcessHeap(), 0, pMem);
-    return Result;
-}
-
-inline UINT64 StoreSubresources(
-    _In_ ID3D12GraphicsCommandList* pCmdList,
-    _In_ ID3D12Resource* pDestinationResource,
-    _In_ ID3D12Resource* pIntermediate,
-    _In_range_(0, D3D12_REQ_SUBRESOURCES) UINT FirstSubresource,
-    _In_range_(0, D3D12_REQ_SUBRESOURCES - FirstSubresource) UINT NumSubresources,
-    UINT64 RequiredSize,
-    _In_reads_(NumSubresources) const D3D12_PLACED_SUBRESOURCE_FOOTPRINT* pLayouts,
-    _In_reads_(NumSubresources) const UINT* pNumRows,
-    _In_reads_(NumSubresources) const UINT64* pRowSizesInBytes,
-    _In_reads_(NumSubresources) const D3D12_SUBRESOURCE_DATA* pSrcData) noexcept
-{
-    // Minor validation
-    auto IntermediateDesc = pIntermediate->GetDesc();
-    auto DestinationDesc = pDestinationResource->GetDesc();
-    if (IntermediateDesc.Dimension != D3D12_RESOURCE_DIMENSION_BUFFER ||
-        IntermediateDesc.Width < RequiredSize + pLayouts[0].Offset ||
-        RequiredSize > SIZE_T(-1) ||
-        (DestinationDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER &&
-            (FirstSubresource != 0 || NumSubresources != 1)))
-    {
-        return 0;
-    }
-
-    BYTE* pData;
-    HRESULT hr = pIntermediate->Map(0, nullptr, reinterpret_cast<void**>(&pData));
-    if (FAILED(hr))
-    {
-        return 0;
-    }
-
-    for (UINT i = 0; i < NumSubresources; ++i)
-    {
-        if (pRowSizesInBytes[i] > SIZE_T(-1)) return 0;
-        D3D12_MEMCPY_DEST DestData = { pData + pLayouts[i].Offset, pLayouts[i].Footprint.RowPitch, SIZE_T(pLayouts[i].Footprint.RowPitch) * SIZE_T(pNumRows[i]) };
-        MemcpySubresource(&DestData, &pSrcData[i], static_cast<SIZE_T>(pRowSizesInBytes[i]), pNumRows[i], pLayouts[i].Footprint.Depth);
-    }
-    pIntermediate->Unmap(0, nullptr);
-
-    if (DestinationDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
-    {
-        pCmdList->CopyBufferRegion(
-            pDestinationResource, 0, pIntermediate, pLayouts[0].Offset, pLayouts[0].Footprint.Width);
-    }
-    else
-    {
-        for (UINT i = 0; i < NumSubresources; ++i)
-        {
-            CD3DX12_TEXTURE_COPY_LOCATION Dst(pDestinationResource, i + FirstSubresource);
-            CD3DX12_TEXTURE_COPY_LOCATION Src(pIntermediate, pLayouts[i]);
-            std::cout << "CopyTextureRegion: " << i + FirstSubresource << " " << pLayouts[i].Footprint.Width << " " << pLayouts[i].Footprint.Height << " "
-                << pLayouts[i].Footprint.RowPitch << " " << pLayouts[i].Footprint.Depth << 
-                " " << pLayouts[i].Offset << std::endl;
-            pCmdList->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
-        }
-    }
-    return RequiredSize;
-}
 
 int main()
 {
@@ -283,7 +178,7 @@ int main()
         subresource_data.pData = pData;
         subresource_data.RowPitch = 256 * 16;
         subresource_data.SlicePitch = 256 * 16 * 256;
-        StoreSubresources(commandList, pTexture->GetResource(), pTextureUpload->GetResource(), 0, 0, 1, &subresource_data);
+        UpdateSubresources(commandList, pTexture->GetResource(), pTextureUpload->GetResource(), 0, 0, 1, &subresource_data);
         //commandList->CopyBufferRegion(pTexture->GetResource(), 0, pTextureUpload->GetResource(), 0, pTextureUpload->GetBufferSize());
         //commandList->ResourceBarrier(1, rb + 1);
 
@@ -441,19 +336,19 @@ int main()
         environment.EndDraw();
         environment.Present(0);
 
-        {
-            GRLColor* pBuffer;
-            GRLIImage* pImage;
-            GRLCreateImage(256, 256, &pImage);
-            pImage->GetImageBuffer(&pBuffer);
-            CD3DX12_RANGE range(0, 256 * 256 * 16);
-            GRLColor* pSrcBuffer;
-            GRLComCall(pTextureReadback->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pSrcBuffer)));
-            memcpy(pBuffer, pSrcBuffer, 256 * 256 * 16);
-            pTextureReadback->GetResource()->Unmap(0, nullptr);
-            pImage->StoreBMP("texture.bmp");
-            pImage->Release();
-        }
+        //{
+        //    GRLColor* pBuffer;
+        //    GRLIImage* pImage;
+        //    GRLCreateImage(256, 256, &pImage);
+        //    pImage->GetImageBuffer(&pBuffer);
+        //    CD3DX12_RANGE range(0, 256 * 256 * 16);
+        //    GRLColor* pSrcBuffer;
+        //    GRLComCall(pTextureReadback->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pSrcBuffer)));
+        //    memcpy(pBuffer, pSrcBuffer, 256 * 256 * 16);
+        //    pTextureReadback->GetResource()->Unmap(0, nullptr);
+        //    pImage->StoreBMP("texture.bmp");
+        //    pImage->Release();
+        //}
     }
 
     pVertexBuffer->Release();
