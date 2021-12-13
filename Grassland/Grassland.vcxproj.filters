@@ -278,6 +278,9 @@
     <ClInclude Include="include\Graphics\DirectX\DXEnvironment.h">
       <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\Graphics3D.h">
+      <Filter>Headers\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
