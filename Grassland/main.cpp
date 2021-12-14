@@ -37,20 +37,39 @@ struct ConstantBuffer
     char padding[CBPaddingSize(sizeof(_Ty))];
 };
 
+int main2();
+
 int main()
 {
     SetProcessDPIAware();
     SetConsoleOutputCP(936);
     GRLPtr<GRLIGraphicsEnvironment> pEnvironment;
-
+    GRLPtr<GRLIGraphicsPipelineState> pPipelineState;
 
     GRLCreateGraphicsEnvironment(1280, 720, "Grassland Graphics", GRL_GRAPHICS_API::D3D12, &pEnvironment);
+
+
+    GRL_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc;
+    pipelineStateDesc.enableBlend = 1;
+    pipelineStateDesc.enableDepthTest = 1;
+    pipelineStateDesc.enableCullFace = 1;
+    pipelineStateDesc.inputElementLayout = new GRL_FORMAT[3];
+    pipelineStateDesc.inputElementLayout[0] = GRL_FORMAT::FLOAT4;
+    pipelineStateDesc.inputElementLayout[1] = GRL_FORMAT::FLOAT4;
+    pipelineStateDesc.inputElementLayout[2] = GRL_FORMAT::FLOAT4;
+    pipelineStateDesc.numInputElement = 3;
+    pipelineStateDesc.numConstantBuffer = 1;
+    pipelineStateDesc.numRenderTargets = 1;
+    pipelineStateDesc.numTexture = 1;
+    pipelineStateDesc.renderTargetFormatsList[0] = GRL_FORMAT::BYTE4;
+    pEnvironment->CreatePipelineState("shaders\\DirectX\\shaders.hlsl", &pipelineStateDesc, &pPipelineState);
 
     while (!pEnvironment->PollEvents())
     {
         pEnvironment->BeginDraw();
         pEnvironment->SetInternalRenderTarget();
         pEnvironment->ClearRenderTargets(GRLColor(0.0,1.0,0.0,1.0));
+        pEnvironment->ApplyPipelineState(pPipelineState.Get());
         pEnvironment->EndDraw();
         pEnvironment->Present(1);
     }

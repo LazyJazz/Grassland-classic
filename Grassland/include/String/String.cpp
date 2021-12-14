@@ -71,7 +71,7 @@ namespace Grassland
 				len++;
 			}
 		}
-		return result + L'\0\0';
+		return result;// +L'\0\0';
 	}
 	std::string GRLStringUnicodetoUTF8(std::wstring unicode_str)
 	{
@@ -97,6 +97,6 @@ namespace Grassland
 				res += (char)(c&0b01111111);
 			}
 		}
-		return res + '\0';
+		return res;// +'\0';
 	}
 }

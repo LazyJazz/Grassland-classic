@@ -5,8 +5,7 @@ namespace Grassland
 	GRLCD3D12PipelineState::GRLCD3D12PipelineState(
 		GRLCD3D12Environment* pEnvironment, 
 		const char* shader_path,
-		GRL_GRAPHICS_PIPELINE_STATE_DESC* desc,
-		GRLIGraphicsPipelineState** ppPipelineState)
+		GRL_GRAPHICS_PIPELINE_STATE_DESC* desc)
 	{
 		__Ref_Cnt = 1;
 		ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
@@ -435,7 +434,7 @@ namespace Grassland
 		GRLIGraphicsPipelineState** ppPipelineState)
 	{
 		if (m_duringDraw) GRL_TRUE;
-
+		*ppPipelineState = new GRLCD3D12PipelineState(this, shader_path, desc);
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCD3D12Environment::BeginDraw()
@@ -449,9 +448,15 @@ namespace Grassland
 		m_duringDraw = true;
 		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCD3D12Environment::SetPipelineState(GRLIGraphicsPipelineState* pPipelineState)
+	GRL_RESULT GRLCD3D12Environment::ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState)
 	{
-		return GRL_RESULT();
+		if (!m_duringDraw) return GRL_TRUE;
+		GRLPtr<GRLCD3D12PipelineState> pGRLD3D12PipelineState;
+		if (pPipelineState->QueryInterface(GRLID_PPV_ARGS(&pGRLD3D12PipelineState)))
+			return GRL_TRUE;
+		m_commandList->SetPipelineState(pGRLD3D12PipelineState->GetPipelineState());
+		m_commandList->SetGraphicsRootSignature(pGRLD3D12PipelineState->GetRootSignature());
+		return GRL_FALSE;
 	}
 	LRESULT __stdcall GRLCD3D12Environment::GRLD3D12EnvironmentProcFunc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{

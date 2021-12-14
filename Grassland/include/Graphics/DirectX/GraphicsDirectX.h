@@ -17,11 +17,6 @@
 namespace Grassland
 {
 	const int GRLD3D12FrameCount = 2;
-//#define GRLID_CD3D12Environment						GRLUUID("877751a2-5308-416e-9fee-c981d70964d5")
-//#define GRLID_CD3D12Buffer							GRLUUID("fc0f8ae9-520d-44c5-9d85-54c4066dd6f7")
-//#define GRLID_CD3D12Texture							GRLUUID("7bb45f0c-5e72-459e-82a7-20c3160720d8")
-//#define GRLID_CD3D12DepthMap						GRLUUID("ea8ca3e4-1203-4aa3-b86f-7a60f3e5ad3f")
-//#define GRLID_CD3D12PipelineState					GRLUUID("70519a5b-9f40-491d-9bc4-ecd2676d966b")
 
 	class GRLCD3D12Environment;
 	class GRLCD3D12Buffer;
@@ -53,7 +48,7 @@ namespace Grassland
 			GRL_GRAPHICS_PIPELINE_STATE_DESC* desc,
 			GRLIGraphicsPipelineState** ppPipelineState) override;
 		virtual GRL_RESULT BeginDraw() override;
-		virtual GRL_RESULT SetPipelineState(GRLIGraphicsPipelineState* pPipelineState) override;
+		virtual GRL_RESULT ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState) override;
 		virtual GRL_RESULT SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, uint64_t size, void* pData) override;
 		virtual GRL_RESULT SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture) override;
@@ -169,8 +164,7 @@ namespace Grassland
 		GRLCD3D12PipelineState(
 			GRLCD3D12Environment * pEnvironment,
 			const char* shader_path,
-			GRL_GRAPHICS_PIPELINE_STATE_DESC* desc,
-			GRLIGraphicsPipelineState** ppPipelineState);
+			GRL_GRAPHICS_PIPELINE_STATE_DESC* desc);
 		virtual GRL_RESULT AddRef() override;
 		virtual GRL_RESULT Release() override;
 		virtual GRL_RESULT QueryInterface(GRLUUID Uuid, void** ppObject) override;

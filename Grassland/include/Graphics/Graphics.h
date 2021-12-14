@@ -88,7 +88,7 @@ namespace Grassland
 			GRL_GRAPHICS_PIPELINE_STATE_DESC *desc,
 			GRLIGraphicsPipelineState** ppPipelineState) = 0;
 		virtual GRL_RESULT BeginDraw() = 0;
-		virtual GRL_RESULT SetPipelineState(GRLIGraphicsPipelineState* pPipelineState) = 0;
+		virtual GRL_RESULT ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState) = 0;
 		virtual GRL_RESULT SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, uint64_t size, void* pData) = 0;
 		virtual GRL_RESULT SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture) = 0;
