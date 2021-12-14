@@ -129,6 +129,15 @@
     <ClCompile Include="include\Graphics\DirectX\DXHeader.cpp">
       <Filter>Sources\Graphics\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="include\GrasslandDecl.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\Graphics.cpp">
+      <Filter>Sources\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\DirectX\GraphicsDirectX.cpp">
+      <Filter>Sources\Graphics\DirectX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Grassland.h">
@@ -278,8 +287,8 @@
     <ClInclude Include="include\Graphics\DirectX\DXEnvironment.h">
       <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="include\Graphics\Graphics3D.h">
-      <Filter>Headers\Graphics</Filter>
+    <ClInclude Include="include\Graphics\DirectX\GraphicsDirectX.h">
+      <Filter>Headers\Graphics\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

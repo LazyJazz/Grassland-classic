@@ -215,8 +215,6 @@ namespace Grassland
 		GRLCImage(int32_t width, int32_t height);
 		~GRLCImage();
 
-		virtual GRL_RESULT AddRef() override;
-		virtual GRL_RESULT Release() override;
 		virtual GRL_RESULT Resize(int32_t width, int32_t height) const override;
 		virtual int32_t GetHeight() const override;
 		virtual int32_t GetWidth() const override;
@@ -224,6 +222,9 @@ namespace Grassland
 		virtual GRL_RESULT GetImageBuffer(GRLColor ** ppBuffer) const override;
 		virtual GRL_RESULT LoadBMP(const char* __bmp_file_path) const override;
 		virtual GRL_RESULT StoreBMP(const char* __bmp_file_path) const override;
+		virtual GRL_RESULT AddRef() override;
+		virtual GRL_RESULT Release() override;
+		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject) override;
 	private:
 		Graphics::Util::Image * pImage;
 		int32_t __Ref_Cnter;
@@ -272,6 +273,14 @@ namespace Grassland
 		{
 			delete this;
 		}
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLCImage::QueryInterface(GRLUUID uuid, void** ppObject)
+	{
+		if (uuid == GRLID_Image) *ppObject = (GRLIImage*)this;
+		else if (uuid == GRLID_IBase) *ppObject = (GRLIBase*)this;
+		else return GRL_TRUE;
+		AddRef();
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCImage::Resize(int32_t width, int32_t height) const

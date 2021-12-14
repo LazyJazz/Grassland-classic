@@ -39,6 +39,26 @@ struct ConstantBuffer
 
 int main()
 {
+    SetProcessDPIAware();
+    SetConsoleOutputCP(936);
+    GRLPtr<GRLIGraphicsEnvironment> pEnvironment;
+
+
+    GRLCreateGraphicsEnvironment(1280, 720, "Grassland Graphics", GRL_GRAPHICS_API::D3D12, &pEnvironment);
+
+    while (!pEnvironment->PollEvents())
+    {
+        pEnvironment->BeginDraw();
+        pEnvironment->SetInternalRenderTarget();
+        pEnvironment->ClearRenderTargets(GRLColor(0.0,1.0,0.0,1.0));
+        pEnvironment->EndDraw();
+        pEnvironment->Present(1);
+    }
+    return 0;
+}
+
+int main2()
+{
     SetConsoleOutputCP(936);
 
     GRLCDirectXEnvironment environment(1280, 720, "Grassland D3D12", false);

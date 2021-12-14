@@ -1,7 +1,10 @@
 #pragma once
 
+#include <cctype>
 #include <cstdint>
 #include <cstdio>
+#include <iostream>
+#include <iomanip>
 
 #define GRLSetErrorInfo puts
 
@@ -11,11 +14,43 @@ namespace Grassland
 #define GRL_TRUE 1
 #define GRL_FALSE 0
 
+	class GRLUUID
+	{
+	public:
+		GRLUUID();
+		GRLUUID(const char* uuid_str);
+		bool operator == (const GRLUUID& __another_uuid) const;
+		friend std::ostream& operator << (std::ostream& os, const GRLUUID& uuid);
+	private:
+		union
+		{
+			uint8_t __uuid_bytes[16];
+			uint32_t __uuid_int32[4];
+			uint64_t __uuid_int64[2];
+		};
+	};
+
+	template<typename GRLInterfaceType, typename keepTemplate>
+	GRLUUID GRLGetUUID(const GRLInterfaceType*);
+	template<typename GRLInterfaceType, typename keepTemplate>
+	GRLUUID GRLGetUUID(const GRLInterfaceType*)
+	{
+		return GRLUUID("00000000-0000-0000-0000-000000000000");
+	}
+
+	class GRLIBase;
+
+#define GRLMakeObjectUUIDAssociate(ObjectType, GRLID_Name, UUID) const GRLUUID GRLID_Name = GRLUUID(UUID); template<typename keepTemplate> GRLUUID GRLGetUUID(const ObjectType*) { return GRLID_Name; }
+#define GRLID_PPV_ARGS(x) GRLGetUUID<void>(*(x)), reinterpret_cast<void**>(x)
+
+	GRLMakeObjectUUIDAssociate(GRLIBase, GRLID_IBase, "53386c00-4617-4105-b7cb-caccfcf34848");
+
 	class GRLIBase
 	{
 	public:
 		virtual GRL_RESULT AddRef() = 0;
 		virtual GRL_RESULT Release() = 0;
+		virtual GRL_RESULT QueryInterface(GRLUUID Uuid, void** ppObject) = 0;
 	};
 
 	template<typename __Ty>

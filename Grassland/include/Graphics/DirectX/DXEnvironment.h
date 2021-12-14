@@ -29,6 +29,7 @@ namespace Grassland
 		virtual void Resize(uint32_t width, uint32_t height);
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
+		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void ** ppObject);
 		virtual void WaitForGpu();
 		virtual void MoveToNextFrame();
 	private:
@@ -75,6 +76,7 @@ namespace Grassland
 		virtual GRL_RESULT SetBufferData(void * pData, uint64_t data_size, uint64_t buffer_offset);
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
+		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject);
 	private:
 		ComPtr<ID3D12Resource> m_buffer;
 		uint64_t m_size;
@@ -98,6 +100,7 @@ namespace Grassland
 		virtual ID3D12PipelineState* GetPipelineState();
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
+		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject);
 	private:
 		ComPtr<ID3D12RootSignature> m_rootSignature;
 		ComPtr<ID3D12PipelineState> m_pipelineState;
@@ -114,6 +117,7 @@ namespace Grassland
 		virtual ID3D12Resource* GetResource();
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
+		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject);
 	private:
 		void __build_resource(ID3D12Device * device);
 		ComPtr<ID3D12Resource> m_texture;
@@ -133,6 +137,7 @@ namespace Grassland
 		virtual void Resize(uint32_t width, uint32_t height);
 		virtual GRL_RESULT AddRef();
 		virtual GRL_RESULT Release();
+		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject);
 	private:
 		void __build_resource(ID3D12Device* device);
 		ComPtr<ID3D12Resource> m_depthMap;

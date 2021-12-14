@@ -51,6 +51,7 @@ namespace Grassland
 		virtual GRL_RESULT LoadBMP(const char * __bmp_file_path) const = 0;
 		virtual GRL_RESULT StoreBMP(const char* __bmp_file_path) const = 0;
 	};
+	GRLMakeObjectUUIDAssociate(GRLIImage, GRLID_Image, "ae91b50d-555a-4fa1-b7cc-10d6df5cd9ab");
 
 	/*
 	* @param width

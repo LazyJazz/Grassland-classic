@@ -63,11 +63,12 @@ namespace Grassland
 
         RECT windowRect = { 0, 0, static_cast<LONG>(screen_width), static_cast<LONG>(screen_height) };
         AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-        
+
+        std::wstring window_title_wc = GRLStringUTF8toUnicode(window_title);
         // Create the window and store a handle to it.
         m_hWnd = CreateWindow(
             windowClass.lpszClassName,
-            GRLStringUTF8toUnicode(window_title).c_str(),
+            window_title_wc.c_str(),
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
@@ -106,6 +107,10 @@ namespace Grassland
         __Ref_Cnt--;
         if (!__Ref_Cnt) delete this;
         return 0;
+    }
+    GRL_RESULT GRLCDirectXEnvironment::QueryInterface(GRLUUID uuid, void** ppObject)
+    {
+        return GRL_FALSE;
     }
     void GRLCDirectXEnvironment::WaitForGpu()
     {
@@ -599,6 +604,10 @@ namespace Grassland
             delete this;
         return GRL_FALSE;
     }
+    GRL_RESULT GRLCDirectXPipelineStateAndRootSignature::QueryInterface(GRLUUID uuid, void** ppObject)
+    {
+        return GRL_FALSE;
+    }
     GRLCDirectXBuffer::GRLCDirectXBuffer(GRLCDirectXEnvironment* pEnvironment, uint64_t size, uint32_t uploadBuffer, D3D12_RESOURCE_STATES resourceState)
     {
         __Ref_Cnt = 1;
@@ -672,6 +681,11 @@ namespace Grassland
             delete this;
         return GRL_FALSE;
     }
+
+    GRL_RESULT GRLCDirectXBuffer::QueryInterface(GRLUUID uuid, void** ppObject)
+    {
+        return GRL_FALSE;
+    }
     
     GRLCDirectXDepthMap::GRLCDirectXDepthMap(GRLCDirectXEnvironment* pEnvironment, uint32_t width, uint32_t height)
     {
@@ -715,6 +729,10 @@ namespace Grassland
         if (!__Ref_Cnt)
             delete this;
         return GRL_FALSE;
+    }
+    GRL_RESULT GRLCDirectXDepthMap::QueryInterface(GRLUUID uuid, void** ppObject)
+    {
+        return GRL_TRUE;
     }
     void GRLCDirectXDepthMap::__build_resource(ID3D12Device * device)
     {
@@ -779,6 +797,10 @@ namespace Grassland
         __Ref_Cnt--;
         if (!__Ref_Cnt)
             delete this;
+        return GRL_FALSE;
+    }
+    GRL_RESULT GRLCDirectXTexture::QueryInterface(GRLUUID uuid, void** ppObject)
+    {
         return GRL_FALSE;
     }
     void GRLCDirectXTexture::__build_resource(ID3D12Device* device)
