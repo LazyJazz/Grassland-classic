@@ -46,31 +46,55 @@ int main()
     SetConsoleOutputCP(936);
     GRLPtr<GRLIGraphicsEnvironment> pEnvironment;
     GRLPtr<GRLIGraphicsPipelineState> pPipelineState;
+    GRLPtr<GRLIGraphicsTexture> pTexture;
+    GRLPtr<GRLIGraphicsBuffer> pVertexBuffer;
+    GRLPtr<GRLIGraphicsBuffer> pIndexBuffer;
 
     GRLCreateGraphicsEnvironment(1280, 720, "Grassland Graphics", GRL_GRAPHICS_API::D3D12, &pEnvironment);
 
 
     GRL_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc;
-    pipelineStateDesc.enableBlend = 1;
+    pipelineStateDesc.enableBlend = 0;
     pipelineStateDesc.enableDepthTest = 1;
-    pipelineStateDesc.enableCullFace = 1;
+    pipelineStateDesc.enableCullFace = 0;
     pipelineStateDesc.inputElementLayout = new GRL_FORMAT[3];
-    pipelineStateDesc.inputElementLayout[0] = GRL_FORMAT::FLOAT4;
-    pipelineStateDesc.inputElementLayout[1] = GRL_FORMAT::FLOAT4;
+    pipelineStateDesc.inputElementLayout[0] = GRL_FORMAT::FLOAT3;
+    pipelineStateDesc.inputElementLayout[1] = GRL_FORMAT::FLOAT3;
     pipelineStateDesc.inputElementLayout[2] = GRL_FORMAT::FLOAT4;
-    pipelineStateDesc.numInputElement = 3;
-    pipelineStateDesc.numConstantBuffer = 1;
+    pipelineStateDesc.numInputElement = 2;
+    pipelineStateDesc.numConstantBuffer = 0;
     pipelineStateDesc.numRenderTargets = 1;
     pipelineStateDesc.numTexture = 1;
     pipelineStateDesc.renderTargetFormatsList[0] = GRL_FORMAT::BYTE4;
-    pEnvironment->CreatePipelineState("shaders\\DirectX\\shaders.hlsl", &pipelineStateDesc, &pPipelineState);
+    pEnvironment->CreatePipelineState("shaders\\DirectX\\simple_shader.hlsl", &pipelineStateDesc, &pPipelineState);
+    pEnvironment->CreateTexture(256, 256, GRL_FORMAT::FLOAT4, &pTexture);
+
+
+    float vertex_data[] = {
+        0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
+        -0.5, -0.5, 0.0, 0.0, 1.0, 0.0,
+        0.0, 0.5, 0.0, 0.0, 0.0, 1.0,
+    };
+
+    uint32_t indices_data[] = { 0,1,2 };
+
+
+    pEnvironment->CreateBuffer(sizeof(float) * 6 * 3, GRL_GRAPHICS_BUFFER_TYPE::VERTEX, &pVertexBuffer);
+    pEnvironment->CreateBuffer(sizeof(uint32_t) * 3, GRL_GRAPHICS_BUFFER_TYPE::INDEX, &pIndexBuffer);
+    pVertexBuffer->WriteData(sizeof(float) * 6 * 3, 0, vertex_data);
+    pIndexBuffer->WriteData(sizeof(uint32_t) * 3, 0, indices_data);
 
     while (!pEnvironment->PollEvents())
     {
+        uint32_t scrWidth, scrHeight;
+        pEnvironment->GetSize(&scrWidth, &scrHeight);
         pEnvironment->BeginDraw();
         pEnvironment->SetInternalRenderTarget();
-        pEnvironment->ClearRenderTargets(GRLColor(0.0,1.0,0.0,1.0));
+        pEnvironment->ClearRenderTargets(GRLColor(0.6,0.7,0.8,1.0));
+        pEnvironment->ClearDepthMap();
         pEnvironment->ApplyPipelineState(pPipelineState.Get());
+        pEnvironment->SetViewport(0, 0, scrWidth, scrHeight);
+        pEnvironment->DrawIndexedInstance(pVertexBuffer.Get(), pIndexBuffer.Get(), 3, GRL_RENDER_TOPOLOGY::TRIANGLE);
         pEnvironment->EndDraw();
         pEnvironment->Present(1);
     }
@@ -89,7 +113,7 @@ int main2()
         1,
         formats,
         1,
-        1,
+        2,
         true,
         true
     );
@@ -99,7 +123,7 @@ int main2()
         1,
         formats + 1,
         1,
-        1,
+        2,
         true,
         true
     );
@@ -181,8 +205,9 @@ int main2()
     GRLCDirectXBuffer* pConstantBufferTex = new GRLCDirectXBuffer(&environment, sizeof(cb));
 
     GRLCDirectXDepthMap* pDepthMap = new GRLCDirectXDepthMap(&environment, 1280, 720);
-    GRLCDirectXDepthMap* pDepthMapTex = new GRLCDirectXDepthMap(&environment, 255, 255);
-    GRLCDirectXTexture* pTexture = new GRLCDirectXTexture(&environment, 255, 255, nullptr);
+    GRLCDirectXDepthMap* pDepthMapTex = new GRLCDirectXDepthMap(&environment, 256, 256);
+    GRLCDirectXTexture* pTexture = new GRLCDirectXTexture(&environment, 256, 256, nullptr);
+    GRLCDirectXTexture* pTexture2 = new GRLCDirectXTexture(&environment, 256, 256, nullptr);
     GRLCDirectXBuffer* pTextureUpload = new GRLCDirectXBuffer(&environment, GetRequiredIntermediateSize(pTexture->GetResource(), 0, 1), 1);
     GRLCDirectXBuffer* pTextureReadback = new GRLCDirectXBuffer(&environment, GetRequiredIntermediateSize(pTexture->GetResource(), 0, 1), -1, D3D12_RESOURCE_STATE_COPY_DEST);
 
@@ -207,7 +232,7 @@ int main2()
         auto commandList = environment.StartDraw();
         CD3DX12_RESOURCE_BARRIER rb[8];
 
-        rb[0] = CD3DX12_RESOURCE_BARRIER::Transition(pTexture->GetResource(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+        rb[0] = CD3DX12_RESOURCE_BARRIER::Transition(pTexture2->GetResource(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
         rb[1] = CD3DX12_RESOURCE_BARRIER::Transition(pIndexBuffer->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
         commandList->CopyBufferRegion(pVertexBuffer->GetResource(), 0, pVertexBufferUpload->GetResource(), 0, min(pVertexBuffer->GetBufferSize(), pVertexBufferUpload->GetBufferSize()));
@@ -220,14 +245,14 @@ int main2()
         subresource_data.pData = pData;
         subresource_data.RowPitch = 256 * 16;
         subresource_data.SlicePitch = 256 * 16 * 256;
-        UpdateSubresources(commandList, pTexture->GetResource(), pTextureUpload->GetResource(), 0, 0, 1, &subresource_data);
+        UpdateSubresources(commandList, pTexture2->GetResource(), pTextureUpload->GetResource(), 0, 0, 1, &subresource_data);
         //commandList->CopyBufferRegion(pTexture->GetResource(), 0, pTextureUpload->GetResource(), 0, pTextureUpload->GetBufferSize());
         //commandList->ResourceBarrier(1, rb + 1);
 
         rb[2] = CD3DX12_RESOURCE_BARRIER::Transition(pVertexBuffer->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
         rb[3] = CD3DX12_RESOURCE_BARRIER::Transition(pIndexBuffer->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER);
 
-        rb[4] = CD3DX12_RESOURCE_BARRIER::Transition(pTexture->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        rb[4] = CD3DX12_RESOURCE_BARRIER::Transition(pTexture2->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         commandList->ResourceBarrier(1, rb + 4);
         //rb[6] = CD3DX12_RESOURCE_BARRIER::Transition(pIndexBuffer->GetResource(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
         //rb[7] = CD3DX12_RESOURCE_BARRIER::Transition(pIndexBufferUpload->GetResource(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_GENERIC_READ);
@@ -274,8 +299,8 @@ int main2()
         //std::cout << "[" << scr_width << ", " << scr_height << "]" << std::endl;
         CD3DX12_VIEWPORT viewPort(0.0f, 0.0f, (float)scr_width, (float)scr_height);
         CD3DX12_RECT scissorRect(0, 0, (LONG)scr_width, (LONG)scr_height);
-        CD3DX12_VIEWPORT viewPortTex(0.0f, 0.0f, (float)255, (float)255);
-        CD3DX12_RECT scissorRectTex(0, 0, (LONG)255, (LONG)255);
+        CD3DX12_VIEWPORT viewPortTex(0.0f, 0.0f, (float)256, (float)256);
+        CD3DX12_RECT scissorRectTex(0, 0, (LONG)256, (LONG)256);
 
         rot *= GRLTransformRotation(GRLRadian(0.03f), GRLRadian(0.02f), GRLRadian(0.01f));
         rotTex *= GRLTransformRotation(GRLRadian(0.1f), GRLRadian(0.2f), GRLRadian(0.3f));
@@ -320,7 +345,7 @@ int main2()
         float clearcolor[4] = { 0.6,0.7,0.8,1.0 };
         float texcolor[4] = { 0.8,0.7,0.6,1.0 };
         environment.ClearBackFrameColor(clearcolor);
-        //commandList->ClearRenderTargetView(rtvHandleTex, texcolor, 0, nullptr);
+        commandList->ClearRenderTargetView(rtvHandleTex, texcolor, 0, nullptr);
         commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0, 0, 0, nullptr);
         commandList->ClearDepthStencilView(dsvHandleTex, D3D12_CLEAR_FLAG_DEPTH, 1.0, 0, 0, nullptr);
         commandList->SetGraphicsRootConstantBufferView(1, pConstantBufferTex->GetResource()->GetGPUVirtualAddress());
@@ -328,23 +353,30 @@ int main2()
 
         commandList->RSSetScissorRects(1, &scissorRectTex);
         commandList->RSSetViewports(1, &viewPortTex);
-        commandList->SetGraphicsRootConstantBufferView(1, pConstantBufferTex->GetResource()->GetGPUVirtualAddress());
+        commandList->SetGraphicsRootConstantBufferView(2, pConstantBufferTex->GetResource()->GetGPUVirtualAddress());
 
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         D3D12_VERTEX_BUFFER_VIEW vertexBufferViewTex = pVertexBufferTex->GetVertexBufferView(sizeof(Vertex));
         commandList->IASetVertexBuffers(0, 1, &vertexBufferViewTex);
         D3D12_INDEX_BUFFER_VIEW indexBufferViewTex = pIndexBufferTex->GetIndexBufferView();
         commandList->IASetIndexBuffer(&indexBufferViewTex);
-        //commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+        commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
+        commandList->SetPipelineState(psoAndRootSignature->GetPipelineState());
+        commandList->SetGraphicsRootSignature(psoAndRootSignature->GetRootSignature());
         commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
         commandList->RSSetScissorRects(1, &scissorRect);
         commandList->RSSetViewports(1, &viewPort);
-        commandList->SetGraphicsRootConstantBufferView(1, pConstantBuffer->GetResource()->GetGPUVirtualAddress());
+        commandList->SetGraphicsRootConstantBufferView(2, pConstantBuffer->GetResource()->GetGPUVirtualAddress());
         ID3D12DescriptorHeap* ppHeaps[] = { pTexture->GetSRVHeap() };
         commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
         commandList->SetGraphicsRootDescriptorTable(0, pTexture->GetSRV());
+        ID3D12DescriptorHeap* ppHeaps2[] = { pTexture2->GetSRVHeap() };
+        commandList->SetDescriptorHeaps(_countof(ppHeaps2), ppHeaps2);
+        commandList->SetGraphicsRootDescriptorTable(1, pTexture2->GetSRV());
+        //commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+        //commandList->SetGraphicsRootDescriptorTable(0, pTexture->GetSRV());
 
         resourceBarrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(pTexture->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         commandList->ResourceBarrier(1, resourceBarrier + 1);
@@ -362,8 +394,8 @@ int main2()
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT Layout;
         Layout.Offset = 0;
         Layout.Footprint.Depth = 1;
-        Layout.Footprint.Width = 255;
-        Layout.Footprint.Height = 255;
+        Layout.Footprint.Width = 256;
+        Layout.Footprint.Height = 256;
         Layout.Footprint.RowPitch = 256 * 16;
         Layout.Footprint.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         
@@ -378,20 +410,20 @@ int main2()
         environment.EndDraw();
         environment.Present(0);
 
-        {
-            GRLColor* pBuffer;
-            GRLIImage* pImage;
-            GRLCreateImage(255, 255, &pImage);
-            pImage->GetImageBuffer(&pBuffer);
-            CD3DX12_RANGE range(0, 255 * 256 * 16 - 16);
-            GRLColor* pSrcBuffer;
-            GRLComCall(pTextureReadback->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pSrcBuffer)));
-            for (int i = 0; i < 255; i++)
-                memcpy(pBuffer + 255 * i, pSrcBuffer + 256 * i, 255 * 16);
-            pTextureReadback->GetResource()->Unmap(0, nullptr);
-            pImage->StoreBMP("texture.bmp");
-            pImage->Release();
-        }
+        //{
+        //    GRLColor* pBuffer;
+        //    GRLIImage* pImage;
+        //    GRLCreateImage(255, 255, &pImage);
+        //    pImage->GetImageBuffer(&pBuffer);
+        //    CD3DX12_RANGE range(0, 255 * 256 * 16 - 16);
+        //    GRLColor* pSrcBuffer;
+        //    GRLComCall(pTextureReadback->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pSrcBuffer)));
+        //    for (int i = 0; i < 255; i++)
+        //        memcpy(pBuffer + 255 * i, pSrcBuffer + 256 * i, 255 * 16);
+        //    pTextureReadback->GetResource()->Unmap(0, nullptr);
+        //    pImage->StoreBMP("texture.bmp");
+        //    pImage->Release();
+        //}
     }
 
     pVertexBuffer->Release();

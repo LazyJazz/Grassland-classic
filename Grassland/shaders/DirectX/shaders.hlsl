@@ -29,6 +29,7 @@ PSInput VSMain(
 }
 
 Texture2D g_texture : register(t0);
+Texture2D g_texture2 : register(t1);
 SamplerState g_sampler : register(s0);
 SamplerState g_sampler_linear : register(s1);
 
@@ -50,7 +51,9 @@ PSOutput PSMain(PSInput input)
 	{
 		float scale = max(dot(normalize(input.Normal), normalize(float4(0.0, 1.0, -1.0, 0.0))), 0.0) * 0.5;
 		scale += 0.5;
-		res.Color0 = g_texture.Sample(g_sampler, input.TexCoord.xy);
+		res.Color0 = 
+		//g_texture.Sample(g_sampler, input.TexCoord.xy);
+		 (g_texture.Sample(g_sampler, input.TexCoord.xy) + g_texture2.Sample(g_sampler, input.TexCoord.xy)) * 0.5;
 		res.Color0 = float4(res.Color0.xyz * scale, res.Color0.w);
 		//res.Color0 = (input.Normal + 1.0) * 0.5;
 	}

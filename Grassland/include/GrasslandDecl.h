@@ -70,7 +70,7 @@ namespace Grassland
 			__Pnter_Object = __Pnter_Source.__Pnter_Object;
 			if (__Pnter_Object)
 				__Pnter_Object->AddRef();
-		}//*/
+		}
 
 		GRLPtr<__Ty>& operator = (const GRLPtr<__Ty>& __Pnter_Source)
 		{

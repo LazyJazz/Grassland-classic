@@ -50,6 +50,13 @@ namespace Grassland
 		VULKAN = 2
 	};
 
+	enum class GRL_GRAPHICS_BUFFER_TYPE
+	{
+		VERTEX = 0,
+		INDEX = 1,
+		CONSTANT = 2,
+	};
+
 	class GRLIGraphicsEnvironment;
 	class GRLIGraphicsBuffer;
 	class GRLIGraphicsTexture;
@@ -78,11 +85,12 @@ namespace Grassland
 	class GRLIGraphicsEnvironment : public GRLIBase
 	{
 	public:
+		virtual void GetSize(uint32_t * width, uint32_t * height) = 0;
 		virtual GRL_RESULT PollEvents() = 0;
 		virtual GRL_RESULT Resize(uint32_t width, uint32_t height) = 0;
 		virtual GRL_RESULT CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture) = 0;
 		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap) = 0;
-		virtual GRL_RESULT CreateBuffer(uint64_t size, GRLIGraphicsBuffer** ppBuffer) = 0;
+		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLIGraphicsBuffer** ppBuffer) = 0;
 		virtual GRL_RESULT CreatePipelineState(
 			const char* shader_path,
 			GRL_GRAPHICS_PIPELINE_STATE_DESC *desc,
@@ -122,6 +130,7 @@ namespace Grassland
 		virtual GRL_RESULT WritePixels(void* pData) = 0;
 		virtual GRL_RESULT ReadPixels(void* pData) = 0;
 		virtual GRL_RESULT GetSize(uint32_t* pWidth, uint32_t* pHeight) = 0;
+		virtual GRL_FORMAT GetFormat() = 0;
 	};
 
 	class GRLIGraphicsDepthMap : public GRLIBase
