@@ -218,7 +218,7 @@ namespace Grassland
 	{
 		return GRL_RESULT();
 	}
-	GRL_RESULT GRLCD3D12Environment::SetConstantBuffer(uint32_t constantBufferIndex, uint64_t size, void* pData)
+	GRL_RESULT GRLCD3D12Environment::SetConstantBuffer(uint32_t constantBufferIndex, GRLIGraphicsBuffer * constantBuffer)
 	{
 		return GRL_RESULT();
 	}
@@ -418,9 +418,10 @@ namespace Grassland
 	}
 	GRL_RESULT GRLCD3D12Environment::CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture)
 	{
-		return GRL_RESULT();
+		*ppTexture = new GRLCD3D12Texture(width, height, format, this);
+		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCD3D12Environment::CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppTexture)
+	GRL_RESULT GRLCD3D12Environment::CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap)
 	{
 		return GRL_RESULT();
 	}
@@ -728,6 +729,82 @@ namespace Grassland
 	GRL_RESULT GRLCreateD3D12Environment(uint32_t width, uint32_t height, const char* window_title, GRLIGraphicsEnvironment** ppEnvironment)
 	{
 		*ppEnvironment = new GRLCD3D12Environment(width, height, window_title);
+		return GRL_FALSE;
+	}
+	GRLCD3D12Texture::GRLCD3D12Texture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLCD3D12Environment* pEnvironment)
+	{
+		__Ref_Cnt = 1;
+		m_width = width;
+		m_height = height;
+		m_format = format;
+		m_dxgi_format = GRLFormatToDXGIFormat(format);
+		ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
+		CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_DEFAULT);
+		CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+			m_dxgi_format,
+			m_width,
+			m_height,
+			1,
+			0,
+			1,
+			0,
+			D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+		);
+		device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&resourceDesc,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			nullptr,
+			IID_PPV_ARGS(&m_texture)
+		);
+
+		heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(
+			(uint64_t)m_width* (uint64_t)m_height*(uint64_t)GRLFormatSizeInByte(m_format)
+		);
+		device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&resourceDesc,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			nullptr,
+			IID_PPV_ARGS(&m_texture)
+		);
+	}
+	GRL_RESULT GRLCD3D12Texture::WritePixels(void* pData)
+	{
+		return GRL_RESULT();
+	}
+	GRL_RESULT GRLCD3D12Texture::ReadPixels(void* pData)
+	{
+		return GRL_RESULT();
+	}
+	GRL_RESULT GRLCD3D12Texture::GetSize(uint32_t* pWidth, uint32_t* pHeight)
+	{
+		if (pWidth) *pWidth = m_width;
+		if (pHeight) *pHeight = m_height;
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLCD3D12Texture::AddRef()
+	{
+		__Ref_Cnt++;
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLCD3D12Texture::Release()
+	{
+		__Ref_Cnt--;
+		if (!__Ref_Cnt)
+			delete this;
+		return GRL_FALSE;
+	}
+	GRL_RESULT GRLCD3D12Texture::QueryInterface(GRLUUID uuid, void** ppObject)
+	{
+		if (uuid == GRLID_IBase) *ppObject = (GRLIBase*)this;
+		else if (uuid == GRLID_IGraphicsTexture) *ppObject = (GRLIGraphicsTexture*)this;
+		else if (uuid == GRLID_CD3D12Texture) *ppObject = (GRLCD3D12Texture*)this;
+		else return GRL_TRUE;
+		AddRef();
 		return GRL_FALSE;
 	}
 }

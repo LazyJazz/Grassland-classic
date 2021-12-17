@@ -41,7 +41,7 @@ namespace Grassland
 		virtual GRL_RESULT PollEvents() override;
 		virtual GRL_RESULT Resize(uint32_t width, uint32_t height) override;
 		virtual GRL_RESULT CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture) override;
-		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppTexture) override;
+		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap) override;
 		virtual GRL_RESULT CreateBuffer(uint64_t size, GRLIGraphicsBuffer** ppBuffer) override;
 		virtual GRL_RESULT CreatePipelineState(
 			const char* shader_path,
@@ -50,7 +50,7 @@ namespace Grassland
 		virtual GRL_RESULT BeginDraw() override;
 		virtual GRL_RESULT ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState) override;
 		virtual GRL_RESULT SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
-		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, uint64_t size, void* pData) override;
+		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, GRLIGraphicsBuffer* constantBuffer) override;
 		virtual GRL_RESULT SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture) override;
 		virtual GRL_RESULT SetRenderTargets(GRLIGraphicsTexture* pRenderTargetList, GRLIGraphicsDepthMap* pDepthMap) override;
 		virtual GRL_RESULT SetInternalRenderTarget() override;
@@ -137,6 +137,7 @@ namespace Grassland
 	class GRLCD3D12Texture : public GRLIGraphicsTexture
 	{
 	public:
+		GRLCD3D12Texture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLCD3D12Environment * pEnvironment);
 		virtual GRL_RESULT WritePixels(void* pData) override;
 		virtual GRL_RESULT ReadPixels(void* pData) override;
 		virtual GRL_RESULT GetSize(uint32_t* pWidth, uint32_t* pHeight) override;
@@ -145,6 +146,12 @@ namespace Grassland
 		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject) override;
 	private:
 		uint32_t __Ref_Cnt;
+		uint32_t m_width, m_height;
+		ComPtr<ID3D12Resource> m_texture;
+		ComPtr<ID3D12Resource> m_uploadBuffer;
+		ComPtr<ID3D12Resource> m_downloadBuffer;
+		GRL_FORMAT m_format;
+		DXGI_FORMAT m_dxgi_format;
 	};
 
 	class GRLCD3D12DepthMap : public GRLIGraphicsDepthMap

@@ -81,7 +81,7 @@ namespace Grassland
 		virtual GRL_RESULT PollEvents() = 0;
 		virtual GRL_RESULT Resize(uint32_t width, uint32_t height) = 0;
 		virtual GRL_RESULT CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture) = 0;
-		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppTexture) = 0;
+		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap) = 0;
 		virtual GRL_RESULT CreateBuffer(uint64_t size, GRLIGraphicsBuffer** ppBuffer) = 0;
 		virtual GRL_RESULT CreatePipelineState(
 			const char* shader_path,
@@ -90,7 +90,7 @@ namespace Grassland
 		virtual GRL_RESULT BeginDraw() = 0;
 		virtual GRL_RESULT ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState) = 0;
 		virtual GRL_RESULT SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
-		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, uint64_t size, void* pData) = 0;
+		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, GRLIGraphicsBuffer* constantBuffer) = 0;
 		virtual GRL_RESULT SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture) = 0;
 		virtual GRL_RESULT SetRenderTargets(GRLIGraphicsTexture* pRenderTargetList, GRLIGraphicsDepthMap* pDepthMap) = 0;
 		virtual GRL_RESULT SetInternalRenderTarget() = 0;

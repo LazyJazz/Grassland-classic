@@ -41,6 +41,7 @@ int main2();
 
 int main()
 {
+    return main2();
     SetProcessDPIAware();
     SetConsoleOutputCP(936);
     GRLPtr<GRLIGraphicsEnvironment> pEnvironment;
@@ -180,10 +181,12 @@ int main2()
     GRLCDirectXBuffer* pConstantBufferTex = new GRLCDirectXBuffer(&environment, sizeof(cb));
 
     GRLCDirectXDepthMap* pDepthMap = new GRLCDirectXDepthMap(&environment, 1280, 720);
-    GRLCDirectXDepthMap* pDepthMapTex = new GRLCDirectXDepthMap(&environment, 256, 256);
-    GRLCDirectXTexture* pTexture = new GRLCDirectXTexture(&environment, 256, 256, nullptr);
+    GRLCDirectXDepthMap* pDepthMapTex = new GRLCDirectXDepthMap(&environment, 255, 255);
+    GRLCDirectXTexture* pTexture = new GRLCDirectXTexture(&environment, 255, 255, nullptr);
     GRLCDirectXBuffer* pTextureUpload = new GRLCDirectXBuffer(&environment, GetRequiredIntermediateSize(pTexture->GetResource(), 0, 1), 1);
     GRLCDirectXBuffer* pTextureReadback = new GRLCDirectXBuffer(&environment, GetRequiredIntermediateSize(pTexture->GetResource(), 0, 1), -1, D3D12_RESOURCE_STATE_COPY_DEST);
+
+    std::cout << pTextureReadback->GetBufferSize() << std::endl;
 
     GRLColor* pData = new GRLColor[256*256];
     //GRLComCall(pTextureUpload->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pData)));
@@ -271,8 +274,8 @@ int main2()
         //std::cout << "[" << scr_width << ", " << scr_height << "]" << std::endl;
         CD3DX12_VIEWPORT viewPort(0.0f, 0.0f, (float)scr_width, (float)scr_height);
         CD3DX12_RECT scissorRect(0, 0, (LONG)scr_width, (LONG)scr_height);
-        CD3DX12_VIEWPORT viewPortTex(0.0f, 0.0f, (float)256, (float)256);
-        CD3DX12_RECT scissorRectTex(0, 0, (LONG)256, (LONG)256);
+        CD3DX12_VIEWPORT viewPortTex(0.0f, 0.0f, (float)255, (float)255);
+        CD3DX12_RECT scissorRectTex(0, 0, (LONG)255, (LONG)255);
 
         rot *= GRLTransformRotation(GRLRadian(0.03f), GRLRadian(0.02f), GRLRadian(0.01f));
         rotTex *= GRLTransformRotation(GRLRadian(0.1f), GRLRadian(0.2f), GRLRadian(0.3f));
@@ -317,7 +320,7 @@ int main2()
         float clearcolor[4] = { 0.6,0.7,0.8,1.0 };
         float texcolor[4] = { 0.8,0.7,0.6,1.0 };
         environment.ClearBackFrameColor(clearcolor);
-        commandList->ClearRenderTargetView(rtvHandleTex, texcolor, 0, nullptr);
+        //commandList->ClearRenderTargetView(rtvHandleTex, texcolor, 0, nullptr);
         commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0, 0, 0, nullptr);
         commandList->ClearDepthStencilView(dsvHandleTex, D3D12_CLEAR_FLAG_DEPTH, 1.0, 0, 0, nullptr);
         commandList->SetGraphicsRootConstantBufferView(1, pConstantBufferTex->GetResource()->GetGPUVirtualAddress());
@@ -332,7 +335,7 @@ int main2()
         commandList->IASetVertexBuffers(0, 1, &vertexBufferViewTex);
         D3D12_INDEX_BUFFER_VIEW indexBufferViewTex = pIndexBufferTex->GetIndexBufferView();
         commandList->IASetIndexBuffer(&indexBufferViewTex);
-        commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+        //commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
         commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
@@ -359,8 +362,8 @@ int main2()
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT Layout;
         Layout.Offset = 0;
         Layout.Footprint.Depth = 1;
-        Layout.Footprint.Width = 256;
-        Layout.Footprint.Height = 256;
+        Layout.Footprint.Width = 255;
+        Layout.Footprint.Height = 255;
         Layout.Footprint.RowPitch = 256 * 16;
         Layout.Footprint.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         
@@ -375,19 +378,20 @@ int main2()
         environment.EndDraw();
         environment.Present(0);
 
-        //{
-        //    GRLColor* pBuffer;
-        //    GRLIImage* pImage;
-        //    GRLCreateImage(256, 256, &pImage);
-        //    pImage->GetImageBuffer(&pBuffer);
-        //    CD3DX12_RANGE range(0, 256 * 256 * 16);
-        //    GRLColor* pSrcBuffer;
-        //    GRLComCall(pTextureReadback->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pSrcBuffer)));
-        //    memcpy(pBuffer, pSrcBuffer, 256 * 256 * 16);
-        //    pTextureReadback->GetResource()->Unmap(0, nullptr);
-        //    pImage->StoreBMP("texture.bmp");
-        //    pImage->Release();
-        //}
+        {
+            GRLColor* pBuffer;
+            GRLIImage* pImage;
+            GRLCreateImage(255, 255, &pImage);
+            pImage->GetImageBuffer(&pBuffer);
+            CD3DX12_RANGE range(0, 255 * 256 * 16 - 16);
+            GRLColor* pSrcBuffer;
+            GRLComCall(pTextureReadback->GetResource()->Map(0, &range, reinterpret_cast<void**>(&pSrcBuffer)));
+            for (int i = 0; i < 255; i++)
+                memcpy(pBuffer + 255 * i, pSrcBuffer + 256 * i, 255 * 16);
+            pTextureReadback->GetResource()->Unmap(0, nullptr);
+            pImage->StoreBMP("texture.bmp");
+            pImage->Release();
+        }
     }
 
     pVertexBuffer->Release();
