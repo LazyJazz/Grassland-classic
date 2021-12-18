@@ -56,6 +56,7 @@ PSOutput PSMain(PSInput input)
 		 (g_texture.Sample(g_sampler, input.TexCoord.xy) + g_texture2.Sample(g_sampler, input.TexCoord.xy)) * 0.5;
 		res.Color0 = float4(res.Color0.xyz * scale, res.Color0.w);
 		//res.Color0 = (input.Normal + 1.0) * 0.5;
+		//res.Color0 = input.TexCoord;
 	}
 	else res.Color0 = float4(input.TexCoord.xyz, input.TexCoord.w);
 

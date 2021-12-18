@@ -237,16 +237,66 @@ namespace Grassland
 	}
 	GRL_RESULT GRLCD3D12Environment::SetConstantBuffer(uint32_t constantBufferIndex, GRLIGraphicsBuffer * constantBuffer)
 	{
-		return GRL_RESULT();
-	}
-	GRL_RESULT GRLCD3D12Environment::SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture)
-	{
+		if (!m_workingPipelineState.Get()) return GRL_TRUE;
+		GRLPtr<GRLCD3D12Buffer> pConstantBuffer;
+		if (constantBuffer->QueryInterface(GRLID_PPV_ARGS(&pConstantBuffer))) return GRL_TRUE;
+		m_commandList->SetGraphicsRootConstantBufferView(m_workingPipelineState->GetConstantBufferRootParameterIndex(constantBufferIndex), pConstantBuffer->GetResource()->GetGPUVirtualAddress());
 		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCD3D12Environment::SetRenderTargets(GRLIGraphicsTexture* pRenderTargetList, GRLIGraphicsDepthMap* pDepthMap)
+
+	GRL_RESULT GRLCD3D12Environment::SetTextures(uint32_t numTexture, GRLIGraphicsTexture* const* pTextures)
 	{
-		return GRL_RESULT();
+		if (!m_workingPipelineState.Get()) return GRL_TRUE;
+		if (numTexture > m_workingPipelineState->m_numTexture) return GRL_TRUE;
+		if (!m_duringDraw) return GRL_TRUE;
+
+		GRLPtr<GRLCD3D12Texture>* textures = new GRLPtr<GRLCD3D12Texture>[numTexture];
+
+		for (int index = 0; index < numTexture; index++)
+		{
+			if (pTextures[index]->QueryInterface(GRLID_PPV_ARGS(&textures[index])))
+			{
+				delete[] textures;
+				return GRL_TRUE;
+			}
+		}
+		for (int index = 0; index < numTexture; index++)
+		{
+			textures[index]->ResourceStateTransition(m_commandList.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+			m_commandList->SetGraphicsRootDescriptorTable(m_workingPipelineState->GetTextureRootParameterIndex(index), textures[index]->GetSRVHandle());
+		}
+
+		delete[] textures;
+		return GRL_FALSE;
 	}
+
+	GRL_RESULT GRLCD3D12Environment::SetRenderTargets(uint32_t numRenderTarget, GRLIGraphicsTexture* const* pRenderTargets, GRLIGraphicsDepthMap* pDepthMap)
+	{
+		if (numRenderTarget > 8) return GRL_TRUE;
+		if (!m_duringDraw) return GRL_TRUE;
+		GRLPtr<GRLCD3D12Texture> renderTargets[8];
+		GRLPtr<GRLCD3D12DepthMap> depthMap;
+		m_numWorkingRTV = numRenderTarget;
+		for (int index = 0; index < numRenderTarget; index++)
+		{
+			if (pRenderTargets[index]->QueryInterface(GRLID_PPV_ARGS(&renderTargets[index])))
+				return GRL_TRUE;
+			m_workingRTVHandleList[index] = renderTargets[index]->GetRTVHandle();
+			renderTargets[index]->ResourceStateTransition(m_commandList.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET);
+		}
+
+		if (pDepthMap)
+		{
+			m_isWorkingDSV = true;
+			if (pDepthMap->QueryInterface(GRLID_PPV_ARGS(&depthMap))) return GRL_TRUE;
+			m_workingDSVHandle = depthMap->GetDSVHandle();
+		}
+		else m_isWorkingDSV = false;
+		m_commandList->OMSetRenderTargets(m_numWorkingRTV, m_workingRTVHandleList, m_isWorkingDSV, m_isWorkingDSV ? (&m_workingDSVHandle) : nullptr);
+		return GRL_FALSE;
+	}
+
+
 	GRL_RESULT GRLCD3D12Environment::SetInternalRenderTarget()
 	{
 		if (!m_duringDraw) return GRL_TRUE;
@@ -381,6 +431,21 @@ namespace Grassland
 		return GetSwapChainRenderTargetViewHandle(m_frameIndex);
 	}
 
+	GRL_RESULT GRLCD3D12Environment::AcquireSRVHandle(D3D12_CPU_DESCRIPTOR_HANDLE& cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE& gpuHandle)
+	{
+		if (m_queueSrvCPUHandle.empty()) return GRL_TRUE;
+		cpuHandle = m_queueSrvCPUHandle.front(); m_queueSrvCPUHandle.pop();
+		gpuHandle = m_queueSrvGPUHandle.front(); m_queueSrvGPUHandle.pop();
+		return GRL_FALSE;
+	}
+
+	GRL_RESULT GRLCD3D12Environment::ReturnSRVHandle(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
+	{
+		m_queueSrvCPUHandle.push(cpuHandle);
+		m_queueSrvGPUHandle.push(gpuHandle);
+		return GRL_FALSE;
+	}
+
 	void GRLCD3D12Environment::MoveToNextFrame()
 	{
 		// Schedule a Signal command in the queue.
@@ -462,6 +527,7 @@ namespace Grassland
 	}
 	GRL_RESULT GRLCD3D12Environment::CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture)
 	{
+		if (m_queueSrvCPUHandle.empty()) return GRL_TRUE;
 		*ppTexture = new GRLCD3D12Texture(width, height, format, this);
 		return GRL_FALSE;
 	}
@@ -496,6 +562,9 @@ namespace Grassland
 		)) return GRL_TRUE;
 		m_duringDraw = true;
 		m_workingPipelineState.Reset();
+
+		ID3D12DescriptorHeap* ppHeaps[] = {m_srvHeap.Get()};
+		m_commandList->SetDescriptorHeaps(1, ppHeaps);
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCD3D12Environment::ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState)
@@ -647,14 +716,27 @@ namespace Grassland
 			GRLComCall(swapChain.As(&m_swapChain))
 		)) return GRL_TRUE;
 
+
+		uint32_t numSrvHandle = (1 << 19);
 		D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-
-		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		srvHeapDesc.NumDescriptors = 32;
-		GRLComCall(m_device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srvHeap)));
+		srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		srvHeapDesc.NumDescriptors = numSrvHandle;
 
-		m_srvIncrementSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		if (FAILED(
+			GRLComCall(m_device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_srvHeap)))
+		)) return GRL_TRUE;
+
+		uint32_t srvHandleIncrementSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(m_srvHeap->GetCPUDescriptorHandleForHeapStart());
+		CD3DX12_GPU_DESCRIPTOR_HANDLE srvGPUHandle(m_srvHeap->GetGPUDescriptorHandleForHeapStart());
+		for (int i = 0; i < numSrvHandle; i++)
+		{
+			m_queueSrvCPUHandle.push(srvHandle);
+			m_queueSrvGPUHandle.push(srvGPUHandle);
+			srvHandle.Offset(srvHandleIncrementSize);
+			srvGPUHandle.Offset(srvHandleIncrementSize);
+		}
 
 		__build_rtvdsvResources();
 		return GRL_FALSE;
@@ -678,6 +760,7 @@ namespace Grassland
 			GRLComCall(m_commandList->Close())
 		)) return GRL_TRUE;
 
+		
 
 		return GRL_FALSE;
 	}
@@ -820,7 +903,7 @@ namespace Grassland
 			0,
 			1,
 			0,
-			D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
+			D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS
 		);
 		GRLComCall(device->CreateCommittedResource(
 				&heapProperties,
@@ -830,6 +913,8 @@ namespace Grassland
 				nullptr,
 				IID_PPV_ARGS(&m_texture)
 			));
+
+		m_curResourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
 		heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		device->GetCopyableFootprints(&resourceDesc, 0, 1, 0, &m_footprint, &m_numRows, &m_rowSizeInBytes, &m_bufferSize);
@@ -852,13 +937,28 @@ namespace Grassland
 				IID_PPV_ARGS(&m_downloadBuffer)
 			));
 
-		D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
-		descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		descHeapDesc.NumDescriptors = 1;
-		descHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		device->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&m_rtvHeap));
+		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		rtvHeapDesc.NumDescriptors = 1;
+		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		GRLComCall(device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
+
 		//D3D12_RENDER_TARGET_VIEW_DESC rtvDesc;
 		device->CreateRenderTargetView(m_texture.Get(), nullptr, m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+		m_environment->AcquireSRVHandle(m_srvCPUHandle, m_srvGPUHandle);
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = m_dxgi_format;
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = 1;
+
+		device->CreateShaderResourceView(m_texture.Get(), &srvDesc, m_srvCPUHandle);
+	}
+	GRLCD3D12Texture::~GRLCD3D12Texture()
+	{
+		m_environment->ReturnSRVHandle(m_srvCPUHandle, m_srvGPUHandle);
 	}
 	GRL_RESULT GRLCD3D12Texture::WritePixels(void* pData)
 	{
@@ -878,15 +978,11 @@ namespace Grassland
 
 		if (m_environment->BeginDraw()) return GRL_TRUE;
 		auto commandList = m_environment->GetCommandList();
-		CD3DX12_RESOURCE_BARRIER resource_barrier[2];
-		resource_barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
-		commandList->ResourceBarrier(1, resource_barrier);
+		ResourceStateTransition(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 		CD3DX12_TEXTURE_COPY_LOCATION
 			src(m_uploadBuffer.Get(), m_footprint),
 			dst(m_texture.Get(), 0);
 		commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-		resource_barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		commandList->ResourceBarrier(1, resource_barrier +  1);
 		m_environment->EndDraw();
 		m_environment->WaitForGpu();
 		return GRL_FALSE;
@@ -895,29 +991,25 @@ namespace Grassland
 	{
 		if (m_environment->BeginDraw()) return GRL_TRUE;
 		auto commandList = m_environment->GetCommandList();
-		CD3DX12_RESOURCE_BARRIER resource_barrier[2];
-		resource_barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_SOURCE);
-		commandList->ResourceBarrier(1, resource_barrier);
+		ResourceStateTransition(commandList, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		CD3DX12_TEXTURE_COPY_LOCATION
 			dst(m_downloadBuffer.Get(), m_footprint),
 			src(m_texture.Get(), 0);
 		commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-		resource_barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		commandList->ResourceBarrier(1, resource_barrier + 1);
 		m_environment->EndDraw();
 		m_environment->WaitForGpu();
 
 		CD3DX12_RANGE range(0, m_bufferSize);
 		uint8_t* gpu_buffer;
 		uint8_t* cpu_buffer = reinterpret_cast<uint8_t*>(pData);
-		GRLComCall(m_uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&gpu_buffer)));
+		GRLComCall(m_downloadBuffer->Map(0, &range, reinterpret_cast<void**>(&gpu_buffer)));
 		int32_t m_pixel_size = GRLFormatSizeInByte(m_format);
 
 		for (int i = 0; i < m_numRows; i++)
 		{
 			memcpy(cpu_buffer, gpu_buffer, m_width * m_pixel_size);
-			gpu_buffer += m_rowSizeInBytes;
 			cpu_buffer += m_width * m_pixel_size;
+			gpu_buffer += m_rowSizeInBytes;
 		}
 		m_uploadBuffer->Unmap(0, nullptr);
 
@@ -962,8 +1054,22 @@ namespace Grassland
 	{
 		return m_rtvHeap->GetCPUDescriptorHandleForHeapStart();
 	}
+	D3D12_GPU_DESCRIPTOR_HANDLE GRLCD3D12Texture::GetSRVHandle()
+	{
+		return m_srvGPUHandle;
+	}
+	void GRLCD3D12Texture::ResourceStateTransition(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newResourceState)
+	{
+		if (newResourceState == m_curResourceState) return;
+		CD3DX12_RESOURCE_BARRIER resource_barrier;
+		resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), m_curResourceState, newResourceState);
+		commandList->ResourceBarrier(1, &resource_barrier);
+		m_curResourceState = newResourceState;
+	}
 	GRLCD3D12Buffer::GRLCD3D12Buffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLCD3D12Environment* pEnvironment)
 	{
+		if (type == GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
+			size = ((size + 255) & 0xffffffffffffff00u);
 		__Ref_Cnt = 1;
 		m_environment = pEnvironment;
 		m_size = size;
@@ -1074,6 +1180,10 @@ namespace Grassland
 		res.Format = DXGI_FORMAT_R32_UINT;
 		res.SizeInBytes = m_size;
 		return res;
+	}
+	ID3D12Resource* GRLCD3D12Buffer::GetResource()
+	{
+		return m_buffer.Get();
 	}
 	GRLCD3D12DepthMap::GRLCD3D12DepthMap(uint32_t width, uint32_t height, GRLCD3D12Environment* pEnvironment)
 	{

@@ -99,19 +99,19 @@ namespace Grassland
 		virtual GRL_RESULT ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState) = 0;
 		virtual GRL_RESULT SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, GRLIGraphicsBuffer* constantBuffer) = 0;
-		virtual GRL_RESULT SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture) = 0;
-		virtual GRL_RESULT SetRenderTargets(GRLIGraphicsTexture* pRenderTargetList, GRLIGraphicsDepthMap* pDepthMap) = 0;
+		virtual GRL_RESULT SetTextures(uint32_t numTexture, GRLIGraphicsTexture* const* pTextures) = 0;
+		virtual GRL_RESULT SetRenderTargets(uint32_t numRenderTarget, GRLIGraphicsTexture* const* pRenderTargets, GRLIGraphicsDepthMap* pDepthMap) = 0;
 		virtual GRL_RESULT SetInternalRenderTarget() = 0;
 		virtual GRL_RESULT ClearRenderTargets(GRLColor color) = 0;
 		virtual GRL_RESULT ClearDepthMap() = 0;
 		virtual GRL_RESULT DrawInstance(
 			GRLIGraphicsBuffer* pVertexBuffer,
-			uint32_t numInstance,
+			uint32_t numVertices,
 			GRL_RENDER_TOPOLOGY renderTopology) = 0;
 		virtual GRL_RESULT DrawIndexedInstance(
 			GRLIGraphicsBuffer* pVertexBuffer, 
 			GRLIGraphicsBuffer* pIndexBuffer,
-			uint32_t numInstance,
+			uint32_t numVertices,
 			GRL_RENDER_TOPOLOGY renderTopology) = 0;
 		virtual GRL_RESULT EndDraw() = 0;
 		virtual void WaitForGpu() = 0;

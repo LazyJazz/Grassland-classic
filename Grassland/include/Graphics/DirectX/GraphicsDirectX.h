@@ -11,6 +11,7 @@
 #include "../../GrasslandDecl.h"
 #include "../../String/String.h"
 #include <map>
+#include <queue>
 
 #include <iostream>
 
@@ -54,8 +55,8 @@ namespace Grassland
 		virtual GRL_RESULT ApplyPipelineState(GRLIGraphicsPipelineState* pPipelineState) override;
 		virtual GRL_RESULT SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 		virtual GRL_RESULT SetConstantBuffer(uint32_t constantBufferIndex, GRLIGraphicsBuffer* constantBuffer) override;
-		virtual GRL_RESULT SetTextures(uint32_t textureIndex, GRLIGraphicsTexture* pTexture) override;
-		virtual GRL_RESULT SetRenderTargets(GRLIGraphicsTexture* pRenderTargetList, GRLIGraphicsDepthMap* pDepthMap) override;
+		virtual GRL_RESULT SetTextures(uint32_t numTexture, GRLIGraphicsTexture* const* pTextures) override;
+		virtual GRL_RESULT SetRenderTargets(uint32_t numRenderTarget, GRLIGraphicsTexture* const* pRenderTargets, GRLIGraphicsDepthMap* pDepthMap) override;
 		virtual GRL_RESULT SetInternalRenderTarget() override;
 		virtual GRL_RESULT ClearRenderTargets(GRLColor color) override;
 		virtual GRL_RESULT ClearDepthMap() override;
@@ -81,6 +82,9 @@ namespace Grassland
 		ID3D12Resource* GetSwapChainFrameResource();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetSwapChainRenderTargetViewHandle(int frameIndex);
 		D3D12_CPU_DESCRIPTOR_HANDLE GetSwapChainRenderTargetViewHandle();
+
+		GRL_RESULT AcquireSRVHandle(D3D12_CPU_DESCRIPTOR_HANDLE &cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE &gpuHandle);
+		GRL_RESULT ReturnSRVHandle(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 
 		virtual void MoveToNextFrame();
 	private:
@@ -108,7 +112,8 @@ namespace Grassland
 		ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 
 		ComPtr<ID3D12DescriptorHeap> m_srvHeap;
-		uint32_t m_srvIncrementSize;
+		std::queue<D3D12_CPU_DESCRIPTOR_HANDLE> m_queueSrvCPUHandle;
+		std::queue<D3D12_GPU_DESCRIPTOR_HANDLE> m_queueSrvGPUHandle;
 
 		ComPtr<ID3D12Fence> m_fence;
 		ComPtr<ID3D12CommandQueue> m_commandQueue;
@@ -146,6 +151,8 @@ namespace Grassland
 		virtual GRL_RESULT QueryInterface(GRLUUID uuid, void** ppObject) override;
 		D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView(uint32_t strideInBytes);
 		D3D12_INDEX_BUFFER_VIEW GetIndexBufferView();
+
+		ID3D12Resource* GetResource();
 	private:
 		ComPtr<ID3D12Resource> m_buffer;
 		ComPtr<ID3D12Resource> m_uploadBuffer;
@@ -159,6 +166,7 @@ namespace Grassland
 	{
 	public:
 		GRLCD3D12Texture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLCD3D12Environment * pEnvironment);
+		~GRLCD3D12Texture();
 		virtual GRL_RESULT WritePixels(void* pData) override;
 		virtual GRL_RESULT ReadPixels(void* pData) override;
 		virtual GRL_RESULT GetSize(uint32_t* pWidth, uint32_t* pHeight) override;
@@ -169,6 +177,10 @@ namespace Grassland
 
 		ID3D12Resource* GetResource();
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRTVHandle();
+		D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle();
+
+		void ResourceStateTransition(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newResourceState);
+
 	private:
 		uint32_t __Ref_Cnt;
 		uint32_t m_width, m_height;
@@ -177,12 +189,15 @@ namespace Grassland
 		ComPtr<ID3D12Resource> m_downloadBuffer;
 		ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
 		GRLPtr<GRLCD3D12Environment> m_environment;
+		D3D12_CPU_DESCRIPTOR_HANDLE m_srvCPUHandle;
+		D3D12_GPU_DESCRIPTOR_HANDLE m_srvGPUHandle;
 		GRL_FORMAT m_format;
 		DXGI_FORMAT m_dxgi_format;
 		uint64_t m_bufferSize;
 		uint32_t m_numRows;
 		uint64_t m_rowSizeInBytes;
 		D3D12_PLACED_SUBRESOURCE_FOOTPRINT m_footprint;
+		D3D12_RESOURCE_STATES m_curResourceState;
 	};
 
 	class GRLCD3D12DepthMap : public GRLIGraphicsDepthMap
