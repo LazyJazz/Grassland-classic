@@ -1,4 +1,5 @@
 #include "GLTexture.h"
+#include "GraphicsOpenGL.h"
 
 namespace Grassland
 {
@@ -268,4 +269,5 @@ namespace Grassland
 			delete this;
 		return GRL_FALSE;
 	}
+
 }

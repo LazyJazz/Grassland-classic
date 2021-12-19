@@ -5,9 +5,6 @@ cbuffer GlobalSettings: register(b0)
 	float __padding[47];
 };
 
-//Texture2D g_texture : register(t0);
-//SamplerState g_sampler_nearest : register (s0);
-
 struct PSInput
 {
 	float4 Position : SV_POSITION;
@@ -19,7 +16,7 @@ PSInput VSMain(
 	float4 pos : DATA0,
 	float4 norm : DATA1,
 	float4 texcoord : DATA2
-	)
+)
 {
 	PSInput res;
 	res.Position = mul(transform, pos);
@@ -45,18 +42,14 @@ struct PSOutput
 PSOutput PSMain(PSInput input)
 {
 	PSOutput res;
-	//res.Color0 = input.TexCoord;
-	//res.Color0 = input.Position;
 	if (mode)
 	{
 		float scale = max(dot(normalize(input.Normal), normalize(float4(0.0, 1.0, -1.0, 0.0))), 0.0) * 0.5;
 		scale += 0.5;
-		res.Color0 = 
-		g_texture.Sample(g_sampler, input.TexCoord.xy);
-		// (g_texture.Sample(g_sampler, input.TexCoord.xy) + g_texture2.Sample(g_sampler2, input.TexCoord.xy)) * 0.5;
+		res.Color0 =
+			//g_texture.Sample(g_sampler, input.TexCoord.xy);
+			(g_texture.Sample(g_sampler, input.TexCoord.xy) + g_texture2.Sample(g_sampler2, input.TexCoord.xy)) * 0.5;
 		res.Color0 = float4(res.Color0.xyz * scale, res.Color0.w);
-		//res.Color0 = (input.Normal + 1.0) * 0.5;
-		//res.Color0 = input.TexCoord;
 	}
 	else res.Color0 = float4(input.TexCoord.xyz, input.TexCoord.w);
 

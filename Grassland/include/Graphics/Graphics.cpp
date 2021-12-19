@@ -1,9 +1,14 @@
 #include "Graphics.h"
+
+#if defined(_WIN32)
 #include "DirectX/GraphicsDirectX.h"
+#endif
+
+#include "OpenGL/GraphicsOpenGL.h"
 
 namespace Grassland
 {
-	uint32_t GRLFormatSizeInByte(GRL_FORMAT format)
+	uint32_t GRLFormatSizeInBytes(GRL_FORMAT format)
 	{
 		switch (format)
 		{
@@ -34,7 +39,7 @@ namespace Grassland
 			return GRLCreateD3D12Environment(width, height, window_title, ppEnvironment);
 #endif
 		case GRL_GRAPHICS_API::OPENGL:
-			return GRL_FALSE;
+			return GRLCreateOpenGLEnvironment(width, height, window_title, ppEnvironment);
 		}
 		return GRL_FALSE;
 	};

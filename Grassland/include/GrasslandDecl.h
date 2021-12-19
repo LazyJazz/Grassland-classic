@@ -40,7 +40,10 @@ namespace Grassland
 
 	class GRLIBase;
 
-#define GRLMakeObjectUUIDAssociate(ObjectType, GRLID_Name, UUID) const GRLUUID GRLID_Name = GRLUUID(UUID); template<typename keepTemplate> GRLUUID GRLGetUUID(const ObjectType*) { return GRLID_Name; }
+#define GRLMakeObjectUUIDAssociate(ObjectName, GRLID_Name, UUID) const GRLUUID GRLID_Name = GRLUUID(UUID); template<typename keepTemplate> GRLUUID GRLGetUUID(const ObjectName*) { return GRLID_Name; }
+
+#define GRLDeclareObject(ObjectSubname, UUID) class GRL##ObjectSubname; GRLMakeObjectUUIDAssociate(GRL##ObjectSubname, GRLID_##ObjectSubname, UUID);
+
 #define GRLID_PPV_ARGS(x) GRLGetUUID<void>(*(x)), reinterpret_cast<void**>(x)
 
 	GRLMakeObjectUUIDAssociate(GRLIBase, GRLID_IBase, "53386c00-4617-4105-b7cb-caccfcf34848");

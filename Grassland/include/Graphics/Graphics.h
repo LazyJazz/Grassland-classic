@@ -3,11 +3,6 @@
 //#include "OpenGL/GL2D.h"
 #include "Util/Util.h"
 
-#ifdef _WIN32
-#include "DirectX/DX.h"
-#endif
-
-
 namespace Grassland
 {
 //#define GRLID_IGraphicsEnvironment				GRLUUID("8c7edbfd-fc7b-479d-87ac-069480d65d3e")
@@ -35,7 +30,7 @@ namespace Grassland
 		BYTE4 = 19,
 	};
 
-	uint32_t GRLFormatSizeInByte(GRL_FORMAT format);
+	uint32_t GRLFormatSizeInBytes(GRL_FORMAT format);
 
 	enum class GRL_RENDER_TOPOLOGY
 	{
@@ -57,6 +52,32 @@ namespace Grassland
 		CONSTANT = 2,
 	};
 
+	enum class GRL_GRAPHICS_SAMPLER_FILTER
+	{
+		MIN_MAG_LINEAR = 1,
+		MIP_LINEAR = 2,
+		LINEAR = 3,
+		MIN_MAG_POINT = 0,
+		MIP_POINT = 0,
+		POINT = 0,
+	};
+
+	enum class GRL_GRAPHICS_TEXTURE_EXTENSION_MODE
+	{
+		BLACK = 0,
+		CLAMP = 1,
+		REPEAT = 2,
+		MIRROR = 3
+	};
+
+	struct GRL_GRAPHICS_SAMPLER_DESC
+	{
+		GRL_GRAPHICS_SAMPLER_FILTER filter;
+		GRL_GRAPHICS_TEXTURE_EXTENSION_MODE extensionU;
+		GRL_GRAPHICS_TEXTURE_EXTENSION_MODE extensionV;
+		GRL_GRAPHICS_TEXTURE_EXTENSION_MODE extensionW;
+	};
+
 	class GRLIGraphicsEnvironment;
 	class GRLIGraphicsBuffer;
 	class GRLIGraphicsTexture;
@@ -69,11 +90,12 @@ namespace Grassland
 		GRL_FORMAT renderTargetFormatsList[8];
 		uint32_t numConstantBuffer;
 		uint32_t numTexture;
+		GRL_GRAPHICS_SAMPLER_DESC* samplerDesc;
 		uint32_t numInputElement;
 		GRL_FORMAT *inputElementLayout;
 		bool enableDepthTest;
 		bool enableBlend;
-		bool enableCullFace;
+		int cullFace;
 	};
 
 	GRLMakeObjectUUIDAssociate(GRLIGraphicsEnvironment, GRLID_IGraphicsEnvironment, "8c7edbfd-fc7b-479d-87ac-069480d65d3e");

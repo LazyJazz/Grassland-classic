@@ -2,6 +2,16 @@
 
 namespace Grassland
 {
+	HRESULT GRLDirectXErrorReport(HRESULT hr, const char* code, const char* file, int line)
+	{
+		if (FAILED(hr))
+		{
+			std::cout << "[ComCall Error!] code: " << std::hex << hr << std::endl
+				<< '(' << file << ":" << line << ')' << code << std::endl;
+		}
+		return hr;
+	}
+
 	GRLCD3D12PipelineState::GRLCD3D12PipelineState(
 		GRLCD3D12Environment* pEnvironment, 
 		const char* shader_path,
@@ -26,7 +36,7 @@ namespace Grassland
 #else
 		UINT compileFlags = 0;
 #endif
-		std::wstring wshader_path = GRLStringUTF8toUnicode(shader_path);
+		std::wstring wshader_path = GRLStringUTF8toUnicode(shader_path) + L"/d3d12_shaders.hlsl";
 
 		if (FAILED(
 			GRLComCall(D3DCompileFromFile(wshader_path.c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &shaderErrorMsg))
@@ -77,38 +87,29 @@ namespace Grassland
 			for (int index = 0; index < desc->numConstantBuffer; index++)
 				rootParameters[index + desc->numTexture].InitAsConstantBufferView(index);
 
-			D3D12_STATIC_SAMPLER_DESC sampler = {}, samplers[2];
-			sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-			sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-			sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-			sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-			sampler.MipLODBias = 0;
-			sampler.MaxAnisotropy = 0;
-			sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-			sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-			sampler.MinLOD = 0.0f;
-			sampler.MaxLOD = D3D12_FLOAT32_MAX;
-			sampler.ShaderRegister = 0;
-			sampler.RegisterSpace = 0;
-			sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-			samplers[0] = sampler;
-			sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-			sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-			sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-			sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-			sampler.MipLODBias = 0;
-			sampler.MaxAnisotropy = 0;
-			sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-			sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-			sampler.MinLOD = 0.0f;
-			sampler.MaxLOD = D3D12_FLOAT32_MAX;
-			sampler.ShaderRegister = 1;
-			sampler.RegisterSpace = 0;
-			samplers[1] = sampler;
+			D3D12_STATIC_SAMPLER_DESC sampler = {}, *samplers = new D3D12_STATIC_SAMPLER_DESC[desc->numTexture];
+
+			for (int i = 0; i < desc->numTexture; i++)
+			{
+				sampler.Filter = GRLFilterToD3D12Filter(desc->samplerDesc[i].filter);
+				sampler.AddressU = GRLExtensionModeToD3D12TextureAddressMode(desc->samplerDesc[i].extensionU);
+				sampler.AddressV = GRLExtensionModeToD3D12TextureAddressMode(desc->samplerDesc[i].extensionV);
+				sampler.AddressW = GRLExtensionModeToD3D12TextureAddressMode(desc->samplerDesc[i].extensionW);
+				sampler.MipLODBias = 0;
+				sampler.MaxAnisotropy = 0;
+				sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+				sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+				sampler.MinLOD = 0.0f;
+				sampler.MaxLOD = D3D12_FLOAT32_MAX;
+				sampler.ShaderRegister = i;
+				sampler.RegisterSpace = 0;
+				sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+				samplers[i] = sampler;
+			}
 
 
 			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			rootSignatureDesc.Init_1_1(desc->numTexture + desc->numConstantBuffer, rootParameters, desc->numTexture ? 2 : 0, desc->numTexture ? (samplers) : nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			rootSignatureDesc.Init_1_1(desc->numTexture + desc->numConstantBuffer, rootParameters, desc->numTexture, desc->numTexture ? (samplers) : nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> signature;
 			ComPtr<ID3DBlob> error;
@@ -122,6 +123,8 @@ namespace Grassland
 				delete[] ranges;
 			if (rootParameters)
 				delete[] rootParameters;
+			if (samplers)
+				delete[] samplers;
 		}
 
 		/***************************************
@@ -135,7 +138,7 @@ namespace Grassland
 				inputElementDescs[index] = D3D12_INPUT_ELEMENT_DESC(
 					{ "DATA", index, GRLFormatToDXGIFormat(desc->inputElementLayout[index]), 0, offset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
 				);
-				offset += GRLFormatSizeInByte(desc->inputElementLayout[index]);
+				offset += GRLFormatSizeInBytes(desc->inputElementLayout[index]);
 				m_vertexStride = offset;
 			}
 			/* =
@@ -167,7 +170,9 @@ namespace Grassland
 			psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
 			psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
 			psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-			if (!desc->enableCullFace) psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+			if (!desc->cullFace) psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+			else if (desc->cullFace == 1) psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_FRONT;
+			else if (desc->cullFace == -1) psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 			psoDesc.BlendState = blendDesc; //CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 
 
@@ -484,11 +489,15 @@ namespace Grassland
 
 		RECT windowRect = { 0, 0, static_cast<LONG>(screen_width), static_cast<LONG>(screen_height) };
 		AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+		std::wstring wtitle = GRLStringUTF8toUnicode(window_title);
 
+#ifdef _DEBUG
+		wtitle = wtitle + L" [D3D12]";
+#endif
 		// Create the window and store a handle to it.
 		m_hWnd = CreateWindow(
 			windowClass.lpszClassName,
-			GRLStringUTF8toUnicode(window_title).c_str(),
+			wtitle.c_str(),
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -687,7 +696,7 @@ namespace Grassland
 	GRL_RESULT GRLCD3D12Environment::__create_swapchain()
 	{
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-		swapChainDesc.BufferCount = GRLFrameCount;
+		swapChainDesc.BufferCount = GRLD3D12FrameCount;
 		swapChainDesc.Width = m_width;
 		swapChainDesc.Height = m_height;
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -880,6 +889,27 @@ namespace Grassland
 		}
 		return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 	}
+	D3D12_FILTER GRLFilterToD3D12Filter(GRL_GRAPHICS_SAMPLER_FILTER sampler_filter)
+	{
+		switch (sampler_filter)
+		{
+		case GRL_GRAPHICS_SAMPLER_FILTER::MIN_MAG_LINEAR: return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		case GRL_GRAPHICS_SAMPLER_FILTER::MIP_LINEAR: return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+		case GRL_GRAPHICS_SAMPLER_FILTER::LINEAR: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		}
+		return D3D12_FILTER_MIN_MAG_MIP_POINT;
+	}
+	D3D12_TEXTURE_ADDRESS_MODE GRLExtensionModeToD3D12TextureAddressMode(GRL_GRAPHICS_TEXTURE_EXTENSION_MODE extension_mode)
+	{
+		switch (extension_mode)
+		{
+		case GRL_GRAPHICS_TEXTURE_EXTENSION_MODE::CLAMP: return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		case GRL_GRAPHICS_TEXTURE_EXTENSION_MODE::MIRROR: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
+		case GRL_GRAPHICS_TEXTURE_EXTENSION_MODE::REPEAT: return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+//		case GRL_GRAPHICS_TEXTURE_EXTENSION_MODE::CLAMP: D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		}
+		return D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	}
 	GRL_RESULT GRLCreateD3D12Environment(uint32_t width, uint32_t height, const char* window_title, GRLIGraphicsEnvironment** ppEnvironment)
 	{
 		*ppEnvironment = new GRLCD3D12Environment(width, height, window_title);
@@ -966,7 +996,7 @@ namespace Grassland
 		uint8_t* gpu_buffer;
 		uint8_t* cpu_buffer = reinterpret_cast<uint8_t*>(pData);
 		GRLComCall(m_uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&gpu_buffer)));
-		int32_t m_pixel_size = GRLFormatSizeInByte(m_format);
+		int32_t m_pixel_size = GRLFormatSizeInBytes(m_format);
 
 		for (int i = 0; i < m_numRows; i++)
 		{
@@ -1003,7 +1033,7 @@ namespace Grassland
 		uint8_t* gpu_buffer;
 		uint8_t* cpu_buffer = reinterpret_cast<uint8_t*>(pData);
 		GRLComCall(m_downloadBuffer->Map(0, &range, reinterpret_cast<void**>(&gpu_buffer)));
-		int32_t m_pixel_size = GRLFormatSizeInByte(m_format);
+		int32_t m_pixel_size = GRLFormatSizeInBytes(m_format);
 
 		for (int i = 0; i < m_numRows; i++)
 		{

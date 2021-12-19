@@ -15,8 +15,13 @@
 
 #include <iostream>
 
+
 namespace Grassland
 {
+	using Microsoft::WRL::ComPtr;
+	HRESULT GRLDirectXErrorReport(HRESULT hr, const char* code, const char* file, int line);
+
+#define GRLComCall(x) GRLDirectXErrorReport(x, #x, __FILE__, __LINE__)
 	const int GRLD3D12FrameCount = 2;
 
 	class GRLCD3D12Environment;
@@ -36,6 +41,10 @@ namespace Grassland
 	DXGI_FORMAT GRLFormatToDXGIFormat(GRL_FORMAT grl_format);
 
 	D3D12_PRIMITIVE_TOPOLOGY GRLTopologyToD3D12Topology(GRL_RENDER_TOPOLOGY topo);
+
+	D3D12_FILTER GRLFilterToD3D12Filter(GRL_GRAPHICS_SAMPLER_FILTER sampler_filter);
+
+	D3D12_TEXTURE_ADDRESS_MODE GRLExtensionModeToD3D12TextureAddressMode(GRL_GRAPHICS_TEXTURE_EXTENSION_MODE extension_mode);
 
 	class GRLCD3D12Environment : public GRLIGraphicsEnvironment
 	{
