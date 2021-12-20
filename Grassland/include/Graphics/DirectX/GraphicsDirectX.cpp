@@ -367,6 +367,7 @@ namespace Grassland
 		m_commandQueue->ExecuteCommandLists(1, ppCommandLists);
 
 		m_duringDraw = false;
+		return GRL_FALSE;
 	}
 	void GRLCD3D12Environment::WaitForGpu()
 	{
@@ -884,10 +885,10 @@ namespace Grassland
 	{
 		switch (topo)
 		{
-		case GRL_RENDER_TOPOLOGY::TRIANGLE: D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		case GRL_RENDER_TOPOLOGY::LINE: D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+		case GRL_RENDER_TOPOLOGY::TRIANGLE: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		case GRL_RENDER_TOPOLOGY::LINE: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 		}
-		return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	}
 	D3D12_FILTER GRLFilterToD3D12Filter(GRL_GRAPHICS_SAMPLER_FILTER sampler_filter)
 	{

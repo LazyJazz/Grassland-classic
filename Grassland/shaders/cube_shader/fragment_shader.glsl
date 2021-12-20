@@ -14,10 +14,10 @@ layout (std140, binding = 0) uniform ConstantBuffer
 uniform sampler2D texture0;
 uniform sampler2D texture1;
 
-vec4 SampleTex(sampler2D textureX, vec2 __texcoord)
+vec4 SampleTex(sampler2D textureX, vec2 st_texcoord)
 {
-	__texcoord.y = 1.0 - __texcoord.y;
-	return texture(textureX, __texcoord);
+	st_texcoord.y = 1.0 - st_texcoord.y;
+	return texture(textureX, st_texcoord);
 }
 
 void main()

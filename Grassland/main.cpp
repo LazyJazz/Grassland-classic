@@ -41,6 +41,17 @@ void SimulateFuncCall(Func && func, Args && ...args)
 
 #define MacroFuncCall(func, ...) SimulateFuncCall(func, __VA_ARGS__)
 
+GRL_RESULT GRLHandlingFunction(GRL_RESULT Gr, const char * code, const char * file, int line)
+{
+    if (Gr)
+    {
+        std::cout << "[ GRL Error ] " << file << ":" << line << " " << code << std::endl;
+    }
+    return Gr;
+}
+
+#define GRLCall(x) GRLHandlingFunction(x, #x, __FILE__, __LINE__)
+
 int main()
 {
     GRLGraphicsAPIFullTest(GRL_GRAPHICS_API::D3D12);
@@ -183,12 +194,12 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
             pData[x + y * 256] = GRLColor(x, y, x ^ y);
         }
     }
-    pTextureBitmap->WritePixels(pData);
+    GRLCall(pTextureBitmap->WritePixels(pData));
 
-    pVertexBuffer->WriteData(sizeof(vertices), 0, vertices);
-    pIndexBuffer->WriteData(sizeof(indices), 0, indices);
-    pVertexBufferTex->WriteData(sizeof(verticesTex), 0, verticesTex);
-    pIndexBufferTex->WriteData(sizeof(indicesTex), 0, indicesTex);
+    GRLCall(pVertexBuffer->WriteData(sizeof(vertices), 0, vertices));
+    GRLCall(pIndexBuffer->WriteData(sizeof(indices), 0, indices));
+    GRLCall(pVertexBufferTex->WriteData(sizeof(verticesTex), 0, verticesTex));
+    GRLCall(pIndexBufferTex->WriteData(sizeof(indicesTex), 0, indicesTex));
 
     GRLMat4 rot(1.0), rotTex(1.0);
 
@@ -215,42 +226,42 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
             (GRLTransformProjection(GRLRadian(30.0f), 1.0f, 1.0f, 10.0f) *
                 GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rotTex).transpose();
         constantBuffer.mode = 0;
-        pConstantBufferTex->WriteData(sizeof(constantBuffer), 0, &constantBuffer);
+        GRLCall(pConstantBufferTex->WriteData(sizeof(constantBuffer), 0, &constantBuffer));
         constantBuffer.mat =
             (GRLTransformProjection(GRLRadian(30.0f), (float)scrWidth / (float)scrHeight, 1.0f, 10.0f) *
                 GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rot).transpose();
         constantBuffer.mode = 1;
-        pConstantBuffer->WriteData(sizeof(constantBuffer), 0, &constantBuffer);
+        GRLCall(pConstantBuffer->WriteData(sizeof(constantBuffer), 0, &constantBuffer));
 
-        pEnvironment->BeginDraw();
-        pEnvironment->ApplyPipelineState(pPipelineStateTex.Get());
+        GRLCall(pEnvironment->BeginDraw());
+        GRLCall(pEnvironment->ApplyPipelineState(pPipelineStateTex.Get()));
         {
             GRLIGraphicsTexture* renderTargets[] = { pTexture.Get() };
             if (pEnvironment->SetRenderTargets(1, renderTargets, pDepthMapTex.Get()))
                 GRLSetErrorInfo("Set RenderTargets Failed.");
         }
-        pEnvironment->SetViewport(0, 0, 32, 32);
-        pEnvironment->ClearRenderTargets(GRLColor(0.8, 0.7, 0.6, 1.0));
-        pEnvironment->ClearDepthMap();
-        pEnvironment->SetConstantBuffer(0, pConstantBufferTex.Get());
-        pEnvironment->DrawIndexedInstance(pVertexBufferTex.Get(), pIndexBufferTex.Get(), 36, GRL_RENDER_TOPOLOGY::TRIANGLE);
+        GRLCall(pEnvironment->SetViewport(0, 0, 32, 32));
+        GRLCall(pEnvironment->ClearRenderTargets(GRLColor(0.8, 0.7, 0.6, 1.0)));
+        GRLCall(pEnvironment->ClearDepthMap());
+        GRLCall(pEnvironment->SetConstantBuffer(0, pConstantBufferTex.Get()));
+        GRLCall(pEnvironment->DrawIndexedInstance(pVertexBufferTex.Get(), pIndexBufferTex.Get(), 36, GRL_RENDER_TOPOLOGY::TRIANGLE));
         
         
-        pEnvironment->ApplyPipelineState(pPipelineState.Get());
-        pEnvironment->SetInternalRenderTarget();
-        pEnvironment->SetViewport(0, 0, scrWidth, scrHeight);
-        pEnvironment->ClearRenderTargets(GRLColor(0.6, 0.7, 0.8, 1.0));
-        pEnvironment->ClearDepthMap();
+        GRLCall(pEnvironment->ApplyPipelineState(pPipelineState.Get()));
+        GRLCall(pEnvironment->SetInternalRenderTarget());
+        GRLCall(pEnvironment->SetViewport(0, 0, scrWidth, scrHeight));
+        GRLCall(pEnvironment->ClearRenderTargets(GRLColor(0.6, 0.7, 0.8, 1.0)));
+        GRLCall(pEnvironment->ClearDepthMap());
         GRLIGraphicsTexture* bindTextures[] = { pTexture.Get(), pTextureBitmap.Get() };
-        pEnvironment->SetTextures(2, bindTextures);
-        pEnvironment->SetConstantBuffer(0, pConstantBuffer.Get());
-        pEnvironment->DrawIndexedInstance(pVertexBuffer.Get(), pIndexBuffer.Get(), 36, GRL_RENDER_TOPOLOGY::TRIANGLE);
-        pEnvironment->EndDraw();
+        GRLCall(pEnvironment->SetTextures(2, bindTextures));
+        GRLCall(pEnvironment->SetConstantBuffer(0, pConstantBuffer.Get()));
+        GRLCall(pEnvironment->DrawIndexedInstance(pVertexBuffer.Get(), pIndexBuffer.Get(), 36, GRL_RENDER_TOPOLOGY::TRIANGLE));
+        GRLCall(pEnvironment->EndDraw());
         pEnvironment->Present(0);
-        /*
+        
         {
             GRLIImage * pImage;
-            GRLCreateImage(32, 32, &pImage);
+            GRLCreateImage(32, 32, & pImage);
             GRLColor* pColor;
             pImage->GetImageBuffer(&pColor);
             pTexture->ReadPixels(pColor);
