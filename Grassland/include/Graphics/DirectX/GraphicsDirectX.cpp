@@ -1160,17 +1160,20 @@ namespace Grassland
 			break;
 		}
 
-		if (m_environment->BeginDraw()) return GRL_TRUE;
-		auto commandList = m_environment->GetCommandList();
+		if (m_type != GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
+		{
+			if (m_environment->BeginDraw()) return GRL_TRUE;
+			auto commandList = m_environment->GetCommandList();
 
-		CD3DX12_RESOURCE_BARRIER resourceBarrier[2];
-		resourceBarrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), defResourceState, D3D12_RESOURCE_STATE_COPY_DEST);
-		commandList->ResourceBarrier(1, resourceBarrier);
-		commandList->CopyBufferRegion(m_buffer.Get(), offset, m_uploadBuffer.Get(), offset, size);
-		resourceBarrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, defResourceState);
-		commandList->ResourceBarrier(1, resourceBarrier + 1);
-		m_environment->EndDraw();
-		m_environment->WaitForGpu();
+			CD3DX12_RESOURCE_BARRIER resourceBarrier[2];
+			resourceBarrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), defResourceState, D3D12_RESOURCE_STATE_COPY_DEST);
+			commandList->ResourceBarrier(1, resourceBarrier);
+			commandList->CopyBufferRegion(m_buffer.Get(), offset, m_uploadBuffer.Get(), offset, size);
+			resourceBarrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, defResourceState);
+			commandList->ResourceBarrier(1, resourceBarrier + 1);
+			m_environment->EndDraw();
+			m_environment->WaitForGpu();
+		}
 
 		return GRL_FALSE;
 	}
@@ -1213,7 +1216,10 @@ namespace Grassland
 	}
 	ID3D12Resource* GRLCD3D12Buffer::GetResource()
 	{
-		return m_buffer.Get();
+		if (m_type != GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
+			return m_buffer.Get();
+		else
+			return m_uploadBuffer.Get();
 	}
 	GRLCD3D12DepthMap::GRLCD3D12DepthMap(uint32_t width, uint32_t height, GRLCD3D12Environment* pEnvironment)
 	{

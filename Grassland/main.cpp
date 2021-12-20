@@ -198,10 +198,10 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
     {
         std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now();
         qts.push(tp);
-        if (qts.size() == 100)
+        if (qts.size() == 1000)
         {
             std::chrono::steady_clock::time_point fp = qts.front();
-            std::cout << (99e9f / (float)((tp - fp) / std::chrono::nanoseconds(1))) << std::endl;
+            std::cout << (999e9f / (float)((tp - fp) / std::chrono::nanoseconds(1))) << std::endl;
             while (!qts.empty())
                 qts.pop();
         }
