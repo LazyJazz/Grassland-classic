@@ -55,7 +55,7 @@ namespace Grassland
 		virtual GRL_RESULT Resize(uint32_t width, uint32_t height) override;
 		virtual GRL_RESULT CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture) override;
 		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap) override;
-		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLIGraphicsBuffer** ppBuffer) override;
+		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void *pData, GRLIGraphicsBuffer** ppBuffer) override;
 		virtual GRL_RESULT CreatePipelineState(
 			const char* shader_path,
 			GRL_GRAPHICS_PIPELINE_STATE_DESC* desc,
@@ -84,7 +84,6 @@ namespace Grassland
 		virtual GRL_RESULT AddRef() override;
 		virtual GRL_RESULT Release() override;
 		virtual GRL_RESULT QueryInterface(GRLUUID Uuid, void** ppObject) override;
-
 		ID3D12Device* GetDevice();
 		ID3D12GraphicsCommandList* GetCommandList();
 		ID3D12Resource* GetSwapChainFrameResource(int frameIndex);
@@ -96,6 +95,10 @@ namespace Grassland
 		GRL_RESULT ReturnSRVHandle(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 
 		virtual void MoveToNextFrame();
+
+		ID3D12GraphicsCommandList* BeginCopy();
+		GRL_RESULT EndCopy();
+		void WaitForCopy();
 	private:
 
 		static LRESULT WINAPI GRLD3D12EnvironmentProcFunc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -128,6 +131,11 @@ namespace Grassland
 		ComPtr<ID3D12CommandQueue> m_commandQueue;
 		ComPtr<ID3D12CommandAllocator> m_commandAllocator;
 		ComPtr<ID3D12GraphicsCommandList> m_commandList;
+		ComPtr<ID3D12CommandAllocator> m_copyCommandAllocator;
+		ComPtr<ID3D12GraphicsCommandList> m_copyCommandList;
+		ComPtr<ID3D12Fence> m_copyFence;
+		HANDLE m_copyFenceEvent;
+		uint64_t m_copyFenceValue;
 		HANDLE m_fenceEvent;
 		uint32_t m_width, m_height;
 		uint32_t m_frameIndex;
@@ -152,7 +160,7 @@ namespace Grassland
 	class GRLCD3D12Buffer : public GRLIGraphicsBuffer
 	{
 	public:
-		GRLCD3D12Buffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLCD3D12Environment * pEnvironment);
+		GRLCD3D12Buffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLCD3D12Environment * pEnvironment);
 		virtual GRL_RESULT WriteData(uint64_t size, uint64_t offset, void* pData) override;
 
 		virtual GRL_RESULT AddRef() override;
@@ -167,6 +175,7 @@ namespace Grassland
 		ComPtr<ID3D12Resource> m_uploadBuffer;
 		GRLPtr<GRLCD3D12Environment> m_environment;
 		GRL_GRAPHICS_BUFFER_TYPE m_type;
+		GRL_GRAPHICS_BUFFER_USAGE m_usage;
 		uint64_t m_size;
 		uint32_t __Ref_Cnt;
 	};

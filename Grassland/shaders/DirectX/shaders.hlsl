@@ -1,6 +1,7 @@
 cbuffer GlobalSettings: register(b0)
 {
-	float4x4 transform;
+	float4x4 world;
+	float4x4 projection;
 	int mode;
 	float __padding[47];
 };
@@ -22,8 +23,8 @@ PSInput VSMain(
 	)
 {
 	PSInput res;
-	res.Position = mul(transform, pos);
-	res.Normal = mul(transform, norm);
+	res.Position = mul(projection, mul(world, pos));
+	res.Normal = mul(world, norm);
 	res.TexCoord = texcoord;
 	return res;
 }

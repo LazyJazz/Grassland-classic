@@ -231,10 +231,10 @@ namespace Grassland
 		return GRL_FALSE;
 	}
 
-	GRL_RESULT GRLCOpenGLEnvironment::CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLIGraphicsBuffer** ppBuffer)
+	GRL_RESULT GRLCOpenGLEnvironment::CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLIGraphicsBuffer** ppBuffer)
 	{
 		MakeThisContextCurrent();
-		*ppBuffer = new GRLCOpenGLBuffer(size, type, this);
+		*ppBuffer = new GRLCOpenGLBuffer(size, type, usage, pData, this);
 		return GRL_FALSE;
 	}
 
@@ -463,7 +463,8 @@ namespace Grassland
 	{
 		if (!m_duringDraw) return GRL_TRUE;
 		MakeThisContextCurrent();
-		return GRL_RESULT();
+		m_duringDraw = false;
+		return GRL_FALSE;
 	}
 
 	void GRLCOpenGLEnvironment::WaitForGpu()
@@ -808,7 +809,7 @@ namespace Grassland
 		}
 		return m_mapTextureLocation[textureIndex];
 	}
-	GRLCOpenGLBuffer::GRLCOpenGLBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLCOpenGLEnvironment* pEnvironment)
+	GRLCOpenGLBuffer::GRLCOpenGLBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void * pData, GRLCOpenGLEnvironment* pEnvironment)
 	{
 		__Ref_Cnt = 1;
 		m_type = type;
@@ -817,7 +818,18 @@ namespace Grassland
 		GRLOpenGLCall(glGenBuffers, 1, &m_buffer);
 		m_glType = GRLBufferTypeToOpenGLBufferType(type);
 		GRLOpenGLCall(glBindBuffer, m_glType, m_buffer);
-		GRLOpenGLCall(glBufferData, m_glType, size, nullptr, GL_DYNAMIC_DRAW);
+
+		if (usage == GRL_GRAPHICS_BUFFER_USAGE::DEFAULT)
+			if (type == GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
+				usage = GRL_GRAPHICS_BUFFER_USAGE::DYNAMIC;
+			else
+				usage = GRL_GRAPHICS_BUFFER_USAGE::STATIC;
+		m_usage = usage;
+		if (usage == GRL_GRAPHICS_BUFFER_USAGE::DYNAMIC)
+			m_glUsage = GL_DYNAMIC_DRAW;
+		else
+			m_glUsage = GL_STATIC_DRAW;
+		GRLOpenGLCall(glBufferData, m_glType, size, pData, m_glUsage);
 		GRLOpenGLCall(glBindBuffer, m_glType, 0);
 		m_environment = pEnvironment;
 	}

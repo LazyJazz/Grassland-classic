@@ -1,8 +1,9 @@
 cbuffer GlobalSettings: register(b0)
 {
-	float4x4 transform;
+	float4x4 world;
+	float4x4 projection;
 	int mode;
-	float __padding[47];
+	float __padding[31];
 };
 
 struct PSInput
@@ -19,8 +20,8 @@ PSInput VSMain(
 )
 {
 	PSInput res;
-	res.Position = mul(transform, pos);
-	res.Normal = mul(transform, norm);
+	res.Position = mul(projection, mul(world, pos));
+	res.Normal = mul(world, norm);
 	res.TexCoord = texcoord;
 	return res;
 }
@@ -44,12 +45,14 @@ PSOutput PSMain(PSInput input)
 	PSOutput res;
 	if (mode)
 	{
-		float scale = max(dot(normalize(input.Normal), normalize(float4(0.0, 1.0, -1.0, 0.0))), 0.0) * 0.5;
+		float scale = max(dot(input.Normal, normalize(float4(0.0, 1.0, -1.0, 0.0))), 0.0) * 0.5;
 		scale += 0.5;
 		res.Color0 =
 			//g_texture.Sample(g_sampler, input.TexCoord.xy);
 			(g_texture.Sample(g_sampler, input.TexCoord.xy) + g_texture2.Sample(g_sampler2, input.TexCoord.xy)) * 0.5;
 		res.Color0 = float4(res.Color0.xyz * scale, res.Color0.w);
+		//res.Color0 = float4(input.Normal.xyz + 1.0, 2.0) * 0.5;
+		//res.Color0 = float4(float3(1.0, 1.0, 1.0) * length(input.Normal) * 0.5, 1.0);
 	}
 	else res.Color0 = float4(input.TexCoord.xyz, input.TexCoord.w);
 

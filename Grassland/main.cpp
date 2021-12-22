@@ -22,24 +22,12 @@ struct Vertex
 
 struct ConstantBufferConstant
 {
-    GRLMat4 mat;
+    GRLMat4 world;
+    GRLMat4 projection;
     int mode;
 };
 
 void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API);
-
-int aplusb(int a, int b)
-{
-    return a + b;
-}
-
-template <class Func, class ... Args>
-void SimulateFuncCall(Func && func, Args && ...args)
-{
-    std::cout << func(args...);
-}
-
-#define MacroFuncCall(func, ...) SimulateFuncCall(func, __VA_ARGS__)
 
 GRL_RESULT GRLHandlingFunction(GRL_RESULT Gr, const char * code, const char * file, int line)
 {
@@ -55,12 +43,6 @@ GRL_RESULT GRLHandlingFunction(GRL_RESULT Gr, const char * code, const char * fi
 int main()
 {
     GRLGraphicsAPIFullTest(GRL_GRAPHICS_API::D3D12);
-    return 0;
-    std::thread th[2];
-    th[0] = std::thread(GRLGraphicsAPIFullTest, GRL_GRAPHICS_API::D3D12);
-    th[1] = std::thread(GRLGraphicsAPIFullTest, GRL_GRAPHICS_API::OPENGL);
-    th[0].join();
-    th[1].join();
     return 0;
 }
 
@@ -93,6 +75,7 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
             vertices[i * 4 + 1].normal = GRLVec4(mat[i][0][2], mat[i][1][2], mat[i][2][2], 0.0);
             vertices[i * 4 + 2].normal = GRLVec4(mat[i][0][2], mat[i][1][2], mat[i][2][2], 0.0);
             vertices[i * 4 + 3].normal = GRLVec4(mat[i][0][2], mat[i][1][2], mat[i][2][2], 0.0);
+            std::cout << vertices[i * 4 + 3].normal.norm() << std::endl;
             indices[i * 6] = i * 4;
             indices[i * 6 + 1] = i * 4 + 1;
             indices[i * 6 + 2] = i * 4 + 2;
@@ -177,12 +160,12 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
     pEnvironment->CreatePipelineState("shaders/cube_shader", &pipelineStateDesc, &pPipelineStateTex);
     //delete [] pipelineStateDesc.inputElementLayout;
     pEnvironment->CreateTexture(32, 32, GRL_FORMAT::FLOAT4, &pTexture);
-    pEnvironment->CreateBuffer(sizeof(vertices), GRL_GRAPHICS_BUFFER_TYPE::VERTEX, &pVertexBuffer);
-    pEnvironment->CreateBuffer(sizeof(indices), GRL_GRAPHICS_BUFFER_TYPE::INDEX, &pIndexBuffer);
-    pEnvironment->CreateBuffer(sizeof(constantBuffer), GRL_GRAPHICS_BUFFER_TYPE::CONSTANT, &pConstantBuffer);
-    pEnvironment->CreateBuffer(sizeof(verticesTex), GRL_GRAPHICS_BUFFER_TYPE::VERTEX, &pVertexBufferTex);
-    pEnvironment->CreateBuffer(sizeof(indicesTex), GRL_GRAPHICS_BUFFER_TYPE::INDEX, &pIndexBufferTex);
-    pEnvironment->CreateBuffer(sizeof(constantBuffer), GRL_GRAPHICS_BUFFER_TYPE::CONSTANT, &pConstantBufferTex);
+    pEnvironment->CreateBuffer(sizeof(vertices), GRL_GRAPHICS_BUFFER_TYPE::VERTEX, GRL_GRAPHICS_BUFFER_USAGE::DEFAULT, vertices, &pVertexBuffer);
+    pEnvironment->CreateBuffer(sizeof(indices), GRL_GRAPHICS_BUFFER_TYPE::INDEX, GRL_GRAPHICS_BUFFER_USAGE::DEFAULT, indices, &pIndexBuffer);
+    pEnvironment->CreateBuffer(sizeof(constantBuffer), GRL_GRAPHICS_BUFFER_TYPE::CONSTANT, GRL_GRAPHICS_BUFFER_USAGE::DEFAULT, nullptr, &pConstantBuffer);
+    pEnvironment->CreateBuffer(sizeof(verticesTex), GRL_GRAPHICS_BUFFER_TYPE::VERTEX, GRL_GRAPHICS_BUFFER_USAGE::DEFAULT, verticesTex, &pVertexBufferTex);
+    pEnvironment->CreateBuffer(sizeof(indicesTex), GRL_GRAPHICS_BUFFER_TYPE::INDEX, GRL_GRAPHICS_BUFFER_USAGE::DEFAULT, indicesTex, &pIndexBufferTex);
+    pEnvironment->CreateBuffer(sizeof(constantBuffer), GRL_GRAPHICS_BUFFER_TYPE::CONSTANT, GRL_GRAPHICS_BUFFER_USAGE::DEFAULT, nullptr, &pConstantBufferTex);
     pEnvironment->CreateDepthMap(32, 32, &pDepthMapTex);
 
     pEnvironment->CreateTexture(256, 256, GRL_FORMAT::FLOAT4, &pTextureBitmap);
@@ -196,10 +179,10 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
     }
     GRLCall(pTextureBitmap->WritePixels(pData));
 
-    GRLCall(pVertexBuffer->WriteData(sizeof(vertices), 0, vertices));
-    GRLCall(pIndexBuffer->WriteData(sizeof(indices), 0, indices));
-    GRLCall(pVertexBufferTex->WriteData(sizeof(verticesTex), 0, verticesTex));
-    GRLCall(pIndexBufferTex->WriteData(sizeof(indicesTex), 0, indicesTex));
+    //GRLCall(pVertexBuffer->WriteData(sizeof(vertices), 0, vertices));
+    //GRLCall(pIndexBuffer->WriteData(sizeof(indices), 0, indices));
+    //GRLCall(pVertexBufferTex->WriteData(sizeof(verticesTex), 0, verticesTex));
+    //GRLCall(pIndexBufferTex->WriteData(sizeof(indicesTex), 0, indicesTex));
 
     GRLMat4 rot(1.0), rotTex(1.0);
 
@@ -209,10 +192,10 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
     {
         std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now();
         qts.push(tp);
-        if (qts.size() == 1000)
+        if (qts.size() == 200)
         {
             std::chrono::steady_clock::time_point fp = qts.front();
-            std::cout << (999e9f / (float)((tp - fp) / std::chrono::nanoseconds(1))) << std::endl;
+            std::cout << (199e9f / (float)((tp - fp) / std::chrono::nanoseconds(1))) << std::endl;
             while (!qts.empty())
                 qts.pop();
         }
@@ -222,14 +205,16 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
         rot *= GRLTransformRotation(GRLRadian(0.03f), GRLRadian(0.02f), GRLRadian(0.01f));
         rotTex *= GRLTransformRotation(GRLRadian(0.1f), GRLRadian(0.2f), GRLRadian(0.3f));
 
-        constantBuffer.mat =
-            (GRLTransformProjection(GRLRadian(30.0f), 1.0f, 1.0f, 10.0f) *
-                GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rotTex).transpose();
-        constantBuffer.mode = 0;
-        GRLCall(pConstantBufferTex->WriteData(sizeof(constantBuffer), 0, &constantBuffer));
-        constantBuffer.mat =
-            (GRLTransformProjection(GRLRadian(30.0f), (float)scrWidth / (float)scrHeight, 1.0f, 10.0f) *
-                GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rot).transpose();
+        constantBufferTex.world =
+            (GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rotTex).transpose();
+        constantBufferTex.projection =
+            GRLTransformProjection(GRLRadian(30.0f), 1.0f, 1.0f, 10.0f).transpose();
+        constantBufferTex.mode = 0;
+        GRLCall(pConstantBufferTex->WriteData(sizeof(constantBufferTex), 0, &constantBufferTex));
+        constantBuffer.world =
+            (GRLTransformTranslate(0.0f, 0.0f, 5.0f) * rot).transpose();
+        constantBuffer.projection =
+            GRLTransformProjection(GRLRadian(30.0f), (float)scrWidth / (float)scrHeight, 1.0f, 10.0f).transpose();
         constantBuffer.mode = 1;
         GRLCall(pConstantBuffer->WriteData(sizeof(constantBuffer), 0, &constantBuffer));
 
@@ -252,14 +237,14 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
         GRLCall(pEnvironment->SetViewport(0, 0, scrWidth, scrHeight));
         GRLCall(pEnvironment->ClearRenderTargets(GRLColor(0.6, 0.7, 0.8, 1.0)));
         GRLCall(pEnvironment->ClearDepthMap());
-        GRLIGraphicsTexture* bindTextures[] = { pTexture.Get(), pTextureBitmap.Get() };
+        GRLIGraphicsTexture* bindTextures[] = { pTextureBitmap.Get(), pTexture.Get() };
         GRLCall(pEnvironment->SetTextures(2, bindTextures));
         GRLCall(pEnvironment->SetConstantBuffer(0, pConstantBuffer.Get()));
         GRLCall(pEnvironment->DrawIndexedInstance(pVertexBuffer.Get(), pIndexBuffer.Get(), 36, GRL_RENDER_TOPOLOGY::TRIANGLE));
         GRLCall(pEnvironment->EndDraw());
-        pEnvironment->Present(0);
+        pEnvironment->Present(1);
         
-        {
+        /* {
             GRLIImage * pImage;
             GRLCreateImage(32, 32, & pImage);
             GRLColor* pColor;

@@ -79,6 +79,15 @@
     <Filter Include="Assets\Shaders\cube_shader">
       <UniqueIdentifier>{1e7969c6-1d5e-4c5a-8ae8-354d44deb059}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headers\Graphics\2D">
+      <UniqueIdentifier>{d618c2a1-a668-4000-abdb-78cb850d6d78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Graphics\2D">
+      <UniqueIdentifier>{9f58d80e-b95c-41e9-a53f-fdc38ef1a12a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Shaders\2d_shader">
+      <UniqueIdentifier>{cc5c7791-e498-4f36-ac47-fc6b4a1cb5e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -143,6 +152,9 @@
     </ClCompile>
     <ClCompile Include="include\Graphics\OpenGL\GraphicsOpenGL.cpp">
       <Filter>Sources\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Graphics\2D\Graphics2D.cpp">
+      <Filter>Sources\Graphics\2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -290,6 +302,12 @@
     <ClInclude Include="include\Graphics\OpenGL\GraphicsOpenGL.h">
       <Filter>Headers\Graphics\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="include\Graphics\2D\Graphics2D.h">
+      <Filter>Headers\Graphics\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Math\Vector2.inl">
@@ -376,6 +394,12 @@
     <None Include="shaders\cube_shader\vertex_shader.glsl">
       <Filter>Assets\Shaders\cube_shader</Filter>
     </None>
+    <None Include="shaders\2d_shader\fragment_shader.glsl">
+      <Filter>Assets\Shaders\2d_shader</Filter>
+    </None>
+    <None Include="shaders\2d_shader\vertex_shader.glsl">
+      <Filter>Assets\Shaders\2d_shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\DirectX\shaders.hlsl">
@@ -390,5 +414,13 @@
     <FxCompile Include="shaders\cube_shader\d3d12_shaders.hlsl">
       <Filter>Assets\Shaders\cube_shader</Filter>
     </FxCompile>
+    <FxCompile Include="shaders\2d_shader\d3d12_shaders.hlsl">
+      <Filter>Assets\Shaders\2d_shader</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Grassland.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

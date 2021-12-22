@@ -471,6 +471,36 @@ namespace Grassland
 		// Set the fence value for the next frame.
 		m_fenceValues[m_frameIndex] = currentFenceValue + 1;
 	}
+
+	ID3D12GraphicsCommandList* GRLCD3D12Environment::BeginCopy()
+	{
+		WaitForCopy();
+		if (FAILED(GRLComCall(m_copyCommandAllocator->Reset()))) return nullptr;
+		if (FAILED(GRLComCall(m_copyCommandList->Reset(m_copyCommandAllocator.Get(), nullptr)))) return nullptr;
+		return m_copyCommandList.Get();
+	}
+
+	GRL_RESULT GRLCD3D12Environment::EndCopy()
+	{
+		if (FAILED(GRLComCall(m_copyCommandList->Close()))) return GRL_TRUE;
+		ID3D12CommandList* commandLists[] = { m_copyCommandList.Get() };
+		m_commandQueue->ExecuteCommandLists(1, commandLists);
+		GRLComCall(m_commandQueue->Signal(m_copyFence.Get(), m_copyFenceValue));
+		return GRL_FALSE;
+	}
+
+	void GRLCD3D12Environment::WaitForCopy()
+	{
+		// Wait until the fence has been processed.
+		if (m_copyFence->GetCompletedValue() < m_copyFenceValue)
+		{
+			GRLComCall(m_copyFence->SetEventOnCompletion(m_copyFenceValue, m_copyFenceEvent));
+			WaitForSingleObjectEx(m_copyFenceEvent, INFINITE, FALSE);
+		}
+
+		// Increment the fence value for the current frame.
+		m_copyFenceValue++;
+	}
 	
 	GRLCD3D12Environment::GRLCD3D12Environment(uint32_t screen_width, uint32_t screen_height, const char* window_title)
 	{
@@ -546,9 +576,9 @@ namespace Grassland
 		*ppDepthMap = new GRLCD3D12DepthMap(width, height, this);
 		return GRL_FALSE;
 	}
-	GRL_RESULT GRLCD3D12Environment::CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLIGraphicsBuffer** ppBuffer)
+	GRL_RESULT GRLCD3D12Environment::CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLIGraphicsBuffer** ppBuffer)
 	{
-		*ppBuffer = new GRLCD3D12Buffer(size, type, this);
+		*ppBuffer = new GRLCD3D12Buffer(size, type, usage, pData, this);
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCD3D12Environment::CreatePipelineState(
@@ -769,6 +799,15 @@ namespace Grassland
 		if (FAILED(
 			GRLComCall(m_commandList->Close())
 		)) return GRL_TRUE;
+		if (FAILED(
+			GRLComCall(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_copyCommandAllocator)))
+		)) return GRL_TRUE;
+		if (FAILED(
+			GRLComCall(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_copyCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_copyCommandList)))
+		)) return GRL_TRUE;
+		if (FAILED(
+			GRLComCall(m_copyCommandList->Close())
+		)) return GRL_TRUE;
 
 		
 
@@ -783,7 +822,14 @@ namespace Grassland
 			m_fenceValues[n] = 1;
 
 		m_fenceEvent = CreateEvent(0, 0, 0, 0);
+		if (FAILED(
+			GRLComCall(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_copyFence)))
+		)) return GRL_TRUE;
+		m_copyFenceValue = 1;
+
+		m_copyFenceEvent = CreateEvent(0, 0, 0, 0);
 		WaitForPreviousFrame();
+		GRLComCall(m_commandQueue->Signal(m_copyFence.Get(), m_copyFenceValue));
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCD3D12Environment::__build_rtvdsvResources()
@@ -1007,28 +1053,26 @@ namespace Grassland
 		}
 		m_uploadBuffer->Unmap(0, nullptr);
 
-		if (m_environment->BeginDraw()) return GRL_TRUE;
-		auto commandList = m_environment->GetCommandList();
+		auto commandList = m_environment->BeginCopy();
+		if (!commandList) return GRL_TRUE;
 		ResourceStateTransition(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 		CD3DX12_TEXTURE_COPY_LOCATION
 			src(m_uploadBuffer.Get(), m_footprint),
 			dst(m_texture.Get(), 0);
 		commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-		m_environment->EndDraw();
-		m_environment->WaitForGpu();
+		m_environment->EndCopy();
 		return GRL_FALSE;
 	}
 	GRL_RESULT GRLCD3D12Texture::ReadPixels(void* pData)
 	{
-		if (m_environment->BeginDraw()) return GRL_TRUE;
-		auto commandList = m_environment->GetCommandList();
+		auto commandList = m_environment->BeginCopy();
+		if (!commandList) return GRL_TRUE;
 		ResourceStateTransition(commandList, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		CD3DX12_TEXTURE_COPY_LOCATION
 			dst(m_downloadBuffer.Get(), m_footprint),
 			src(m_texture.Get(), 0);
 		commandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
-		m_environment->EndDraw();
-		m_environment->WaitForGpu();
+		m_environment->EndCopy();
 
 		CD3DX12_RANGE range(0, m_bufferSize);
 		uint8_t* gpu_buffer;
@@ -1097,7 +1141,7 @@ namespace Grassland
 		commandList->ResourceBarrier(1, &resource_barrier);
 		m_curResourceState = newResourceState;
 	}
-	GRLCD3D12Buffer::GRLCD3D12Buffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLCD3D12Environment* pEnvironment)
+	GRLCD3D12Buffer::GRLCD3D12Buffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLCD3D12Environment* pEnvironment)
 	{
 		if (type == GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
 			size = ((size + 255) & 0xffffffffffffff00u);
@@ -1106,74 +1150,139 @@ namespace Grassland
 		m_size = size;
 		m_type = type;
 		ComPtr<ID3D12Device> device(pEnvironment->GetDevice());
-		CD3DX12_HEAP_PROPERTIES heapProperties(D3D12_HEAP_TYPE_UPLOAD);
-		CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(
-			size
-		);
-		device->CreateCommittedResource(
-			&heapProperties,
-			D3D12_HEAP_FLAG_NONE,
-			&resourceDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&m_uploadBuffer)
-		);
+		CD3DX12_HEAP_PROPERTIES heapProperties;
+		CD3DX12_RESOURCE_DESC resourceDesc;
+
+		if (usage == GRL_GRAPHICS_BUFFER_USAGE::DEFAULT)
+			if (type == GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
+				usage = GRL_GRAPHICS_BUFFER_USAGE::DYNAMIC;
+			else
+				usage = GRL_GRAPHICS_BUFFER_USAGE::STATIC;
+		m_usage = usage;
 
 		D3D12_RESOURCE_STATES initResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;
-		switch (type)
+		
+		if (usage == GRL_GRAPHICS_BUFFER_USAGE::STATIC)
 		{
-		case GRL_GRAPHICS_BUFFER_TYPE::CONSTANT:
-		case GRL_GRAPHICS_BUFFER_TYPE::VERTEX:
-			initResourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-			break;
-		case GRL_GRAPHICS_BUFFER_TYPE::INDEX:
-			initResourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-			break;
+			switch (type)
+			{
+			case GRL_GRAPHICS_BUFFER_TYPE::CONSTANT:
+			case GRL_GRAPHICS_BUFFER_TYPE::VERTEX:
+				initResourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+				break;
+			case GRL_GRAPHICS_BUFFER_TYPE::INDEX:
+				initResourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+				break;
+			}
 		}
 
-		heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		device->CreateCommittedResource(
-			&heapProperties,
-			D3D12_HEAP_FLAG_NONE,
-			&resourceDesc,
-			initResourceState,
-			nullptr,
-			IID_PPV_ARGS(&m_buffer)
+		resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
+
+		if (usage == GRL_GRAPHICS_BUFFER_USAGE::STATIC)
+			heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+		else 
+			heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		GRLComCall(
+			device->CreateCommittedResource(
+				&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&resourceDesc,
+				initResourceState,
+				nullptr,
+				IID_PPV_ARGS(&m_buffer)
+			)
 		);
+
+		m_uploadBuffer.Reset();
+
+		if (m_usage == GRL_GRAPHICS_BUFFER_USAGE::STATIC)
+		{
+			heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+			GRLComCall(
+				device->CreateCommittedResource(
+					&heapProperties,
+					D3D12_HEAP_FLAG_NONE,
+					&resourceDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(&m_uploadBuffer)
+				)
+			);
+		}
+
+		if (pData)
+		{
+			if (usage == GRL_GRAPHICS_BUFFER_USAGE::STATIC)
+			{
+				CD3DX12_RANGE range(0, 0);
+				uint8_t* pDst;
+				GRLComCall(m_uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&pDst)));
+				memcpy(pDst, pData, size);
+				m_uploadBuffer->Unmap(0, nullptr);
+
+				if (m_usage == GRL_GRAPHICS_BUFFER_USAGE::STATIC)
+				{
+					auto commandList = m_environment->BeginCopy();
+					if (!commandList) return;
+
+					CD3DX12_RESOURCE_BARRIER resourceBarrier[2];
+					resourceBarrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), initResourceState, D3D12_RESOURCE_STATE_COPY_DEST);
+					commandList->ResourceBarrier(1, resourceBarrier);
+					commandList->CopyBufferRegion(m_buffer.Get(), 0, m_uploadBuffer.Get(), 0, size);
+					resourceBarrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, initResourceState);
+					commandList->ResourceBarrier(1, resourceBarrier + 1);
+					m_environment->EndCopy();
+				}
+			}
+			else
+			{
+				CD3DX12_RANGE range(0, 0);
+				uint8_t* pDst;
+				GRLComCall(m_buffer->Map(0, &range, reinterpret_cast<void**>(&pDst)));
+				memcpy(pDst, pData, size);
+				m_buffer->Unmap(0, nullptr);
+			}
+		}
 
 	}
 	GRL_RESULT GRLCD3D12Buffer::WriteData(uint64_t size, uint64_t offset, void* pData)
 	{
-		CD3DX12_RANGE range(0,0);
-		uint8_t* pDst;
-		GRLComCall(m_uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&pDst)));
-		memcpy(pDst + offset, pData, size);
-		m_uploadBuffer->Unmap(0, nullptr);
-		D3D12_RESOURCE_STATES defResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;
-		switch (m_type)
+		if (m_usage == GRL_GRAPHICS_BUFFER_USAGE::DYNAMIC)
 		{
-		case GRL_GRAPHICS_BUFFER_TYPE::CONSTANT:
-		case GRL_GRAPHICS_BUFFER_TYPE::VERTEX:
-			defResourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-			break;
-		case GRL_GRAPHICS_BUFFER_TYPE::INDEX:
-			defResourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-			break;
+			CD3DX12_RANGE range(0, 0);
+			uint8_t* pDst;
+			GRLComCall(m_buffer->Map(0, &range, reinterpret_cast<void**>(&pDst)));
+			memcpy(pDst + offset, pData, size);
+			m_buffer->Unmap(0, nullptr);
 		}
-
-		if (m_type != GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
+		else
 		{
-			if (m_environment->BeginDraw()) return GRL_TRUE;
-			auto commandList = m_environment->GetCommandList();
+			CD3DX12_RANGE range(0, 0);
+			uint8_t* pDst;
+			GRLComCall(m_uploadBuffer->Map(0, &range, reinterpret_cast<void**>(&pDst)));
+			memcpy(pDst + offset, pData, size);
+			m_uploadBuffer->Unmap(0, nullptr);
+			D3D12_RESOURCE_STATES initResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;
+			switch (m_type)
+			{
+			case GRL_GRAPHICS_BUFFER_TYPE::CONSTANT:
+			case GRL_GRAPHICS_BUFFER_TYPE::VERTEX:
+				initResourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+				break;
+			case GRL_GRAPHICS_BUFFER_TYPE::INDEX:
+				initResourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+				break;
+			}
+			auto commandList = m_environment->BeginCopy();
+			if (!commandList) return GRL_TRUE;
 
 			CD3DX12_RESOURCE_BARRIER resourceBarrier[2];
-			resourceBarrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), defResourceState, D3D12_RESOURCE_STATE_COPY_DEST);
+			resourceBarrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), initResourceState, D3D12_RESOURCE_STATE_COPY_DEST);
 			commandList->ResourceBarrier(1, resourceBarrier);
-			commandList->CopyBufferRegion(m_buffer.Get(), offset, m_uploadBuffer.Get(), offset, size);
-			resourceBarrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, defResourceState);
+			commandList->CopyBufferRegion(m_buffer.Get(), 0, m_uploadBuffer.Get(), 0, size);
+			resourceBarrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(m_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, initResourceState);
 			commandList->ResourceBarrier(1, resourceBarrier + 1);
-			m_environment->EndDraw();
-			m_environment->WaitForGpu();
+			m_environment->EndCopy();
 		}
 
 		return GRL_FALSE;
@@ -1217,10 +1326,7 @@ namespace Grassland
 	}
 	ID3D12Resource* GRLCD3D12Buffer::GetResource()
 	{
-		if (m_type != GRL_GRAPHICS_BUFFER_TYPE::CONSTANT)
-			return m_buffer.Get();
-		else
-			return m_uploadBuffer.Get();
+		return m_buffer.Get();
 	}
 	GRLCD3D12DepthMap::GRLCD3D12DepthMap(uint32_t width, uint32_t height, GRLCD3D12Environment* pEnvironment)
 	{

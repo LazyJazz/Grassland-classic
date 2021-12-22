@@ -69,7 +69,7 @@ namespace Grassland
 		virtual GRL_RESULT Resize(uint32_t width, uint32_t height) override;
 		virtual GRL_RESULT CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture) override;
 		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap) override;
-		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLIGraphicsBuffer** ppBuffer) override;
+		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLIGraphicsBuffer** ppBuffer) override;
 		virtual GRL_RESULT CreatePipelineState(
 			const char* shader_path,
 			GRL_GRAPHICS_PIPELINE_STATE_DESC* desc,
@@ -115,7 +115,7 @@ namespace Grassland
 	class GRLCOpenGLBuffer : public GRLIGraphicsBuffer
 	{
 	public:
-		GRLCOpenGLBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLCOpenGLEnvironment * pEnvironment);
+		GRLCOpenGLBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLCOpenGLEnvironment * pEnvironment);
 		~GRLCOpenGLBuffer();
 		virtual GRL_RESULT WriteData(uint64_t size, uint64_t offset, void* pData) override;
 		virtual GRL_RESULT AddRef() override;
@@ -125,8 +125,10 @@ namespace Grassland
 		friend class GRLCOpenGLEnvironment;
 		uint32_t m_buffer;
 		GRL_GRAPHICS_BUFFER_TYPE m_type;
+		GRL_GRAPHICS_BUFFER_USAGE m_usage;
 		GRLPtr<GRLCOpenGLEnvironment> m_environment;
 		uint32_t m_glType;
+		uint32_t m_glUsage;
 		uint64_t m_size;
 		uint32_t __Ref_Cnt;
 	};

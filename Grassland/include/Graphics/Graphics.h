@@ -52,6 +52,13 @@ namespace Grassland
 		CONSTANT = 2,
 	};
 
+	enum class GRL_GRAPHICS_BUFFER_USAGE
+	{
+		DEFAULT = 0,
+		DYNAMIC = 1,
+		STATIC = 2
+	};
+
 	enum class GRL_GRAPHICS_SAMPLER_FILTER
 	{
 		MIN_MAG_LINEAR = 1,
@@ -112,7 +119,7 @@ namespace Grassland
 		virtual GRL_RESULT Resize(uint32_t width, uint32_t height) = 0;
 		virtual GRL_RESULT CreateTexture(uint32_t width, uint32_t height, GRL_FORMAT format, GRLIGraphicsTexture** ppTexture) = 0;
 		virtual GRL_RESULT CreateDepthMap(uint32_t width, uint32_t height, GRLIGraphicsDepthMap** ppDepthMap) = 0;
-		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRLIGraphicsBuffer** ppBuffer) = 0;
+		virtual GRL_RESULT CreateBuffer(uint64_t size, GRL_GRAPHICS_BUFFER_TYPE type, GRL_GRAPHICS_BUFFER_USAGE usage, void* pData, GRLIGraphicsBuffer** ppBuffer) = 0;
 		virtual GRL_RESULT CreatePipelineState(
 			const char* shader_path,
 			GRL_GRAPHICS_PIPELINE_STATE_DESC *desc,
@@ -167,4 +174,20 @@ namespace Grassland
 	};
 
 	GRL_RESULT GRLCreateGraphicsEnvironment(uint32_t width, uint32_t height, const char* window_title, GRL_GRAPHICS_API graphicsAPI, GRLIGraphicsEnvironment** ppEnvironment);
+
+
+	GRLDeclareObject(IGraphics2DEnvironment, "cacf4e12-69ce-41a3-9c73-906e9f50e666");
+
+	class GRLIGraphics2DEnvironment : public GRLIBase
+	{
+	public:
+		virtual GRL_RESULT BeginDraw() = 0;
+		virtual GRL_RESULT EndDraw() = 0;
+		virtual void SetTransformIdentity() = 0;
+		virtual void SetTransformScreenAspect() = 0;
+		virtual void SetTransform(GRLMat4 mat) = 0;
+		virtual GRL_RESULT DrawRectangle(float x0, float y0, float x1, float y1, float x2, float y2, GRLColor color) = 0;
+		virtual GRL_RESULT DrawTriangle(float x0, float y0, float x1, float y1, GRLColor color) = 0;
+		virtual GRL_RESULT PutTexture(float x0, float y0, float width, float height, GRLIGraphicsTexture* texture, float alpha = 1.0) = 0;
+	};
 }
