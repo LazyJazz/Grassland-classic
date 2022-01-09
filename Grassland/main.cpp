@@ -42,7 +42,7 @@ GRL_RESULT GRLHandlingFunction(GRL_RESULT Gr, const char * code, const char * fi
 
 int main()
 {
-    GRLGraphicsAPIFullTest(GRL_GRAPHICS_API::D3D12);
+    GRLGraphicsAPIFullTest(GRL_GRAPHICS_API::OPENGL);
     return 0;
 }
 
@@ -178,6 +178,18 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
         }
     }
     GRLCall(pTextureBitmap->WritePixels(pData));
+    delete[] pData;
+    GRLPtr<GRLIImage> pImage;
+    GRLCreateImage(256, 256, &pImage);
+    pImage->GetImageBuffer(&pData);
+    for (int x = 0; x < 256; x++)
+        for (int y = 0; y < 256; y++)
+        {
+            pData[x + y * 256] = GRLColor(x^y, x^y, x ^ y);
+        }
+    pImage->StoreBMP("texture.bmp");
+    pImage->Release();
+
 
     //GRLCall(pVertexBuffer->WriteData(sizeof(vertices), 0, vertices));
     //GRLCall(pIndexBuffer->WriteData(sizeof(indices), 0, indices));
@@ -242,7 +254,7 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api)
         GRLCall(pEnvironment->SetConstantBuffer(0, pConstantBuffer.Get()));
         GRLCall(pEnvironment->DrawIndexedInstance(pVertexBuffer.Get(), pIndexBuffer.Get(), 36, GRL_RENDER_TOPOLOGY::TRIANGLE));
         GRLCall(pEnvironment->EndDraw());
-        pEnvironment->Present(1);
+        pEnvironment->Present(0);
         
         /* {
             GRLIImage * pImage;
