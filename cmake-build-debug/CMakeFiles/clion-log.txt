@@ -1,0 +1,16 @@
+/home/taichigraphics/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5921.27/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/taichigraphics/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/221.5921.27/bin/ninja/linux/ninja -G Ninja -S /home/taichigraphics/Grassland -B /home/taichigraphics/Grassland/cmake-build-debug
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Including X11 support
+CMake Warning at freetype/builds/cmake/FindHarfBuzz.cmake:99 (message):
+  Required version (2.0.0) is higher than found version ()
+Call Stack (most recent call first):
+  freetype/CMakeLists.txt:254 (find_package)
+
+
+-- Could NOT find BZip2 (missing: BZIP2_LIBRARIES BZIP2_INCLUDE_DIR) 
+-- Checking for module 'bzip2'
+--   No package 'bzip2' found
+-- Could NOT find BrotliDec (missing: BROTLIDEC_INCLUDE_DIRS BROTLIDEC_LIBRARIES) 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/taichigraphics/Grassland/cmake-build-debug
