@@ -366,3 +366,5 @@ FodyWeavers.xsd
 !grassland/lib/x64/Debug/glfw3.lib
 !grassland/lib/x86/Release/glfw3.lib
 !grassland/lib/x86/Debug/glfw3.lib
+
+cmake-*
