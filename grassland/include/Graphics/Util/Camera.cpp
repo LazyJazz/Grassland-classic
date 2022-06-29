@@ -1,6 +1,5 @@
 #include "Camera.h"
 
-namespace Grassland
-{
-	;
+namespace Grassland {
+;
 }

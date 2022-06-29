@@ -1,8 +1,7 @@
 #pragma once
-#include "GL.h"
 #include "../../Geometry/Geometry.h"
+#include "GL.h"
 
-namespace Grassland
-{
-	;
+namespace Grassland {
+;
 }

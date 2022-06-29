@@ -5,7 +5,6 @@
 #include "GeometryRectangle.h"
 #include "GeometryTriangle.h"
 
-namespace Grassland
-{
-	;
+namespace Grassland {
+;
 }

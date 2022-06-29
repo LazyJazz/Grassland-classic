@@ -3,9 +3,8 @@
 #include "GLTexture.h"
 #include "GLWindow.h"
 
-namespace Grassland
-{
-	typedef uint32_t GRL_OPENGL_FRAMEBUFFER_SLOT;
+namespace Grassland {
+typedef uint32_t GRL_OPENGL_FRAMEBUFFER_SLOT;
 #define GRL_OPENGL_FRAMEBUFFER_SLOT_DEPTH -1
 #define GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR0 0
 #define GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR1 1
@@ -41,20 +40,23 @@ namespace Grassland
 #define GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR31 31
 #define GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR_LAST 31
 
-	class GRLIOpenGLFrameBuffer : public GRLIBase
-	{
-	public:
-		virtual uint32_t GetHandle() const = 0;
-		virtual int32_t GetWidth() const = 0;
-		virtual int32_t GetHeight() const = 0;
-		virtual GRL_RESULT CheckStatus() const = 0;
-		virtual GRL_RESULT BindTexture(GRLIOpenGLTexture * pTexture, GRL_OPENGL_FRAMEBUFFER_SLOT slot = GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR0) = 0;
-		virtual GRL_RESULT Resize(int32_t width, int32_t height) = 0;
-	};
+class GRLIOpenGLFrameBuffer : public GRLIBase {
+ public:
+  virtual uint32_t GetHandle() const = 0;
+  virtual int32_t GetWidth() const = 0;
+  virtual int32_t GetHeight() const = 0;
+  virtual GRL_RESULT CheckStatus() const = 0;
+  virtual GRL_RESULT BindTexture(GRLIOpenGLTexture *pTexture,
+                                 GRL_OPENGL_FRAMEBUFFER_SLOT slot =
+                                     GRL_OPENGL_FRAMEBUFFER_SLOT_COLOR0) = 0;
+  virtual GRL_RESULT Resize(int32_t width, int32_t height) = 0;
+};
 
-	GRL_RESULT GRLCreateOpenGLFrameBuffer(int32_t width, int32_t height, GRLIOpenGLFrameBuffer** ppFrameBuffer);
+GRL_RESULT GRLCreateOpenGLFrameBuffer(int32_t width,
+                                      int32_t height,
+                                      GRLIOpenGLFrameBuffer **ppFrameBuffer);
 
-	GRL_RESULT GRLOpenGLBindFrameBuffer(GRLIOpenGLFrameBuffer * pFramebuffer);
+GRL_RESULT GRLOpenGLBindFrameBuffer(GRLIOpenGLFrameBuffer *pFramebuffer);
 
-	GRL_RESULT GRLOpenGLGetFrameBufferSize(int32_t* width, int32_t* height);
-}
+GRL_RESULT GRLOpenGLGetFrameBufferSize(int32_t *width, int32_t *height);
+}  // namespace Grassland

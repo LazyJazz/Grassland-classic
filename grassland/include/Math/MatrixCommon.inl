@@ -44,7 +44,7 @@ namespace Grassland
 			}
 			return res;
 		}
-		
+
 		template<int N, typename T>
 		Matrix<N, N, T> matinverse(Matrix<N, N, T> mat)
 		{

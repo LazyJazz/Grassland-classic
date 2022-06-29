@@ -4,8 +4,7 @@
 #include <Windows.h>
 #endif
 
-namespace Grassland
-{
+namespace Grassland {
 #define GRL_WM_CREATE 0x0001
 #define GRL_WM_KEYDOWN 0x0100
 #define GRL_WM_KEYLAST 0x0109
@@ -15,7 +14,6 @@ namespace Grassland
 #define GRL_WM_MOUSEMOVE 0x0200
 #define GRL_WM_MOUSEWHEEL 0x020E
 #define GRL_WM_SIZE 0x0005
-	
 
 #define GRL_KEY_A 65
 #define GRL_KEY_B 66
@@ -65,8 +63,8 @@ namespace Grassland
 #define GRL_KEY_F10 0x79
 #define GRL_KEY_F11 0x7A
 #define GRL_KEY_F12 0x7B
-#define GRL_KEY_MINUS 
-#define GRL_KEY_EQUAL 
+#define GRL_KEY_MINUS
+#define GRL_KEY_EQUAL
 #define GRL_KEY_LSHIFT 0xA0
 #define GRL_KEY_LCONTROL 0xA2
 #define GRL_KEY_LALT 0xA4
@@ -85,4 +83,4 @@ namespace Grassland
 #define GRL_KEY_DOWN 0x28
 #define GRL_KEY_LEFT 0x25
 #define GRL_KEY_RIGHT 0x27
-}
+}  // namespace Grassland
