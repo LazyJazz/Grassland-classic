@@ -88,8 +88,7 @@ GRLCD3D12PipelineState::GRLCD3D12PipelineState(
       rootParameters[index + desc->numTexture].InitAsConstantBufferView(index);
 
     D3D12_STATIC_SAMPLER_DESC
-        sampler = {},
-        *samplers = new D3D12_STATIC_SAMPLER_DESC[desc->numTexture];
+    sampler = {}, *samplers = new D3D12_STATIC_SAMPLER_DESC[desc->numTexture];
 
     for (int i = 0; i < desc->numTexture; i++) {
       sampler.Filter = GRLFilterToD3D12Filter(desc->samplerDesc[i].filter);
@@ -1014,7 +1013,7 @@ D3D12_TEXTURE_ADDRESS_MODE GRLExtensionModeToD3D12TextureAddressMode(
     case GRL_GRAPHICS_TEXTURE_EXTENSION_MODE::REPEAT:
       return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
       //		case GRL_GRAPHICS_TEXTURE_EXTENSION_MODE::CLAMP:
-      //D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+      // D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
   }
   return D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 }

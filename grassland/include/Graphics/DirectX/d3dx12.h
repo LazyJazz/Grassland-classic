@@ -3755,8 +3755,8 @@ class CD3DX12_STATE_OBJECT_DESC {
   }
   typedef struct SUBOBJECT_WRAPPER : public D3D12_STATE_SUBOBJECT {
     D3D12_STATE_SUBOBJECT
-        *pSubobjectArrayLocation;  // new location when flattened into array
-                                   // for repointing pointers in subobjects
+    *pSubobjectArrayLocation;  // new location when flattened into array
+                               // for repointing pointers in subobjects
   } SUBOBJECT_WRAPPER;
   D3D12_STATE_OBJECT_DESC m_Desc;
   std::list<SUBOBJECT_WRAPPER>

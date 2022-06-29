@@ -1,6 +1,9 @@
 #pragma once
-#include <GLFW/glfw3.h>
+
+// clang-format off
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 
 #include <cstring>
 #include <map>

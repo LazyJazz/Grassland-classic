@@ -5,13 +5,13 @@
 
 namespace Grassland {
 //#define GRLID_IGraphicsEnvironment
-//GRLUUID("8c7edbfd-fc7b-479d-87ac-069480d65d3e") #define GRLID_IGraphicsBuffer
-//GRLUUID("cb318405-fa08-4ded-8393-67dbd259e63f") #define GRLID_IGraphicsTexture
-//GRLUUID("29433e84-b78d-4a5d-886b-864ccef99acc") #define
-//GRLID_IGraphicsDepthMap
-//GRLUUID("82d47f8c-f737-4584-8e00-7abae3df9804") #define
-//GRLID_IGraphicsPipelineState
-//GRLUUID("18adfb02-d6b5-45e6-a7e6-018cfe1c1a62")
+// GRLUUID("8c7edbfd-fc7b-479d-87ac-069480d65d3e") #define GRLID_IGraphicsBuffer
+// GRLUUID("cb318405-fa08-4ded-8393-67dbd259e63f") #define
+// GRLID_IGraphicsTexture GRLUUID("29433e84-b78d-4a5d-886b-864ccef99acc")
+// #define GRLID_IGraphicsDepthMap
+// GRLUUID("82d47f8c-f737-4584-8e00-7abae3df9804") #define
+// GRLID_IGraphicsPipelineState
+// GRLUUID("18adfb02-d6b5-45e6-a7e6-018cfe1c1a62")
 
 enum class GRL_FORMAT {
   FLOAT = 0,
