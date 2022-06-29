@@ -11,5 +11,3 @@ include_directories(freetype/include)
 include_directories(glad/include)
 
 add_subdirectory(grassland)
-
-
