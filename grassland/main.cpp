@@ -293,7 +293,7 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api) {
                                               pIndexBuffer.Get(), 36,
                                               GRL_RENDER_TOPOLOGY::TRIANGLE));
     GRLCall(pEnvironment->EndDraw());
-    pEnvironment->Present(0);
+    pEnvironment->Present(1);
 
     /* {
         GRLIImage * pImage;
@@ -306,5 +306,4 @@ void GRLGraphicsAPIFullTest(GRL_GRAPHICS_API graphics_api) {
         pImage->Release();
     }//*/
   }
-  return;
-}
+  }

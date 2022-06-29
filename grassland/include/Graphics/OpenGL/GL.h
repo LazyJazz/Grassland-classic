@@ -1,9 +1,0 @@
-#pragma once
-#include "GLFrameBuffer.h"
-#include "GLHeader.h"
-#include "GLInput.h"
-#include "GLShaderProgram.h"
-#include "GLText.h"
-#include "GLTexture.h"
-#include "GLVertexArray.h"
-#include "GLWindow.h"
