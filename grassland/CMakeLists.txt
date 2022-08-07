@@ -17,9 +17,9 @@ target_sources(grassland PRIVATE include/Graphics/Util/Mesh.cpp)
 target_sources(grassland PRIVATE include/Math/MathDecl.cpp)
 target_sources(grassland PRIVATE include/String/String.cpp)
 
-if(WIN32)
+if(MSVC)
     target_sources(grassland PRIVATE include/Graphics/DirectX/GraphicsDirectX.cpp)
-    target_link_libraries(grassland d3d12)
+    target_link_libraries(grassland d3d12 d3dcompiler dxgi)
 endif()
 
 target_link_libraries(grassland freetype glfw glad)

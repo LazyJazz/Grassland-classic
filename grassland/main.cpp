@@ -41,7 +41,7 @@ GRL_RESULT GRLHandlingFunction(GRL_RESULT Gr,
 #define GRLCall(x) GRLHandlingFunction(x, #x, __FILE__, __LINE__)
 
 int main() {
-  GRLGraphicsAPIFullTest(GRL_GRAPHICS_API::OPENGL);
+  GRLGraphicsAPIFullTest(GRL_GRAPHICS_API::D3D12);
   return 0;
 }
 
