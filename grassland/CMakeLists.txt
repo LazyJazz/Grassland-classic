@@ -19,6 +19,7 @@ target_sources(grassland PRIVATE include/String/String.cpp)
 
 if(WIN32)
     target_sources(grassland PRIVATE include/Graphics/DirectX/GraphicsDirectX.cpp)
+    target_link_libraries(grassland d3d12)
 endif()
 
 target_link_libraries(grassland freetype glfw glad)

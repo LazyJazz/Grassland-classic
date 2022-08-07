@@ -1,4 +1,4 @@
-#include "GraphicsDirectX.h"
+﻿#include "GraphicsDirectX.h"
 
 namespace Grassland {
 HRESULT GRLDirectXErrorReport(HRESULT hr,
@@ -569,13 +569,18 @@ GRLCD3D12Environment::GRLCD3D12Environment(uint32_t screen_width,
   windowClass.lpfnWndProc = GRLD3D12EnvironmentProcFunc;
   windowClass.hInstance = hInstance;
   windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-  windowClass.lpszClassName = L"GrasslandDirectXWindowClass";
+  windowClass.lpszClassName = "GrasslandDirectXWindowClass";
   RegisterClassEx(&windowClass);
+
 
   RECT windowRect = {0, 0, static_cast<LONG>(screen_width),
                      static_cast<LONG>(screen_height)};
   AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+#ifdef _UNICODE
   std::wstring wtitle = GRLStringUTF8toUnicode(window_title);
+#else
+  std::string wtitle = window_title;
+#endif
 
 #ifdef _DEBUG
   wtitle = wtitle + L" [D3D12]";

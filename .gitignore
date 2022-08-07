@@ -368,3 +368,5 @@ FodyWeavers.xsd
 !grassland/lib/x86/Debug/glfw3.lib
 
 cmake-*
+.idea
+.vscode
